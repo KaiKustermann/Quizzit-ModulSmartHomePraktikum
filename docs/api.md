@@ -26,7 +26,7 @@ API Documentation is realized using:
 
 Framework | Interface | Source | Comment
 --- | --- | --- | ---
-[Async API](https://www.asyncapi.com/docs/reference/specification/v2.6.0) | Websocket | [Source](./websocket-asyncapi.yaml) | [Online Editor](https://studio.asyncapi.com/)
+[Async API](https://www.asyncapi.com/docs/reference/specification/v2.6.0) | Websocket | [Source](./spec/websocket-asyncapi.yaml) | [Online Editor](https://studio.asyncapi.com/)
 [Swagger](https://swagger.io/docs/specification) | REST | TODO | [Online Demo](https://petstore.swagger.io/), can load an own JSON file if available via http
 
 Might find a proper way to provide shared objects to both asyncapi file and swagger file.
