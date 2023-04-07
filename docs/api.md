@@ -13,7 +13,7 @@ See below table to see which interface is used for each cause.
 
 Name | REST/Socket | Content
 --- | --- | --- 
-Backend Available Check | REST | GET /health endpoint of backend
+Backend Available Check | REST | GET /health endpoint of backend (useful for client App to check if backend is online)
 Profile CRUD | REST | GET profile(s), new profile, edit profile, delete profile
 Open Websocket | Socket | Open Websocket connection
 Gamestate Update from Backend | Socket | Send new gamestate
