@@ -1,0 +1,4 @@
+Id:
+  title: Identifier
+  description: A unique ID
+  type: string

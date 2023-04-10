@@ -1,0 +1,20 @@
+Answer:
+  title: Answer
+  description: One possible answer to a question.
+  type: object
+  properties:
+    id:
+      $ref: "id.yaml"
+    text:
+      title: Text
+      description: The actual answer text to be displayed to the player during the game.
+      type: string
+    choiceId:
+      $ref: "id.yaml"
+    disabled:
+      title: Disabled
+      description: Disable this answer possibility. For example due to a joker usage.
+      type: boolean
+  required:
+    - id
+    - text

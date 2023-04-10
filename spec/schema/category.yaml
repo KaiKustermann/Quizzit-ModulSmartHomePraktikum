@@ -1,0 +1,17 @@
+Category:
+  title: Category
+  description: A category for questions and panels.
+  type: object
+  properties:
+    id:
+      $ref: "id.yaml"
+    name:
+      title: Name
+      description: Name of the category to be used in the game
+      type: string
+    icon:
+      $ref: "icon.yaml"
+  required:
+    - id
+    - name
+    - icon

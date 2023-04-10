@@ -1,0 +1,4 @@
+Icon:
+  title: Icon
+  description: Reference to an icon
+  type: string

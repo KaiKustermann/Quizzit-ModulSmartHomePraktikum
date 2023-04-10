@@ -31,13 +31,13 @@ paths:
         content:
           application/json:
             schema:
-              $ref: 'shared.yaml#/components/schemas/Profile'
+              $ref: './schema/profile.yaml#/Profile'
           application/xml:
             schema:
-              $ref: 'shared.yaml#/components/schemas/Profile'
+              $ref: './schema/profile.yaml#/Profile'
           application/x-www-form-urlencoded:
             schema:
-              $ref: 'shared.yaml#/components/schemas/Profile'
+              $ref: './schema/profile.yaml#/Profile'
         required: true
       responses:
         '200':
@@ -45,10 +45,10 @@ paths:
           content:
             application/json:
               schema:
-                $ref: 'shared.yaml#/components/schemas/Profile'          
+                $ref: './schema/profile.yaml#/Profile'          
             application/xml:
               schema:
-                $ref: 'shared.yaml#/components/schemas/Profile'
+                $ref: './schema/profile.yaml#/Profile'
         '400':
           description: Invalid ID supplied
         '404':
@@ -66,13 +66,13 @@ paths:
         content:
           application/json:
             schema:
-              $ref: 'shared.yaml#/components/schemas/Profile'
+              $ref: './schema/profile.yaml#/Profile'
           application/xml:
             schema:
-              $ref: 'shared.yaml#/components/schemas/Profile'
+              $ref: './schema/profile.yaml#/Profile'
           application/x-www-form-urlencoded:
             schema:
-              $ref: 'shared.yaml#/components/schemas/Profile'
+              $ref: './schema/profile.yaml#/Profile'
         required: true
       responses:
         '200':
@@ -80,10 +80,10 @@ paths:
           content:
             application/json:
               schema:
-                $ref: 'shared.yaml#/components/schemas/Profile'          
+                $ref: './schema/profile.yaml#/Profile'          
             application/xml:
               schema:
-                $ref: 'shared.yaml#/components/schemas/Profile'
+                $ref: './schema/profile.yaml#/Profile'
         '405':
           description: Invalid input
   /v1/profile/{profileId}:
@@ -107,10 +107,10 @@ paths:
           content:
             application/json:
               schema:
-                $ref: 'shared.yaml#/components/schemas/Profile'          
+                $ref: './schema/profile.yaml#/Profile'          
             application/xml:
               schema:
-                $ref: 'shared.yaml#/components/schemas/Profile'
+                $ref: './schema/profile.yaml#/Profile'
         '400':
           description: Invalid ID supplied
         '404':
@@ -208,13 +208,13 @@ paths:
         content:
           application/json:
             schema:
-              $ref: 'shared.yaml#/components/schemas/Preferences'
+              $ref: './schema/profile.yaml#/Preferences'
           application/xml:
             schema:
-              $ref: 'shared.yaml#/components/schemas/Preferences'
+              $ref: './schema/profile.yaml#/Preferences'
           application/x-www-form-urlencoded:
             schema:
-              $ref: 'shared.yaml#/components/schemas/Preferences'
+              $ref: './schema/profile.yaml#/Preferences'
         required: true
       responses:
         '200':
@@ -222,10 +222,10 @@ paths:
           content:
             application/json:
               schema:
-                $ref: 'shared.yaml#/components/schemas/Preferences'          
+                $ref: './schema/profile.yaml#/Preferences'          
             application/xml:
               schema:
-                $ref: 'shared.yaml#/components/schemas/Preferences'
+                $ref: './schema/profile.yaml#/Preferences'
         '400':
           description: Invalid ID supplied
         '404':
@@ -252,7 +252,7 @@ components:
       content:
         application/json:
           schema:
-            $ref: 'shared.yaml#/components/schemas/Profile'
+            $ref: './schema/profile.yaml#/Profile'
         application/xml:
           schema:
-            $ref: 'shared.yaml#/components/schemas/Profile'
+            $ref: './schema/profile.yaml#/Profile'
