@@ -27,7 +27,7 @@ API Documentation is realized using:
 Framework | Interface | Source | Comment
 --- | --- | --- | ---
 [Async API](https://www.asyncapi.com/docs/reference/specification/v2.6.0) | Websocket | [Source](./spec/websocket-asyncapi.yaml) | [Online Editor](https://studio.asyncapi.com/)
-[Swagger](https://swagger.io/docs/specification) | REST | TODO | [Online Editor](https://editor.swagger.io/)
+[Swagger](https://swagger.io/docs/specification) | REST | [Source](./spec/swagger.yaml) | [Online Editor](https://editor.swagger.io/)
 
 ### Shared Schema Definitions
 
