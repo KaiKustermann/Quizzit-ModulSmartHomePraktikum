@@ -208,13 +208,13 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/Preferences'
+              $ref: './schema/profile.yaml#/Preferences'
           application/xml:
             schema:
-              $ref: '#/components/schemas/Preferences'
+              $ref: './schema/profile.yaml#/Preferences'
           application/x-www-form-urlencoded:
             schema:
-              $ref: '#/components/schemas/Preferences'
+              $ref: './schema/profile.yaml#/Preferences'
         required: true
       responses:
         '200':
@@ -222,10 +222,10 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Preferences'          
+                $ref: './schema/profile.yaml#/Preferences'          
             application/xml:
               schema:
-                $ref: '#/components/schemas/Preferences'
+                $ref: './schema/profile.yaml#/Preferences'
         '400':
           description: Invalid ID supplied
         '404':
@@ -234,17 +234,6 @@ paths:
           description: Validation exception
 components:
   schemas:
-    Preferences:
-      title: Preferences
-      description: List any set preferences.
-      type: array
-      minItems: 0
-      items:
-        anyOf:
-          - $ref: "./schema/profile.yaml#/UserInterfaceScale"
-          - $ref: "./schema/profile.yaml#/VoiceOutput"
-          - $ref: "./schema/profile.yaml#/Photosensitive"
-          - $ref: "./schema/profile.yaml#/VirtualDie"
     ApiResponse:
       type: object
       properties:

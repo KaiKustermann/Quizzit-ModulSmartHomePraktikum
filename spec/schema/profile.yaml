@@ -1,53 +1,32 @@
-UserInterfaceScale:
-  description: Key-Value Entry for preferences
+Preferences:
+  title: Preferences
+  description: List any set preferences.
   type: object
   properties:
     userInterfaceScale:
       title: User Interface Scale
       description: Interface Scaling factor in %.
       type: number
-  required:
-    - userInterfaceScale
-VoiceOutput:
-  description: Key-Value Entry for preferences
-  type: object
-  properties:
     voiceOutput:
       title: Voice Output
       description: Enable Voice Output / Screen Reading
       type: boolean
-  required:
-    - voiceOutput
-Photosensitive:
-  description: Key-Value Entry for preferences
-  type: object
-  properties:
     photosensitive:
       title: Photosensitive
       description: Whether or not the player is photosensitive.
       type: boolean
-  required:
-    - photosensitive
-VirtualDie:
-  description: Key-Value Entry for preferences
-  type: object
-  properties:
     virtualDie:
       title: Virtual Die
       description: Enable using the virtual die instead of a physical one.
       type: boolean
-  required:
-    - virtualDie
-Preferences:
-  title: Preferences
-  description: List any set preferences.
-  type: array
-  minItems: 0
-  anyOf:
-    - $ref: "#/UserInterfaceScale"
-    - $ref: "#/VoiceOutput"
-    - $ref: "#/Photosensitive"
-    - $ref: "#/VirtualDie"
+  additionalProperties:
+    oneOf: 
+      - type: string
+      - type: number
+      - type: integer
+      - type: boolean
+      - type: array
+      - type: object
 Profile:
   title: Profile
   description: Configuration of one person including preferences.
