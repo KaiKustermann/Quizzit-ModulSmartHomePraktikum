@@ -1,0 +1,258 @@
+openapi: 3.0.3
+info:
+  title: Quizzit - OpenAPI 3.0
+  description: |-
+    This is the first draft of the Quizzit REST API specification.
+    We also provide a Websocket interface for certain information, refer to the asyncapi.yml for these definitions.
+    
+    Some useful links:
+    - [Quizzit repository](https://im-gitlab.hdm-stuttgart.de/quizzit)
+  contact:
+    email: "H3rby7@users.noreply.github.com"
+  license:
+    name: Unlicensed
+  version: 0.1.0
+servers:
+  - url: localhost
+    description: Local development
+tags:
+  - name: profile
+    description: Used to configure/setup profiles
+paths:
+  /v1/profile:
+    put:
+      tags:
+        - profile
+      summary: Update an existing profile
+      description: Update an existing profile by Id
+      operationId: v1UpdateProfile
+      requestBody:
+        description: Update an existent profile
+        content:
+          application/json:
+            schema:
+              $ref: 'shared.yaml#/components/schemas/Profile'
+          application/xml:
+            schema:
+              $ref: 'shared.yaml#/components/schemas/Profile'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: 'shared.yaml#/components/schemas/Profile'
+        required: true
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: 'shared.yaml#/components/schemas/Profile'          
+            application/xml:
+              schema:
+                $ref: 'shared.yaml#/components/schemas/Profile'
+        '400':
+          description: Invalid ID supplied
+        '404':
+          description: Profile not found
+        '405':
+          description: Validation exception
+    post:
+      tags:
+        - profile
+      summary: Add a new profile to the game
+      description: Add a new profile to the game
+      operationId: v1AddProfile
+      requestBody:
+        description: Create a new profile in the game
+        content:
+          application/json:
+            schema:
+              $ref: 'shared.yaml#/components/schemas/Profile'
+          application/xml:
+            schema:
+              $ref: 'shared.yaml#/components/schemas/Profile'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: 'shared.yaml#/components/schemas/Profile'
+        required: true
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: 'shared.yaml#/components/schemas/Profile'          
+            application/xml:
+              schema:
+                $ref: 'shared.yaml#/components/schemas/Profile'
+        '405':
+          description: Invalid input
+  /v1/profile/{profileId}:
+    get:
+      tags:
+        - profile
+      summary: Find profile by ID
+      description: Returns a single profile
+      operationId: getProfileById
+      parameters:
+        - name: profileId
+          in: path
+          description: ID of profile to return
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: 'shared.yaml#/components/schemas/Profile'          
+            application/xml:
+              schema:
+                $ref: 'shared.yaml#/components/schemas/Profile'
+        '400':
+          description: Invalid ID supplied
+        '404':
+          description: Profile not found
+    post:
+      tags:
+        - profile
+      summary: Updates a profile in the game with form data
+      description: ''
+      operationId: v1UpdateProfileWithForm
+      parameters:
+        - name: profileId
+          in: path
+          description: ID of profile that needs to be updated
+          required: true
+          schema:
+            type: integer
+            format: int64
+        - name: name
+          in: query
+          description: Name of profile that needs to be updated
+          schema:
+            type: string
+      responses:
+        '405':
+          description: Invalid input
+    delete:
+      tags:
+        - profile
+      summary: Deletes a profile
+      description: delete a profile
+      operationId: v1DeleteProfile
+      parameters:
+        - name: profileId
+          in: path
+          description: Profile id to delete
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '400':
+          description: Invalid profile value
+  /v1/profile/{profileId}/uploadImage:
+    post:
+      tags:
+        - profile
+      summary: uploads an image
+      description: ''
+      operationId: v1UploadFile
+      parameters:
+        - name: profileId
+          in: path
+          description: ID of profile to update
+          required: true
+          schema:
+            type: integer
+            format: int64
+        - name: additionalMetadata
+          in: query
+          description: Additional Metadata
+          required: false
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/octet-stream:
+            schema:
+              type: string
+              format: binary
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+  /v1/profile/{profileId}/preferences:
+    put:
+      tags:
+        - profile
+      summary: Update an existing profile's preferences
+      description: Update an existing profile's preferences by Id
+      operationId: v1UpdateProfilePreferences
+      parameters:
+        - name: profileId
+          in: path
+          description: ID of profile's preferences to update
+          required: true
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        description: Update an existent profile's preferences
+        content:
+          application/json:
+            schema:
+              $ref: 'shared.yaml#/components/schemas/Preferences'
+          application/xml:
+            schema:
+              $ref: 'shared.yaml#/components/schemas/Preferences'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: 'shared.yaml#/components/schemas/Preferences'
+        required: true
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: 'shared.yaml#/components/schemas/Preferences'          
+            application/xml:
+              schema:
+                $ref: 'shared.yaml#/components/schemas/Preferences'
+        '400':
+          description: Invalid ID supplied
+        '404':
+          description: Profile not found
+        '405':
+          description: Validation exception
+components:
+  schemas:
+    ApiResponse:
+      type: object
+      properties:
+        code:
+          type: integer
+          format: int32
+        type:
+          type: string
+        message:
+          type: string
+      xml:
+        name: '##default'
+  requestBodies:
+    Profile:
+      description: Profile object that needs to be added to the store
+      content:
+        application/json:
+          schema:
+            $ref: 'shared.yaml#/components/schemas/Profile'
+        application/xml:
+          schema:
+            $ref: 'shared.yaml#/components/schemas/Profile'
