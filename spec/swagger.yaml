@@ -31,13 +31,13 @@ paths:
         content:
           application/json:
             schema:
-              $ref: './schema/profile.yaml#/Profile'
+              $ref: '#/components/schemas/Profile'
           application/xml:
             schema:
-              $ref: './schema/profile.yaml#/Profile'
+              $ref: '#/components/schemas/Profile'
           application/x-www-form-urlencoded:
             schema:
-              $ref: './schema/profile.yaml#/Profile'
+              $ref: '#/components/schemas/Profile'
         required: true
       responses:
         '200':
@@ -45,10 +45,10 @@ paths:
           content:
             application/json:
               schema:
-                $ref: './schema/profile.yaml#/Profile'          
+                $ref: '#/components/schemas/Profile'          
             application/xml:
               schema:
-                $ref: './schema/profile.yaml#/Profile'
+                $ref: '#/components/schemas/Profile'
         '400':
           description: Invalid ID supplied
         '404':
@@ -66,13 +66,13 @@ paths:
         content:
           application/json:
             schema:
-              $ref: './schema/profile.yaml#/Profile'
+              $ref: '#/components/schemas/Profile'
           application/xml:
             schema:
-              $ref: './schema/profile.yaml#/Profile'
+              $ref: '#/components/schemas/Profile'
           application/x-www-form-urlencoded:
             schema:
-              $ref: './schema/profile.yaml#/Profile'
+              $ref: '#/components/schemas/Profile'
         required: true
       responses:
         '200':
@@ -80,10 +80,10 @@ paths:
           content:
             application/json:
               schema:
-                $ref: './schema/profile.yaml#/Profile'          
+                $ref: '#/components/schemas/Profile'          
             application/xml:
               schema:
-                $ref: './schema/profile.yaml#/Profile'
+                $ref: '#/components/schemas/Profile'
         '405':
           description: Invalid input
   /v1/profile/{profileId}:
@@ -107,10 +107,10 @@ paths:
           content:
             application/json:
               schema:
-                $ref: './schema/profile.yaml#/Profile'          
+                $ref: '#/components/schemas/Profile'          
             application/xml:
               schema:
-                $ref: './schema/profile.yaml#/Profile'
+                $ref: '#/components/schemas/Profile'
         '400':
           description: Invalid ID supplied
         '404':
@@ -208,13 +208,13 @@ paths:
         content:
           application/json:
             schema:
-              $ref: './schema/profile.yaml#/Preferences'
+              $ref: '#/components/schemas/Preferences'
           application/xml:
             schema:
-              $ref: './schema/profile.yaml#/Preferences'
+              $ref: '#/components/schemas/Preferences'
           application/x-www-form-urlencoded:
             schema:
-              $ref: './schema/profile.yaml#/Preferences'
+              $ref: '#/components/schemas/Preferences'
         required: true
       responses:
         '200':
@@ -222,10 +222,10 @@ paths:
           content:
             application/json:
               schema:
-                $ref: './schema/profile.yaml#/Preferences'          
+                $ref: '#/components/schemas/Preferences'          
             application/xml:
               schema:
-                $ref: './schema/profile.yaml#/Preferences'
+                $ref: '#/components/schemas/Preferences'
         '400':
           description: Invalid ID supplied
         '404':
@@ -234,6 +234,60 @@ paths:
           description: Validation exception
 components:
   schemas:
+    Icon:
+      title: Icon
+      description: Reference to an icon
+      type: string
+    Id:
+      title: Identifier
+      description: A unique ID
+      type: string
+    Preferences:
+      title: Preferences
+      description: List any set preferences.
+      type: object
+      properties:
+        userInterfaceScale:
+          title: User Interface Scale
+          description: Interface Scaling factor in %.
+          type: number
+        voiceOutput:
+          title: Voice Output
+          description: Enable Voice Output / Screen Reading
+          type: boolean
+        photosensitive:
+          title: Photosensitive
+          description: Whether or not the player is photosensitive.
+          type: boolean
+        virtualDie:
+          title: Virtual Die
+          description: Enable using the virtual die instead of a physical one.
+          type: boolean
+      additionalProperties:
+        oneOf: 
+          - type: string
+          - type: number
+          - type: integer
+          - type: boolean
+          - type: array
+          - type: object
+    Profile:
+      title: Profile
+      description: Configuration of one person including preferences.
+      type: object
+      properties:
+        id:
+          $ref: "#/components/schemas/Id"
+        name:
+          type: string
+        icon:
+          $ref: "#/components/schemas/Icon"
+        preferences:
+          $ref: "#/components/schemas/Preferences"
+      required:
+        - id
+        - name
+        - preferences
     ApiResponse:
       type: object
       properties:
@@ -252,7 +306,7 @@ components:
       content:
         application/json:
           schema:
-            $ref: './schema/profile.yaml#/Profile'
+            $ref: '#/components/schemas/Profile'
         application/xml:
           schema:
-            $ref: './schema/profile.yaml#/Profile'
+            $ref: '#/components/schemas/Profile'

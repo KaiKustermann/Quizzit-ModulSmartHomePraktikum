@@ -29,7 +29,7 @@ channels:
         messageId: "game-board-01"
         description: An event containing the new board status.
         payload:
-          $ref: "#/components/schemas/game"
+          $ref: "#/components/schemas/Game"
   game/action/prompt:
     subscribe:
       operationId: "game-action-prompt-01"
@@ -37,7 +37,7 @@ channels:
         messageId: "game-action-prompt-01"
         description: An event prompting a player to take the described action.
         payload:
-          $ref: "#/components/schemas/action"
+          $ref: "#/components/schemas/Action"
   game/action/choice:
     subscribe:
       operationId: "game-action-choice-01"
@@ -45,26 +45,72 @@ channels:
         messageId: "game-action-choice-01"
         description: Player choice for an action.
         payload:
-          $ref: "#/components/schemas/choice"
+          $ref: "#/components/schemas/Choice"
 components:
   schemas:
-    icon:
+    Icon:
       title: Icon
       description: Reference to an icon
       type: string
-    id:
+    Id:
       title: Identifier
       description: A unique ID
       type: string
-    actionId:
-      $ref: "#/components/schemas/id"
+    ActionId:
       title: Action ID
       description: Unique Identifier for this one action prompt. Used to match the user's choice lateron!
-    choiceId:
-      $ref: "#/components/schemas/id"
+      type: string
+    ChoiceId:
       title: Choice ID
       description: Unique Identifier for this choice. Used to match which option the user choses.
-    jokerState:
+      type: string
+    Preferences:
+      title: Preferences
+      description: List any set preferences.
+      type: object
+      properties:
+        userInterfaceScale:
+          title: User Interface Scale
+          description: Interface Scaling factor in %.
+          type: number
+        voiceOutput:
+          title: Voice Output
+          description: Enable Voice Output / Screen Reading
+          type: boolean
+        photosensitive:
+          title: Photosensitive
+          description: Whether or not the player is photosensitive.
+          type: boolean
+        virtualDie:
+          title: Virtual Die
+          description: Enable using the virtual die instead of a physical one.
+          type: boolean
+      additionalProperties:
+        oneOf: 
+          - type: string
+          - type: number
+          - type: integer
+          - type: boolean
+          - type: array
+          - type: object
+    Profile:
+      title: Profile
+      description: Configuration of one person including preferences.
+      type: object
+      properties:
+        id:
+          $ref: "#/components/schemas/Id"
+        name:
+          type: string
+        icon:
+          $ref: "#/components/schemas/Icon"
+        preferences:
+          $ref: "#/components/schemas/Preferences"
+      required:
+        - id
+        - name
+        - preferences
+    JokerState:
       title: Joker State
       description: Keep track of if joker has been used, is being used, etc.
       type: string
@@ -72,197 +118,79 @@ components:
         - available
         - active
         - used
-    joker:
+    Joker:
       title: Joker
       description: A joker to make answering questions easier.
       type: object
       properties:
         id:
-          $ref: "#/components/schemas/id"
+          $ref: "#/components/schemas/Id"
         choiceId:
-          $ref: "#/components/schemas/choiceId"
+          $ref: "#/components/schemas/ChoiceId"
           description: "Unique Identifier for this joker in this situation. Used to match which option the user choses."
         name:
           title: Name
           description: A human readable name to be displayed inside the game.
           type: string
         icon:
-          $ref: "#/components/schemas/icon"
+          $ref: "#/components/schemas/Icon"
         state:
-          $ref: "#/components/schemas/jokerState"
+          $ref: "#/components/schemas/JokerState"
       required:
         - id
         - name
         - icon
         - state
-    userInterfaceScale:
-      description: Key-Value Entry for preferences
-      type: object
-      properties:
-        userInterfaceScale:
-          title: User Interface Scale
-          description: Interface Scaling factor in %.
-          type: number
-      required:
-        - userInterfaceScale
-    voiceOutput:
-      description: Key-Value Entry for preferences
-      type: object
-      properties:
-        voiceOutput:
-          title: Voice Output
-          description: Enable Voice Output / Screen Reading
-          type: boolean
-      required:
-        - voiceOutput
-    photosensitive:
-      description: Key-Value Entry for preferences
-      type: object
-      properties:
-        photosensitive:
-          title: Photosensitive
-          description: Whether or not the player is photosensitive.
-          type: boolean
-      required:
-        - photosensitive
-    virtualDie:
-      description: Key-Value Entry for preferences
-      type: object
-      properties:
-        virtualDie:
-          title: Virtual Die
-          description: Enable using the virtual die instead of a physical one.
-          type: boolean
-      required:
-        - virtualDie
-    preferences:
-      title: Preferences
-      description: List any set preferences.
-      type: array
-      minItems: 0
-      anyOf:
-        - $ref: "#/components/schemas/userInterfaceScale"
-        - $ref: "#/components/schemas/voiceOutput"
-        - $ref: "#/components/schemas/photosensitive"
-        - $ref: "#/components/schemas/virtualDie"
-    profile:
-      title: Profile
-      description: Configuration of one person including preferences.
-      type: object
-      properties:
-        id:
-          $ref: "#/components/schemas/id"
-        name:
-          type: string
-        icon:
-          $ref: "#/components/schemas/icon"
-        preferences:
-          $ref: "#/components/schemas/preferences"
-      required:
-        - id
-        - name
-        - preferences
-    player:
+    Player:
       title: Player
       description: Representation of a person in the game using their profile and game-relevant information
       type: object
       properties:
         id:
-          $ref: "#/components/schemas/id"
+          $ref: "#/components/schemas/Id"
         profile:
-          $ref: "#/components/schemas/profile"
+          $ref: "#/components/schemas/Profile"
         jokers:
           title: Jokers
           description: Jokers of this player.
           type: array
           minItems: 0
           items:
-            $ref: "#/components/schemas/joker"
+            $ref: "#/components/schemas/Joker"
       required:
         - id
         - profile
         - jokers
-    playerReference:
-      title: Player Reference
-      description: Just a reference to a player object. Use the player's ID as value.
-      type: string
-    category:
+    Category:
       title: Category
       description: A category for questions and panels.
       type: object
       properties:
         id:
-          $ref: "#/components/schemas/id"
+          $ref: "#/components/schemas/Id"
         name:
           title: Name
           description: Name of the category to be used in the game
           type: string
         icon:
-          $ref: "#/components/schemas/icon"
+          $ref: "#/components/schemas/Icon"
       required:
         - id
         - name
         - icon
-    panel:
-      title: Panel
-      description: Represents one location/field on the board.
-      type: object
-      properties:
-        id:
-          $ref: "#/components/schemas/id"
-        category:
-          $ref: "#/components/schemas/category"
-        players:
-          title: Players
-          description: Reference all players that are on this panel.
-          type: array
-          minItems: 0
-          items:
-            $ref: "#/components/schemas/playerReference"
-      required:
-        - id
-        - category
-        - players
-    playField:
-      title: Playfield
-      description: Represents the full field of the game. In the analog world this would be all the material on the table.
-      type: object
-      properties:
-        id:
-          $ref: "#/components/schemas/id"
-        start:
-          $ref: "#/components/schemas/panel"
-          title: Start
-          description: The first location, where everyone starts. Maybe making this of type 'panel' is unnecessary.
-        panels:
-          title: Panels
-          description: All panels between start and finish line.
-          type: array
-          minItems: 1
-          items:
-            $ref: "#/components/schemas/panel"
-        finish:
-          $ref: "#/components/schemas/panel"
-          title: Finish / Goal
-          description: The last location, whoever reaches it first wins the game. MAybe making this of type 'panel' is unnecessary.
-      required:
-        - id
-        - start
-        - panels
-        - finish
-    answer:
+    Answer:
       title: Answer
       description: One possible answer to a question.
       type: object
       properties:
         id:
-          $ref: "#/components/schemas/id"
+          $ref: "#/components/schemas/Id"
         text:
           title: Text
           description: The actual answer text to be displayed to the player during the game.
           type: string
         choiceId:
-          $ref: "#/components/schemas/id"
+          $ref: "#/components/schemas/Id"
         disabled:
           title: Disabled
           description: Disable this answer possibility. For example due to a joker usage.
@@ -270,15 +198,15 @@ components:
       required:
         - id
         - text
-    question:
+    Question:
       title: Question
       description: Represents a question inside the game
       type: object
       properties:
         id:
-          $ref: "#/components/schemas/id"
+          $ref: "#/components/schemas/Id"
         category:
-          $ref: "#/components/schemas/category"
+          $ref: "#/components/schemas/Category"
         query:
           type: string
         answers:
@@ -287,13 +215,60 @@ components:
           type: array
           minItems: 2
           items:
-            $ref: "#/components/schemas/answer"
+            $ref: "#/components/schemas/Answer"
       required:
         - id
         - category
         - query
         - answers
-    state:
+    Panel:
+      title: Panel
+      description: Represents one location/field on the board.
+      type: object
+      properties:
+        id:
+          $ref: "#/components/schemas/Id"
+        category:
+          $ref: "#/components/schemas/Category"
+        players:
+          title: Players
+          description: Reference all players that are on this panel.
+          type: array
+          minItems: 0
+          items:
+            $ref: "#/components/schemas/Id"
+      required:
+        - id
+        - category
+        - players
+    PlayField:
+      title: Playfield
+      description: Represents the full field of the game. In the analog world this would be all the material on the table.
+      type: object
+      properties:
+        id:
+          $ref: "#/components/schemas/Id"
+        start:
+          $ref: "#/components/schemas/Panel"
+          title: Start
+          description: The first location, where everyone starts. Maybe making this of type 'panel' is unnecessary.
+        panels:
+          title: Panels
+          description: All panels between start and finish line.
+          type: array
+          minItems: 1
+          items:
+            $ref: "#/components/schemas/Panel"
+        finish:
+          $ref: "#/components/schemas/Panel"
+          title: Finish / Goal
+          description: The last location, whoever reaches it first wins the game. MAybe making this of type 'panel' is unnecessary.
+      required:
+        - id
+        - start
+        - panels
+        - finish
+    State:
       title: Game State
       description: Meta state of the (ongoing) game.
       type: string
@@ -301,68 +276,68 @@ components:
         - running
         - paused
         - finished
-    actionType:
+    ActionType:
       title: Action Type
       description: The type of action to be performed by the player.
       type: string
       enum:
         - roll die
         - question
-    actionData:
+    ActionData:
       title: Action Data
       description: Data associated with the action. For example the question.
       type: object
       oneOf:
-        - $ref: "#/components/schemas/question"
-    action:
+        - $ref: "#/components/schemas/Question"
+    Action:
       title: Action
       description: Represents the gameflow asking the player to do something.
       type: object
       properties:
         actionId:
-          $ref: "#/components/schemas/actionId"
+          $ref: "#/components/schemas/ActionId"
         targetPlayer:
-          $ref: "#/components/schemas/playerReference"
+          $ref: "#/components/schemas/Id"
           title: Target Player
           description: The player responsible for this action.
         actionType:
-          $ref: "#/components/schemas/actionType"
+          $ref: "#/components/schemas/ActionType"
         actionData:
-          $ref: "#/components/schemas/actionData"
+          $ref: "#/components/schemas/ActionData"
       required:
-        - actionId
+        - ActionId
         - targetPlayer
         - taskType
-    choice:
+    Choice:
       title: Choice
       description: Choice of a player on an action prompt. e.G. which question they chose. 
       type: object
       properties:
         actionId:
-          $ref: "#/components/schemas/actionId"
+          $ref: "#/components/schemas/ActionId"
         choiceId:
-          $ref: "#/components/schemas/choiceId"
+          $ref: "#/components/schemas/ChoiceId"
       required:
-        - actionId
-        - choiceId
-    game:
+        - ActionId
+        - ChoiceId
+    Game:
       title: Game
       description: Contains the full state of all objects and players in the game.
       type: object
       properties:
         id:
-          $ref: "#/components/schemas/id"
+          $ref: "#/components/schemas/Id"
         playerOrder:
           title: Player Order
           description: The players in order of taking turns. The active player is in index [0]
           type: array
           minItems: 1
           items:
-            $ref: "#/components/schemas/player"
+            $ref: "#/components/schemas/Player"
         state:
-          $ref: "#/components/schemas/state"
+          $ref: "#/components/schemas/State"
         playField:
-          $ref: "#/components/schemas/playField"
+          $ref: "#/components/schemas/PlayField"
       required:
         - id
         - playerOrder
