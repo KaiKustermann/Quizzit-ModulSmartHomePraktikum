@@ -2,6 +2,15 @@ stages:
   - api-generate
   - api-publish
 
+variables:
+  NPM_TOKEN: ${CI_JOB_TOKEN}
+
+# Cache modules for this project
+cache:
+  key: $CI_PROJECT_ID
+  paths:
+    - .npm/
+
 generate-typescript-models:
   stage: api-generate
   image: node:19.8.1
@@ -13,7 +22,7 @@ generate-typescript-models:
   artifacts:
     expire_in: 30 min
     paths:
-      - generate/typescript/
+      - spec/generate/typescript/
 
 publish-models:
   stage: api-publish
