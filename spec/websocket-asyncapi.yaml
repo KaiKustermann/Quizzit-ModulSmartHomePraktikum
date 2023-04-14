@@ -2,10 +2,10 @@ asyncapi: 2.6.0
 id: "https://quizzit.hdm-stuttgart.de"
 defaultContentType: application/json
 tags:
-  - name: gameloop
-    description: Used during the actual gameplay
-  - name: configuration
-    description: Used to configure/setup the game or profiles
+  - name: "sender:backend"
+    description: Event sent by the backend (e.G. 'game')
+  - name: "sender:client"
+    description: Event sent by the client (e.G. 'player')
 info:
   title: Quizzit
   description: An adaptive hybrid boardgame
@@ -22,164 +22,44 @@ servers:
     protocol: websocket
     description: Local development
 channels:
-  game/board:
+  game/question/prompt:
     subscribe:
-      operationId: "game-board-01"
+      tags:
+      - name: "sender:backend"
+      operationId: "game-question-prompt-01"
       message:
-        messageId: "game-board-01"
-        description: An event containing the new board status.
+        messageId: "game-question-prompt-01"
+        description: An event prompting a player to answer a question.
         payload:
-          $ref: "#/components/schemas/Game"
-  game/action/prompt:
+          $ref: "#/components/schemas/Question"
+  player/question/submit-answer:
     subscribe:
-      operationId: "game-action-prompt-01"
+      tags:
+      - name: "sender:client"
+      operationId: "player-question-submit-answer-01"
       message:
-        messageId: "game-action-prompt-01"
-        description: An event prompting a player to take the described action.
+        messageId: "player-question-submit-answer-01"
+        description: An event containing the player's answer to a question
         payload:
-          $ref: "#/components/schemas/Action"
-  game/action/choice:
+          $ref: "#/components/schemas/SubmitAnswer"
+  game/question/correctness-feedback:
     subscribe:
-      operationId: "game-action-choice-01"
+      tags:
+      - name: "sender:backend"
+      operationId: "game-question-evaluation-01"
       message:
-        messageId: "game-action-choice-01"
-        description: Player choice for an action.
+        messageId: "game-question-evaluation-01"
+        description: Backend informs player of right/wrong choice.
         payload:
-          $ref: "#/components/schemas/Choice"
+          $ref: "#/components/schemas/CorrectnessFeedback"
 components:
   schemas:
-    Icon:
-      title: Icon
-      description: Reference to an icon
-      type: string
     Id:
       title: Identifier
       description: A unique ID
       type: string
-    ActionId:
-      title: Action ID
-      description: Unique Identifier for this one action prompt. Used to match the user's choice lateron!
-      type: string
-    ChoiceId:
-      title: Choice ID
-      description: Unique Identifier for this choice. Used to match which option the user choses.
-      type: string
-    Preferences:
-      title: Preferences
-      description: List any set preferences.
-      type: object
-      properties:
-        userInterfaceScale:
-          title: User Interface Scale
-          description: Interface Scaling factor in %.
-          type: number
-        voiceOutput:
-          title: Voice Output
-          description: Enable Voice Output / Screen Reading
-          type: boolean
-        photosensitive:
-          title: Photosensitive
-          description: Whether or not the player is photosensitive.
-          type: boolean
-        virtualDie:
-          title: Virtual Die
-          description: Enable using the virtual die instead of a physical one.
-          type: boolean
-      additionalProperties:
-        oneOf: 
-          - type: string
-          - type: number
-          - type: integer
-          - type: boolean
-          - type: array
-          - type: object
-    Profile:
-      title: Profile
-      description: Configuration of one person including preferences.
-      type: object
-      properties:
-        id:
-          $ref: "#/components/schemas/Id"
-        name:
-          type: string
-        icon:
-          $ref: "#/components/schemas/Icon"
-        preferences:
-          $ref: "#/components/schemas/Preferences"
-      required:
-        - id
-        - name
-        - preferences
-    JokerState:
-      title: Joker State
-      description: Keep track of if joker has been used, is being used, etc.
-      type: string
-      enum:
-        - available
-        - active
-        - used
-    Joker:
-      title: Joker
-      description: A joker to make answering questions easier.
-      type: object
-      properties:
-        id:
-          $ref: "#/components/schemas/Id"
-        choiceId:
-          $ref: "#/components/schemas/ChoiceId"
-          description: "Unique Identifier for this joker in this situation. Used to match which option the user choses."
-        name:
-          title: Name
-          description: A human readable name to be displayed inside the game.
-          type: string
-        icon:
-          $ref: "#/components/schemas/Icon"
-        state:
-          $ref: "#/components/schemas/JokerState"
-      required:
-        - id
-        - name
-        - icon
-        - state
-    Player:
-      title: Player
-      description: Representation of a person in the game using their profile and game-relevant information
-      type: object
-      properties:
-        id:
-          $ref: "#/components/schemas/Id"
-        profile:
-          $ref: "#/components/schemas/Profile"
-        jokers:
-          title: Jokers
-          description: Jokers of this player.
-          type: array
-          minItems: 0
-          items:
-            $ref: "#/components/schemas/Joker"
-      required:
-        - id
-        - profile
-        - jokers
-    Category:
-      title: Category
-      description: A category for questions and panels.
-      type: object
-      properties:
-        id:
-          $ref: "#/components/schemas/Id"
-        name:
-          title: Name
-          description: Name of the category to be used in the game
-          type: string
-        icon:
-          $ref: "#/components/schemas/Icon"
-      required:
-        - id
-        - name
-        - icon
-    Answer:
-      title: Answer
+    PossibleAnswer:
+      title: Possible Answer
       description: One possible answer to a question.
       type: object
       properties:
@@ -189,12 +69,6 @@ components:
           title: Text
           description: The actual answer text to be displayed to the player during the game.
           type: string
-        choiceId:
-          $ref: "#/components/schemas/Id"
-        disabled:
-          title: Disabled
-          description: Disable this answer possibility. For example due to a joker usage.
-          type: boolean
       required:
         - id
         - text
@@ -205,141 +79,46 @@ components:
       properties:
         id:
           $ref: "#/components/schemas/Id"
-        category:
-          $ref: "#/components/schemas/Category"
         query:
           type: string
+          description: The actual question text.
         answers:
           title: Possible answers
           description: The possible, not necessarily correct, answers.
           type: array
-          minItems: 2
+          minItems: 4
+          maxItems: 4
           items:
-            $ref: "#/components/schemas/Answer"
+            $ref: "#/components/schemas/PossibleAnswer"
       required:
         - id
-        - category
         - query
         - answers
-    Panel:
-      title: Panel
-      description: Represents one location/field on the board.
+    SubmitAnswer:
+      title: Submit Answer
+      description: The submitted answer of a player to a question.
       type: object
       properties:
-        id:
+        questionId:
           $ref: "#/components/schemas/Id"
-        category:
-          $ref: "#/components/schemas/Category"
-        players:
-          title: Players
-          description: Reference all players that are on this panel.
-          type: array
-          minItems: 0
-          items:
-            $ref: "#/components/schemas/Id"
-      required:
-        - id
-        - category
-        - players
-    PlayField:
-      title: Playfield
-      description: Represents the full field of the game. In the analog world this would be all the material on the table.
-      type: object
-      properties:
-        id:
+          description: The ID of the question the player is answering.
+        answerId:
           $ref: "#/components/schemas/Id"
-        start:
-          $ref: "#/components/schemas/Panel"
-          title: Start
-          description: The first location, where everyone starts. Maybe making this of type 'panel' is unnecessary.
-        panels:
-          title: Panels
-          description: All panels between start and finish line.
-          type: array
-          minItems: 1
-          items:
-            $ref: "#/components/schemas/Panel"
-        finish:
-          $ref: "#/components/schemas/Panel"
-          title: Finish / Goal
-          description: The last location, whoever reaches it first wins the game. MAybe making this of type 'panel' is unnecessary.
+          description: The ID of the chosen/submitted answer of the player.
       required:
-        - id
-        - start
-        - panels
-        - finish
-    State:
-      title: Game State
-      description: Meta state of the (ongoing) game.
-      type: string
-      enum:
-        - running
-        - paused
-        - finished
-    ActionType:
-      title: Action Type
-      description: The type of action to be performed by the player.
-      type: string
-      enum:
-        - roll die
-        - question
-    ActionData:
-      title: Action Data
-      description: Data associated with the action. For example the question.
-      type: object
-      oneOf:
-        - $ref: "#/components/schemas/Question"
-    Action:
-      title: Action
-      description: Represents the gameflow asking the player to do something.
+        - questionId
+        - answerId
+    CorrectnessFeedback:
+      title: Correctness Feedback
+      description: Feedback on the correctness of an answer.
       type: object
       properties:
-        actionId:
-          $ref: "#/components/schemas/ActionId"
-        targetPlayer:
+        chosenAnswerId:
           $ref: "#/components/schemas/Id"
-          title: Target Player
-          description: The player responsible for this action.
-        actionType:
-          $ref: "#/components/schemas/ActionType"
-        actionData:
-          $ref: "#/components/schemas/ActionData"
-      required:
-        - ActionId
-        - targetPlayer
-        - taskType
-    Choice:
-      title: Choice
-      description: Choice of a player on an action prompt. e.G. which question they chose. 
-      type: object
-      properties:
-        actionId:
-          $ref: "#/components/schemas/ActionId"
-        choiceId:
-          $ref: "#/components/schemas/ChoiceId"
-      required:
-        - ActionId
-        - ChoiceId
-    Game:
-      title: Game
-      description: Contains the full state of all objects and players in the game.
-      type: object
-      properties:
-        id:
+          description: The ID of the answer that was selected by the player.
+        correctAnswerId:
           $ref: "#/components/schemas/Id"
-        playerOrder:
-          title: Player Order
-          description: The players in order of taking turns. The active player is in index [0]
-          type: array
-          minItems: 1
-          items:
-            $ref: "#/components/schemas/Player"
-        state:
-          $ref: "#/components/schemas/State"
-        playField:
-          $ref: "#/components/schemas/PlayField"
+          description: The ID of the answer that is the correct answer to the posed question.
       required:
-        - id
-        - playerOrder
-        - state
-        - playField
+        - chosenAnswerId
+        - correctAnswerId
