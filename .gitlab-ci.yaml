@@ -1,0 +1,26 @@
+stages:
+  - api-generate
+
+generate-typescript-models:
+  stage: api-generate
+  script:
+    - echo "Generating Source Code from API specifications"
+    - cd generate/typescript
+    - npm install
+    - npm run generate
+  artifacts:
+    expire_in: 30 min
+    paths:
+      - generate/typescript/
+
+publish-models:
+  dependencies:
+    - generate-typescript-models
+  script:
+    - echo "Attempting to publish Typescript Models"
+    - cd generate/typescript
+    - npm publish
+  rules:
+    - when: manual
+      allow_failure: true
+
