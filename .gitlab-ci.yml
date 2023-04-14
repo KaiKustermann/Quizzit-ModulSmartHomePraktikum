@@ -4,12 +4,13 @@ stages:
 
 variables:
   NPM_TOKEN: ${CI_JOB_TOKEN}
+  NPM_CACHE_DIR: $CI_PROJECT_DIR/.npm/
 
 # Cache modules for this project
 cache:
   key: $CI_PROJECT_ID
   paths:
-    - .npm/
+    - $NPM_CACHE_DIR
 
 generate-typescript-models:
   stage: api-generate
@@ -17,7 +18,7 @@ generate-typescript-models:
   script:
     - echo "Generating Source Code from API specifications"
     - cd spec/generate/typescript
-    - npm install --cache .npm
+    - npm install --cache $NPM_CACHE_DIR
     - npm run generate
   artifacts:
     expire_in: 30 min
