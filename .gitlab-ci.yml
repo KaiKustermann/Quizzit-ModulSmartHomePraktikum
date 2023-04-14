@@ -17,7 +17,7 @@ generate-typescript-models:
   script:
     - echo "Generating Source Code from API specifications"
     - cd spec/generate/typescript
-    - npm install
+    - npm install --cache .npm
     - npm run generate
   artifacts:
     expire_in: 30 min
