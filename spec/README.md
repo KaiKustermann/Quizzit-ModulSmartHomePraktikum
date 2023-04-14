@@ -29,7 +29,7 @@ In the future we might find a proper way to provide shared objects to both async
 
 In order to generate and publish the models after changing the API you must initially follow these steps:
 
-1. [Create/Get an access token](https://im-gitlab.hdm-stuttgart.de/groups/quizzit/-/settings/access_tokens)
+1. [Create/Get an access token](https://gitlab.mi.hdm-stuttgart.de/groups/quizzit/-/settings/access_tokens)
 with role `developer` and scope `api`
 2. `cp example.env .env` and use your (new) token as `GITLAB_TOKEN`.
 

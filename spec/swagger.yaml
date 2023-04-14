@@ -6,7 +6,7 @@ info:
     We also provide a Websocket interface for certain information, refer to the asyncapi.yml for these definitions.
     
     Some useful links:
-    - [Quizzit repository](https://im-gitlab.hdm-stuttgart.de/quizzit)
+    - [Quizzit repository](https://gitlab.mi.hdm-stuttgart.de/quizzit)
   contact:
     email: "H3rby7@users.noreply.github.com"
   license:
