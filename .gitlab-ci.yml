@@ -6,7 +6,7 @@ generate-typescript-models:
   stage: api-generate
   script:
     - echo "Generating Source Code from API specifications"
-    - cd generate/typescript
+    - cd spec/generate/typescript
     - npm install
     - npm run generate
   artifacts:
@@ -20,7 +20,7 @@ publish-models:
     - generate-typescript-models
   script:
     - echo "Attempting to publish Typescript Models"
-    - cd generate/typescript
+    - cd spec/generate/typescript
     - npm publish
   rules:
     - when: manual
