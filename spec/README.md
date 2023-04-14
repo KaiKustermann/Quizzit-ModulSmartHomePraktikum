@@ -7,6 +7,7 @@ API Documentation and generating source code from it.
 * [Tools](#tools)
 * [Publish Models](#publish-models)
     * [Typescript](#publish-models-for-typescript)
+* [Related Content](#related-content)
 
 # Tools
 
@@ -41,3 +42,7 @@ Set an appropriate version in [package.json](./generate/typescript/package.json)
     docker-compose run --rm -it generate-typescript
 
 *If you received a 403 when publishing it is either an invalid token or maybe the version already exists!*
+
+# Related Content
+
+* [Gitlab NPM Registry Docs](https://docs.gitlab.com/ee/user/packages/npm_registry/)
