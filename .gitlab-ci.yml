@@ -24,6 +24,8 @@ generate-typescript-models:
     expire_in: 30 min
     paths:
       - spec/generate/typescript/
+    exclude:
+      - spec/generate/typescript/node_modules/**/*
 
 publish-models:
   stage: api-publish
