@@ -4,6 +4,7 @@ stages:
 
 generate-typescript-models:
   stage: api-generate
+  image: node:19.8.1
   script:
     - echo "Generating Source Code from API specifications"
     - cd spec/generate/typescript
@@ -16,6 +17,7 @@ generate-typescript-models:
 
 publish-models:
   stage: api-publish
+  image: node:19.8.1
   dependencies:
     - generate-typescript-models
   script:
