@@ -6,12 +6,6 @@ variables:
   NPM_TOKEN: ${CI_JOB_TOKEN}
   NPM_CACHE_DIR: $CI_PROJECT_DIR/.npm/
 
-# Cache modules for this project
-cache:
-  key: $CI_PROJECT_ID
-  paths:
-    - $NPM_CACHE_DIR
-
 generate-typescript-models:
   stage: api-generate
   image: node:19.8.1
@@ -20,12 +14,16 @@ generate-typescript-models:
     - cd spec/generate/typescript
     - npm install --cache $NPM_CACHE_DIR
     - npm run generate
+  cache:
+    policy: pull-push
+    when: on_success
+    key: $CI_PROJECT_ID
+    paths:
+      - $NPM_CACHE_DIR
   artifacts:
     expire_in: 30 min
     paths:
-      - spec/generate/typescript/
-    exclude:
-      - spec/generate/typescript/node_modules/**/*
+      - spec/generate/typescript/dist/
 
 publish-models:
   stage: api-publish
