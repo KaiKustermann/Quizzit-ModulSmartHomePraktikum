@@ -1,5 +1,6 @@
 stages:
   - api-generate
+  - api-publish
 
 generate-typescript-models:
   stage: api-generate
@@ -14,6 +15,7 @@ generate-typescript-models:
       - generate/typescript/
 
 publish-models:
+  stage: api-publish
   dependencies:
     - generate-typescript-models
   script:
