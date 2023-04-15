@@ -58,7 +58,7 @@ build_go:
     - echo "Building for Windows AMD64"
     - GOOS=windows GOARCH=amd64 go build -o build/${WINDOWS_AMD64_BINARY} cmd/quizzit/quizzit.go
     - echo "Building for Windows 386"
-    - GOOS=windows GOARCH=386 go build -o build/${WIDNOWS_386_BINARY} cmd/quizzit/quizzit.go
+    - GOOS=windows GOARCH=386 go build -o build/${WINDOWS_386_BINARY} cmd/quizzit/quizzit.go
   artifacts:
     when: on_success
     expire_in: "1 day"
@@ -79,7 +79,7 @@ upload_binaries:
     - |
       curl --header "JOB-TOKEN: ${CI_JOB_TOKEN}" --upload-file build/${WINDOWS_AMD64_BINARY} "${PACKAGE_REGISTRY_URL}/${WINDOWS_AMD64_BINARY}"
     - |
-      curl --header "JOB-TOKEN: ${CI_JOB_TOKEN}" --upload-file build/${WIDNOWS_386_BINARY} "${PACKAGE_REGISTRY_URL}/${WIDNOWS_386_BINARY}"
+      curl --header "JOB-TOKEN: ${CI_JOB_TOKEN}" --upload-file build/${WINDOWS_386_BINARY} "${PACKAGE_REGISTRY_URL}/${WINDOWS_386_BINARY}"
 
 release_job:
   stage: release
@@ -103,4 +103,4 @@ release_job:
         - name: Windows 64bit
           url: "${PACKAGE_REGISTRY_URL}/${WINDOWS_AMD64_BINARY}"
         - name: Windows 32bit
-          url: "${PACKAGE_REGISTRY_URL}/${WIDNOWS_386_BINARY}"
+          url: "${PACKAGE_REGISTRY_URL}/${WINDOWS_386_BINARY}"
