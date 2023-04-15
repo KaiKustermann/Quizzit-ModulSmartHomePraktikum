@@ -14,7 +14,15 @@
 # Dependency directories (remove the comment below to include it)
 # vendor/
 
+# Generated Code
+generated-sources
+
 # Go workspace file
 go.work
 
 launch.json
+
+# NodeJS for Code generation
+
+node_modules
+package-lock.json

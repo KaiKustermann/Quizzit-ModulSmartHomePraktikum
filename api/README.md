@@ -5,6 +5,7 @@ API Documentation and generating source code from it.
 # Index
 
 * [Tools](#tools)
+* [Generate Code from models](#generate-code-from-models)
 * [Publish Models](#publish-models)
     * [Typescript](#publish-models-for-typescript)
 * [Related Content](#related-content)
@@ -25,21 +26,24 @@ One for async-api and one for openapi.
 
 In the future we might find a proper way to provide shared objects to both asyncapi file and swagger file.
 
+# Generate Code from models
+
+Run scripts defined in the [package.json in the project root directory](../package.json).
+
 # Publish Models
 
-In order to generate and publish the models after changing the API you must initially follow these steps:
+In order to manually publish the models after generating them, you must initially follow these steps:
 
-1. [Create/Get an access token](https://gitlab.mi.hdm-stuttgart.de/groups/quizzit/-/settings/access_tokens)
-with role `developer` and scope `api`
+1. [Create a personal access token](https://gitlab.mi.hdm-stuttgart.de/-/profile/personal_access_tokens) with scope `api` to work with gitlab's registry.
 
 After this setup you can now run the commands for the given languages...
 
 ## Publish Models for Typescript
 
-Set an appropriate version in [package.json](./generate/typescript/package.json).
+Set an appropriate version in [package.json](./typescript/package.json).
 
-    cd api/generate/typescript
-    NPM_TOKEN=your-token npm run ci
+    cd typescript
+    NPM_TOKEN=your-token npm publish
 
 *If you received a 403 when publishing it is either an invalid token or maybe the version already exists!*
 

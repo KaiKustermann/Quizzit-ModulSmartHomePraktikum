@@ -1,6 +1,6 @@
 package main
 
-//go:generate npm -v
+//go:generate npm run regenerate:golang
 
 func main() {
 	println("Hello from main (quizzit.go)")

@@ -9,8 +9,8 @@ generate-typescript-models:
   image: docker.io/hdmstuttgartquizzit/asyncapi-generator:0.1.0
   script:
     - echo "Generating Source Code from API specifications"
-    - cd api/generate/typescript
-    - npm run generate
+    - npm run generate:typescript
+    - cd api/typescript
     - npm publish
   rules:
     - when: manual

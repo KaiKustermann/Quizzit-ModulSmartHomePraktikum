@@ -5,6 +5,13 @@ Server Code, the heart of the system.
 # Index
 
 * [Scope / Purpose](#scope--purpose)
+* [Development](#development)
+    * [Requirements](#requirements)
+    * [Setup](#setup)
+    * [Run](#run)
+    * [Test](#test)
+    * [Build](#build)
+    * [Code Formatting](#code-format)
 * [Related Content](#related-content)
 
 # Scope / Purpose
@@ -19,37 +26,51 @@ Backend has the following tasks:
 The backend is in flow-control when the game is running.
 For configuration phase the client is in control using REST.
 
-# Related Content
+# Development
 
-* [API Specification](./spec)
-* [Backend Wiki](https://gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/-/wikis/home)
-* [Game Loop](https://gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/-/wikis/home)
+Directory structure as seen in ["Golang Standard Project Layout"](https://github.com/golang-standards/project-layout)
 
+## Requirements
 
-# Prerequisites
-Golang 1.20 or higher
+* Golang 1.20 or higher
+* npm to generate GO code from api spec
 
-# Setup
-## Clone the repository:
-git clone https://gitlab.mi.hdm-stuttgart.de/quizzit/backend-server.git
+## Setup
 
-## Install dependencies:
-```go mod download```
+Download dependencies and generate GO code from api spec.
+
+    go mod download
+    npm i
+    go generate cmd/quizzit/quizzit.go
 
 ## Run
-To start the server, run: <br>
-```go run main.go```<br>
+
+To start the server:
+    
+    go run cmd/quizzit/quizzit.go
+
 The server will start listening on http://localhost:8080.
 
+## Test
+
+    go test ./test
+
 ## Build
-To build the binary, run: <br>
-```go build -o quizzit-server main.go``` <br>
-This will create a binary named quizzit-server in the project directory.
 
-## Testing
-To run all tests, run: <br>
-```go test```
+To build the binary:
 
-# Code format
-Golang has a built-in command-line tool called go fmt that automatically formats Go source code. The go fmt command formats your code according to a set of rules defined in the Go code [style guidelines](https://go.dev/doc/effective_go#formatting). 
-Could be implemented in CI/CD in the future.
+    go build cmd/quizzit/quizzit.go
+
+This will create a binary named quizzit in the project directory.
+
+## Code format
+
+Golang has a built-in command-line tool called go fmt that automatically formats Go source code. The go fmt command formats your code according to a set of rules defined in the Go code [style guidelines](https://go.dev/doc/effective_go#formatting).
+
+*Could be implemented in CI/CD in the future.*
+
+# Related Content
+
+* [API Specification](./api)
+* [Backend Wiki](https://gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/-/wikis/home)
+* [Game Loop](https://gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/-/wikis/home)
