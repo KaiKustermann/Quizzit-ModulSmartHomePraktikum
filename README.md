@@ -74,3 +74,4 @@ Golang has a built-in command-line tool called go fmt that automatically formats
 * [API Specification](./api)
 * [Backend Wiki](https://gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/-/wikis/home)
 * [Game Loop](https://gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/-/wikis/home)
+* [Go Generate](https://go.dev/blog/generate)
