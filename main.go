@@ -1,10 +1,13 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
 	"log"
 	"net/http"
 	"time"
+
+	"gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/types"
 
 	"github.com/gorilla/websocket"
 )
@@ -12,6 +15,15 @@ import (
 var upgrader = websocket.Upgrader{
 	ReadBufferSize:  1024,
 	WriteBufferSize: 1024,
+}
+
+func writeWebsocketMessage(conn *websocket.Conn, msg types.WebsocketMessage) error {
+	data, err := json.Marshal(msg)
+	if err != nil {
+		return err
+	}
+	err = conn.WriteMessage(websocket.TextMessage, []byte(string(data)))
+	return err
 }
 
 func healthCheckHttp(w http.ResponseWriter, r *http.Request) {
@@ -27,8 +39,8 @@ func healthCheckWs(conn *websocket.Conn) {
 	defer ticker.Stop()
 	for {
 		select {
-		case t := <-ticker.C:
-			err := conn.WriteMessage(websocket.TextMessage, []byte("System is running..."+t.String()))
+		case <-ticker.C:
+			err := writeWebsocketMessage(conn, types.WebsocketMessage{MessageType: types.HEALTH_MESSAGE, Data: types.HealthCheck{Healthy: true}})
 			if err != nil {
 				fmt.Println("Failed to send message:", err)
 				return
@@ -70,6 +82,8 @@ func setupRoutes() {
 }
 
 func main() {
+	msg := types.WebsocketMessage{MessageType: "hi", Data: types.HealthCheck{Healthy: true}}
+	fmt.Println(msg)
 	setupRoutes()
 	log.Fatal(http.ListenAndServe(":8080", nil))
 }
