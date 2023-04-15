@@ -13,8 +13,8 @@ API Documentation and generating source code from it.
 
 Framework | Interface | Source | Comment
 --- | --- | --- | ---
-[Async API](https://www.asyncapi.com/docs/reference/specification/v2.6.0) | Websocket | [Source](./spec/websocket-asyncapi.yaml) | [Online Editor](https://studio.asyncapi.com/)
-[Swagger](https://swagger.io/docs/specification) | REST | [Source](./spec/swagger.yaml) | [Online Editor](https://editor.swagger.io/)
+[Async API](https://www.asyncapi.com/docs/reference/specification/v2.6.0) | Websocket | [Source](./api/websocket-asyncapi.yaml) | [Online Editor](https://studio.asyncapi.com/)
+[Swagger](https://swagger.io/docs/specification) | REST | [Source](./api/swagger.yaml) | [Online Editor](https://editor.swagger.io/)
 
 While it is generally possible to import definitions from another file, 
 [the asyncapi-studio does not support file imports yet](https://github.com/asyncapi/studio/pull/538)
@@ -31,7 +31,6 @@ In order to generate and publish the models after changing the API you must init
 
 1. [Create/Get an access token](https://gitlab.mi.hdm-stuttgart.de/groups/quizzit/-/settings/access_tokens)
 with role `developer` and scope `api`
-2. `cp example.env .env` and use your (new) token as `GITLAB_TOKEN`.
 
 After this setup you can now run the commands for the given languages...
 
@@ -39,7 +38,8 @@ After this setup you can now run the commands for the given languages...
 
 Set an appropriate version in [package.json](./generate/typescript/package.json).
 
-    docker-compose run --rm -it generate-typescript
+    cd api/generate/typescript
+    NPM_TOKEN=your-token npm run ci
 
 *If you received a 403 when publishing it is either an invalid token or maybe the version already exists!*
 
