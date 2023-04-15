@@ -1,17 +1,106 @@
 stages:
   - api
+  - build-and-test
+  - upload
+  - release
 
 variables:
   NPM_TOKEN: ${CI_JOB_TOKEN}
+  # Package version can only contain numbers (0-9), and dots (.).
+  # Must be in the format of X.Y.Z, i.e. should match /\A\d+\.\d+\.\d+\z/ regular expresion.
+  # See https://docs.gitlab.com/ee/user/packages/generic_packages/#publish-a-package-file
+  PACKAGE_VERSION: $CI_COMMIT_TAG
+  LINUX_AMD64_BINARY: "quizzit-linux-amd64"
+  LINUX_ARM_BINARY: "quizzit-linux-arm"
+  WINDOWS_AMD64_BINARY: "quizzit-windows-64.exe"
+  WINDOWS_386_BINARY: "quizzit-windows-32.exe"
+  PACKAGE_REGISTRY_URL: "${CI_API_V4_URL}/projects/${CI_PROJECT_ID}/packages/generic/quizzit/${PACKAGE_VERSION}"
 
-generate-typescript-models:
+generate_typescript_models:
   stage: api
   image: docker.io/hdmstuttgartquizzit/asyncapi-generator:0.1.0
   script:
-    - echo "Generating Source Code from API specifications"
+    - echo "Generating TYPESCRIPT Source Code from API specifications"
     - npm run generate:typescript
     - cd api/typescript
     - npm publish
   rules:
     - when: manual
       allow_failure: true
+
+generate_golang_models:
+  stage: api
+  image: docker.io/hdmstuttgartquizzit/asyncapi-generator:0.1.0
+  script:
+    - echo "Generating GOLANG Source Code from API specifications"
+    - npm run generate:golang
+  artifacts:
+    when: on_success
+    expire_in: "1 hour"
+    paths:
+      - "pkg/asyncapi/generated-sources"
+
+# https://go.dev/doc/install/source#environment
+build_go:
+  stage: build-and-test
+  dependencies:
+    - "generate_golang_models"
+  image: docker.io/golang:1.20.3
+  script:
+    - echo "Setting up ..."
+    - go mod download
+    - echo "Running tests ..."
+    - go test ./test
+    - echo "Building for Linux AMD64"
+    - GOOS=linux GOARCH=amd64 go build cmd/quizzit/quizzit.go -o build/${LINUX_AMD64_BINARY}
+    - echo "Building for Linux arm"
+    - GOOS=linux GOARCH=arm go build cmd/quizzit/quizzit.go -o build/${LINUX_ARM_BINARY}
+    - echo "Building for Windows AMD64"
+    - GOOS=windows GOARCH=amd64 go build cmd/quizzit/quizzit.go -o build/${WINDOWS_AMD64_BINARY}
+    - echo "Building for Windows 386"
+    - GOOS=windows GOARCH=386 go build cmd/quizzit/quizzit.go -o build/${WIDNOWS_386_BINARY}
+  artifacts:
+    when: on_success
+    expire_in: "1 day"
+    paths:
+      - "build"
+
+upload_binaries:
+  stage: upload
+  dependencies:
+    - "build_go"
+  rules:
+    - if: $CI_COMMIT_TAG
+  script:
+    - |
+      curl --header "JOB-TOKEN: ${CI_JOB_TOKEN}" --upload-file build/${LINUX_AMD64_BINARY} "${PACKAGE_REGISTRY_URL}/${LINUX_AMD64_BINARY}"
+    - |
+      curl --header "JOB-TOKEN: ${CI_JOB_TOKEN}" --upload-file build/${LINUX_ARM_BINARY} "${PACKAGE_REGISTRY_URL}/${LINUX_ARM_BINARY}"
+    - |
+      curl --header "JOB-TOKEN: ${CI_JOB_TOKEN}" --upload-file build/${WINDOWS_AMD64_BINARY} "${PACKAGE_REGISTRY_URL}/${WINDOWS_AMD64_BINARY}"
+    - |
+      curl --header "JOB-TOKEN: ${CI_JOB_TOKEN}" --upload-file build/${WIDNOWS_386_BINARY} "${PACKAGE_REGISTRY_URL}/${WIDNOWS_386_BINARY}"
+
+release_job:
+  stage: release
+  dependencies:
+    - "upload_binaries"
+  image: registry.gitlab.com/gitlab-org/release-cli:latest
+  rules:
+    - if: $CI_COMMIT_TAG                 # Run this job when a tag is created
+  script:
+    - echo "running release_job"
+  release:                               # See https://docs.gitlab.com/ee/ci/yaml/#release for available properties
+    name: 'Release $TAG'
+    tag_name: '$CI_COMMIT_TAG'
+    description: '$CI_COMMIT_TAG'
+    assets:
+      links:
+        - name: Linux AMD64
+          url: "${PACKAGE_REGISTRY_URL}/${LINUX_AMD64_BINARY}"
+        - name: Linux ARM
+          url: "${PACKAGE_REGISTRY_URL}/${LINUX_ARM_BINARY}"
+        - name: Windows 64bit
+          url: "${PACKAGE_REGISTRY_URL}/${WINDOWS_AMD64_BINARY}"
+        - name: Windows 32bit
+          url: "${PACKAGE_REGISTRY_URL}/${WIDNOWS_386_BINARY}"
