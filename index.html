@@ -13,7 +13,7 @@
         }
 
         socket.onmessage = (msg) => {
-            console.log(msg)
+            console.log(JSON.parse(msg.data))
         }
 
         socket.onclose = (event) => {
