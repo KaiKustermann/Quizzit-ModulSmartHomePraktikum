@@ -1,40 +1,17 @@
 stages:
-  - api-generate
-  - api-publish
+  - api
 
 variables:
   NPM_TOKEN: ${CI_JOB_TOKEN}
-  NPM_CACHE_DIR: $CI_PROJECT_DIR/.npm/
 
 generate-typescript-models:
-  stage: api-generate
-  image: node:19.8.1
+  stage: api
+  image: docker.io/hdmstuttgartquizzit/asyncapi-generator:0.1.0
   script:
     - echo "Generating Source Code from API specifications"
-    - cd spec/generate/typescript
-    - npm install --cache $NPM_CACHE_DIR
-    - npm run generate
-  cache:
-    policy: pull-push
-    when: on_success
-    key: $CI_PROJECT_ID
-    paths:
-      - $NPM_CACHE_DIR
-  artifacts:
-    expire_in: 30 min
-    paths:
-      - spec/generate/typescript/dist/
-
-publish-models:
-  stage: api-publish
-  image: node:19.8.1
-  dependencies:
-    - generate-typescript-models
-  script:
-    - echo "Attempting to publish Typescript Models"
-    - cd spec/generate/typescript
+    - npm run generate:typescript
+    - cd api/typescript
     - npm publish
   rules:
     - when: manual
       allow_failure: true
-
