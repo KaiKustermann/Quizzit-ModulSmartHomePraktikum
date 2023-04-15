@@ -1,6 +1,9 @@
 stages:
   - api
 
+variables:
+  NPM_TOKEN: ${CI_JOB_TOKEN}
+
 generate-typescript-models:
   stage: api
   image: docker.io/hdmstuttgartquizzit/asyncapi-generator:0.1.0
