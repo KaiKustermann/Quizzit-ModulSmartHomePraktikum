@@ -16,7 +16,7 @@ variables:
   WINDOWS_386_BINARY: "quizzit-windows-32.exe"
   PACKAGE_REGISTRY_URL: "${CI_API_V4_URL}/projects/${CI_PROJECT_ID}/packages/generic/quizzit/${PACKAGE_VERSION}"
 
-generate_typescript_models:
+update_typescript_packages:
   stage: api
   image: docker.io/hdmstuttgartquizzit/asyncapi-generator:0.1.0
   script:
@@ -52,13 +52,13 @@ build_go:
     - echo "Running tests ..."
     - go test ./test
     - echo "Building for Linux AMD64"
-    - GOOS=linux GOARCH=amd64 go build cmd/quizzit/quizzit.go -o build/${LINUX_AMD64_BINARY}
+    - GOOS=linux GOARCH=amd64 go build -o build/${LINUX_AMD64_BINARY} cmd/quizzit/quizzit.go
     - echo "Building for Linux arm"
-    - GOOS=linux GOARCH=arm go build cmd/quizzit/quizzit.go -o build/${LINUX_ARM_BINARY}
+    - GOOS=linux GOARCH=arm go build -o build/${LINUX_ARM_BINARY} cmd/quizzit/quizzit.go
     - echo "Building for Windows AMD64"
-    - GOOS=windows GOARCH=amd64 go build cmd/quizzit/quizzit.go -o build/${WINDOWS_AMD64_BINARY}
+    - GOOS=windows GOARCH=amd64 go build -o build/${WINDOWS_AMD64_BINARY} cmd/quizzit/quizzit.go
     - echo "Building for Windows 386"
-    - GOOS=windows GOARCH=386 go build cmd/quizzit/quizzit.go -o build/${WIDNOWS_386_BINARY}
+    - GOOS=windows GOARCH=386 go build -o build/${WIDNOWS_386_BINARY} cmd/quizzit/quizzit.go
   artifacts:
     when: on_success
     expire_in: "1 day"
