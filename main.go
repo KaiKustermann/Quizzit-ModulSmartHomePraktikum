@@ -82,8 +82,6 @@ func setupRoutes() {
 }
 
 func main() {
-	msg := types.WebsocketMessage{MessageType: "hi", Data: types.HealthCheck{Healthy: true}}
-	fmt.Println(msg)
 	setupRoutes()
 	log.Fatal(http.ListenAndServe(":8080", nil))
 }
