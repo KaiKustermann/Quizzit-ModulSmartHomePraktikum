@@ -1,6 +1,6 @@
 package types
 
 type Category struct {
-	id   string
-	name string
+	Id   string `json:"id"`
+	Name string `json:"name"`
 }
