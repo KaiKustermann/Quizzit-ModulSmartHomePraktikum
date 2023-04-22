@@ -1,9 +1,9 @@
 package types
 
 type Question struct {
-	id      string
-	query   string
-	answers [4]Answer
+	Id      string    `json:"name"`
+	Query   string    `json:"query"`
+	Answers [4]Answer `json:"answers"`
 }
 
 func getQuestionByCategory(currentQuestion Question, category Category) {
