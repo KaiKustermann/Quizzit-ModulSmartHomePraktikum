@@ -1,6 +1,7 @@
 package types
 
 type Answer struct {
-	id   string
-	text string
+	Id        string `id:"name"`
+	Text      string `text:"name"`
+	IsCorrect bool   `json:"-"`
 }
