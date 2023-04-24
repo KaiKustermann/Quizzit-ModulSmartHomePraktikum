@@ -7,6 +7,6 @@ const (
 )
 
 type WebsocketMessage struct {
-	MessageType MessageType
-	Data        interface{}
+	MessageType MessageType `json:"messageType"`
+	Data        interface{} `json:"data"`
 }

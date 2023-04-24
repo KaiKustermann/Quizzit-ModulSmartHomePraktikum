@@ -1,5 +1,5 @@
 package types
 
 type HealthCheck struct {
-	Healthy bool
+	Healthy bool `json:"healthy"`
 }
