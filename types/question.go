@@ -1,7 +1,7 @@
 package types
 
 type Question struct {
-	Id      string    `json:"name"`
+	Id      string    `json:"id"`
 	Query   string    `json:"query"`
 	Answers [4]Answer `json:"answers"`
 }
