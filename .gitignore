@@ -15,7 +15,8 @@
 # vendor/
 
 # Generated Code
-generated-sources
+internal/generated-sources/**/*
+!.gitkeep
 
 # Go workspace file
 go.work

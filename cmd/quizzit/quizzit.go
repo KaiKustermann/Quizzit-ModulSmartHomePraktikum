@@ -8,9 +8,9 @@ import (
 	"net/http"
 	"time"
 
-	log "github.com/sirupsen/logrus"
+	dto "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/generated-sources/dto"
 
-	"gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/types"
+	log "github.com/sirupsen/logrus"
 
 	"github.com/gorilla/websocket"
 )
@@ -20,7 +20,7 @@ var upgrader = websocket.Upgrader{
 	WriteBufferSize: 1024,
 }
 
-func writeWebsocketMessage(conn *websocket.Conn, msg types.WebsocketMessage) error {
+func writeWebsocketMessage(conn *websocket.Conn, msg dto.WebsocketMessageSubscribe) error {
 	data, err := json.Marshal(msg)
 	if err != nil {
 		return err
@@ -38,12 +38,14 @@ func healthCheckHttp(w http.ResponseWriter, r *http.Request) {
 }
 
 func healthCheckWs(conn *websocket.Conn) {
+	msgType := dto.MessageTypeSubscribe(dto.MessageTypeSubscribeSystemSlashHealth)
+	msg := dto.WebsocketMessageSubscribe{MessageType: &msgType, Body: dto.Health{Healthy: true}}
 	ticker := time.NewTicker(10 * time.Second)
 	defer ticker.Stop()
 	for {
 		select {
 		case <-ticker.C:
-			err := writeWebsocketMessage(conn, types.WebsocketMessage{MessageType: types.HEALTH_MESSAGE, Data: types.HealthCheck{Healthy: true}})
+			err := writeWebsocketMessage(conn, msg)
 			if err != nil {
 				log.Error("Failed to send message:", err)
 				return
