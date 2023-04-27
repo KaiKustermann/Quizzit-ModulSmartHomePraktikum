@@ -5,9 +5,10 @@ package main
 import (
 	"encoding/json"
 	"fmt"
-	"log"
 	"net/http"
 	"time"
+
+	log "github.com/sirupsen/logrus"
 
 	"gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/types"
 
@@ -44,7 +45,7 @@ func healthCheckWs(conn *websocket.Conn) {
 		case <-ticker.C:
 			err := writeWebsocketMessage(conn, types.WebsocketMessage{MessageType: types.HEALTH_MESSAGE, Data: types.HealthCheck{Healthy: true}})
 			if err != nil {
-				fmt.Println("Failed to send message:", err)
+				log.Error("Failed to send message:", err)
 				return
 			}
 		}
@@ -55,11 +56,11 @@ func reader(conn *websocket.Conn) {
 	for {
 		messageType, payload, err := conn.ReadMessage()
 		if err != nil {
-			log.Println(err)
+			log.Error(err)
 			return
 		}
 
-		log.Println(string(payload), messageType)
+		log.Debug(string(payload), messageType)
 	}
 }
 
@@ -71,9 +72,9 @@ func websocketEndpoint(w http.ResponseWriter, r *http.Request) {
 	upgrader.CheckOrigin = func(r *http.Request) bool { return true }
 	ws, err := upgrader.Upgrade(w, r, nil)
 	if err != nil {
-		log.Println(err)
+		log.Error(err)
 	}
-	log.Println("Successfully connected...")
+	log.Info("Successfully connected...")
 	go reader(ws)
 	go writer(ws)
 }
