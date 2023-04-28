@@ -22,42 +22,90 @@ servers:
     protocol: websocket
     description: Local development
 channels:
-  game/question/prompt:
+  /:
     subscribe:
       tags:
       - name: "sender:backend"
-      operationId: "game-question-prompt-01"
+      operationId: "process"
       message:
-        messageId: "game-question-prompt-01"
-        description: An event prompting a player to answer a question.
+        messageId: "processMessage"
+        description: An event sent by the backend.
         payload:
-          $ref: "#/components/schemas/Question"
-  player/question/submit-answer:
-    subscribe:
+          $ref: "#/components/schemas/WebsocketMessageSubscribe"
+    publish:
       tags:
       - name: "sender:client"
-      operationId: "player-question-submit-answer-01"
+      operationId: "send"
       message:
-        messageId: "player-question-submit-answer-01"
-        description: An event containing the player's answer to a question
+        messageId: "sendMessage"
+        description: An event sent to the backend.
         payload:
-          $ref: "#/components/schemas/SubmitAnswer"
-  game/question/correctness-feedback:
-    subscribe:
-      tags:
-      - name: "sender:backend"
-      operationId: "game-question-evaluation-01"
-      message:
-        messageId: "game-question-evaluation-01"
-        description: Backend informs player of right/wrong choice.
-        payload:
-          $ref: "#/components/schemas/CorrectnessFeedback"
+          $ref: "#/components/schemas/WebsocketMessagePublish"
 components:
   schemas:
     Id:
       title: Identifier
       description: A unique ID
       type: string
+    Health:
+      title: Health
+      description: Health Information
+      type: object
+      properties: 
+        healthy:
+          type: boolean
+      required:
+        - "healthy"
+    MessageTypeSubscribe:
+      title: Message Type Subscribe
+      description: Identifies the type of the message
+      type: string
+      enum:
+        - "system/Health"
+        - "game/question/Question"
+        - "game/question/CorrectnessFeedback"
+    MessageTypePublish:
+      title: Message Type Publish
+      description: Identifies the type of the message
+      type: string
+      enum:
+        - "player/question/SubmitAnswer"
+    WebsocketMessageSubscribe:
+      title: Websocket Message Subscribe
+      description: Envelope for WSS Messages
+      type: object
+      properties:
+        correlationId:
+          $ref: "#/components/schemas/Id"
+        messageType:
+          $ref: "#/components/schemas/MessageTypeSubscribe"
+        body:
+          description: Message content
+          oneOf: 
+            - $ref: "#/components/schemas/Health"
+            - $ref: "#/components/schemas/Question"
+            - $ref: "#/components/schemas/CorrectnessFeedback"
+      required:
+        - correlationId
+        - messageType
+        - body
+    WebsocketMessagePublish:
+      title: Websocket Message Publish
+      description: Envelope for WSS Messages
+      type: object
+      properties:
+        correlationId:
+          $ref: "#/components/schemas/Id"
+        messageType:
+          $ref: "#/components/schemas/MessageTypePublish"
+        body:
+          description: Message content
+          oneOf: 
+            - $ref: "#/components/schemas/SubmitAnswer"
+      required:
+        - correlationId
+        - messageType
+        - body
     PossibleAnswer:
       title: Possible Answer
       description: One possible answer to a question.

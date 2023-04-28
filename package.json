@@ -7,8 +7,8 @@
     "clear:typescript": "rm -rf ./api/typescript/generated-sources",
     "generate:typescript": "asyncapi generate models typescript ./api/websocket-asyncapi.yaml -o ./api/typescript/generated-sources",
     "regenerate:typescript": "npm run clear:typescript && npm run generate:typescript",
-    "clear:golang": "rm -rf ./pkg/asyncapi/generated-sources",
-    "generate:golang": "asyncapi generate models golang ./api/websocket-asyncapi.yaml -o ./pkg/asyncapi/generated-sources --packageName=quizzit_dto",
+    "clear:golang": "rm -rf ./internal/generated-sources/dto",
+    "generate:golang": "asyncapi generate models golang ./api/websocket-asyncapi.yaml -o ./internal/generated-sources/dto --packageName=quizzit_dto",
     "regenerate:golang": "npm run clear:golang && npm run generate:golang"
   },
   "devDependencies": {

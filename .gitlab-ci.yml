@@ -38,7 +38,7 @@ generate_golang_models:
     when: on_success
     expire_in: "1 hour"
     paths:
-      - "pkg/asyncapi/generated-sources"
+      - "internal/generated-sources"
 
 # https://go.dev/doc/install/source#environment
 build_go:
