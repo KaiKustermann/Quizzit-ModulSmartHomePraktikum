@@ -6,10 +6,11 @@ import (
 
 var questions [5]dto.Question
 var currentQuestion int = 0
+var questionsSetup bool = false
 
-func CreateArray() {
+func SetupStaticExampleQuestions() {
 	questions[0] = dto.Question{Id: "1", Query: "Welcher Fluss ist der längste innerhalb von Deutschland?",
-		Answers: []interface{}{dto.PossibleAnswer{Id: "1", Text: "Rhein", AdditionalProperties: nil}, dto.PossibleAnswer{Id: "2", Text: "Rhein", AdditionalProperties: nil}, dto.PossibleAnswer{Id: "3", Text: "Main", AdditionalProperties: nil}, dto.PossibleAnswer{Id: "4", Text: "Neckar", AdditionalProperties: nil}},
+		Answers: []interface{}{dto.PossibleAnswer{Id: "1", Text: "Rhein", AdditionalProperties: nil}, dto.PossibleAnswer{Id: "2", Text: "Donau", AdditionalProperties: nil}, dto.PossibleAnswer{Id: "3", Text: "Main", AdditionalProperties: nil}, dto.PossibleAnswer{Id: "4", Text: "Neckar", AdditionalProperties: nil}},
 	}
 	questions[1] = dto.Question{Id: "1", Query: "Wer moderierte die Sendung - Dalli Dalli?",
 		Answers: []interface{}{dto.PossibleAnswer{Id: "1", Text: "Rudi Carrell", AdditionalProperties: nil}, dto.PossibleAnswer{Id: "2", Text: "Hans Rosenthal", AdditionalProperties: nil}, dto.PossibleAnswer{Id: "3", Text: "Peter Alexander", AdditionalProperties: nil}, dto.PossibleAnswer{Id: "4", Text: "Thomas Gottschalk", AdditionalProperties: nil}},
@@ -26,6 +27,9 @@ func CreateArray() {
 }
 
 func GetNextQuestion() dto.Question {
+	if !questionsSetup {
+		SetupStaticExampleQuestions()
+	}
 	question := currentQuestion
 	if currentQuestion+1 >= len(questions) {
 		currentQuestion = 0
