@@ -1,6 +1,8 @@
 package test
 
-import "testing"
+import (
+	"testing"
+)
 
 func TestExample(t *testing.T) {
 	result := 1 + 2
