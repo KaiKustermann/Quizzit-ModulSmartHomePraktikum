@@ -10,6 +10,7 @@ import (
 	"runtime"
 	"time"
 
+	quizzit "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal"
 	dto "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/generated-sources/dto"
 
 	nested "github.com/antonfisher/nested-logrus-formatter"
@@ -57,21 +58,6 @@ func healthCheckWs(conn *websocket.Conn) {
 	}
 }
 
-func reader(conn *websocket.Conn) {
-	for {
-		messageType, payload, err := conn.ReadMessage()
-		if err != nil {
-			log.Error(err)
-			return
-		}
-
-		log.WithFields(log.Fields{
-			"messageType": messageType,
-			"payload":     string(payload),
-		}).Debug("Received Message")
-	}
-}
-
 func writer(conn *websocket.Conn) {
 	go healthCheckWs(conn)
 }
@@ -83,7 +69,7 @@ func websocketEndpoint(w http.ResponseWriter, r *http.Request) {
 		log.Error(err)
 	}
 	log.Info("Successfully connected...")
-	go reader(ws)
+	go quizzit.Reader(ws)
 	go writer(ws)
 }
 
