@@ -65,7 +65,10 @@ func reader(conn *websocket.Conn) {
 			return
 		}
 
-		log.Debug(string(payload), messageType)
+		log.WithFields(log.Fields{
+			"messageType": messageType,
+			"payload":     string(payload),
+		}).Debug("Received Message")
 	}
 }
 
