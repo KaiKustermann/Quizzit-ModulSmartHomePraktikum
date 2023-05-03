@@ -1,14 +1,19 @@
 package quizzit_helpers
 
 import (
+	log "github.com/sirupsen/logrus"
 	dto "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/generated-sources/dto"
 )
 
 var questions [5]dto.Question
 var currentQuestion int = 0
-var questionsSetup bool = false
 
-func SetupStaticExampleQuestions() {
+func init() {
+	setupStaticExampleQuestions()
+}
+
+func setupStaticExampleQuestions() {
+	log.Warn("Using Static Sample Questions!")
 	questions[0] = dto.Question{Id: "1", Query: "Welcher Fluss ist der längste innerhalb von Deutschland?",
 		Answers: []interface{}{dto.PossibleAnswer{Id: "1", Text: "Rhein", AdditionalProperties: nil}, dto.PossibleAnswer{Id: "2", Text: "Donau", AdditionalProperties: nil}, dto.PossibleAnswer{Id: "3", Text: "Main", AdditionalProperties: nil}, dto.PossibleAnswer{Id: "4", Text: "Neckar", AdditionalProperties: nil}},
 	}
@@ -27,9 +32,6 @@ func SetupStaticExampleQuestions() {
 }
 
 func GetNextQuestion() dto.Question {
-	if !questionsSetup {
-		SetupStaticExampleQuestions()
-	}
 	question := currentQuestion
 	if currentQuestion+1 >= len(questions) {
 		currentQuestion = 0
