@@ -6,6 +6,7 @@ import (
 	"github.com/gorilla/websocket"
 	log "github.com/sirupsen/logrus"
 	dto "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/generated-sources/dto"
+	helper "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/helper-functions"
 )
 
 func Reader(conn *websocket.Conn) {
@@ -15,15 +16,16 @@ func Reader(conn *websocket.Conn) {
 			log.Error(err)
 			return
 		}
+		contextLog := log.WithFields(log.Fields{
+			"messageType": messageType,
+			"payload":     string(payload),
+		})
 
 		envelope := dto.WebsocketMessagePublish{}
 		decode_err := json.Unmarshal(payload, &envelope)
 
 		if decode_err != nil {
-			log.WithFields(log.Fields{
-				"messageType": messageType,
-				"payload":     string(payload),
-			}).Debug("Could not unmarshal Websocket Envelope...")
+			contextLog.Debug("Could not unmarshal Websocket Envelope...")
 			return
 		}
 
@@ -32,22 +34,16 @@ func Reader(conn *websocket.Conn) {
 			return
 		}
 
-		log.Warn("MessageType unknown", envelope)
+		contextLog.Warn("MessageType unknown")
 
 	}
 }
 
+// Handler Function for "player/question/SubmitAnswer"
 func handleSubmitAnswer(envelope dto.WebsocketMessagePublish) {
-	// TODO: Fix this bad workaround to create the needed DTO
-	bytes, err := json.Marshal(envelope.Body)
-	if err != nil {
-		badBodyForMessageType(envelope)
-		return
-	}
 	answer := dto.SubmitAnswer{}
-	decode_err := json.Unmarshal(bytes, &answer)
-
-	if decode_err != nil {
+	err := helper.InterfaceToStruct(envelope.Body, &answer)
+	if err != nil {
 		badBodyForMessageType(envelope)
 		return
 	}
