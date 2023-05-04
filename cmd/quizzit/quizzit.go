@@ -3,7 +3,6 @@
 package main
 
 import (
-	"encoding/json"
 	"fmt"
 	"net/http"
 	"path"
@@ -12,6 +11,7 @@ import (
 
 	quizzit "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal"
 	dto "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/generated-sources/dto"
+	quizzit_helpers "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/helper-functions"
 
 	nested "github.com/antonfisher/nested-logrus-formatter"
 	log "github.com/sirupsen/logrus"
@@ -22,15 +22,6 @@ import (
 var upgrader = websocket.Upgrader{
 	ReadBufferSize:  1024,
 	WriteBufferSize: 1024,
-}
-
-func writeWebsocketMessage(conn *websocket.Conn, msg dto.WebsocketMessageSubscribe) error {
-	data, err := json.Marshal(msg)
-	if err != nil {
-		return err
-	}
-	err = conn.WriteMessage(websocket.TextMessage, []byte(string(data)))
-	return err
 }
 
 func healthCheckHttp(w http.ResponseWriter, r *http.Request) {
@@ -49,7 +40,7 @@ func healthCheckWs(conn *websocket.Conn) {
 	for {
 		select {
 		case <-ticker.C:
-			err := writeWebsocketMessage(conn, msg)
+			err := quizzit_helpers.WriteWebsocketMessage(conn, msg)
 			if err != nil {
 				log.Error("Failed to send message:", err)
 				return
@@ -58,19 +49,14 @@ func healthCheckWs(conn *websocket.Conn) {
 	}
 }
 
-func writer(conn *websocket.Conn) {
-	go healthCheckWs(conn)
-}
-
 func websocketEndpoint(w http.ResponseWriter, r *http.Request) {
 	upgrader.CheckOrigin = func(r *http.Request) bool { return true }
 	ws, err := upgrader.Upgrade(w, r, nil)
 	if err != nil {
 		log.Error(err)
 	}
-	log.Info("Successfully connected...")
-	go quizzit.Reader(ws)
-	go writer(ws)
+	go healthCheckWs(ws)
+	go quizzit.Handler(ws)
 }
 
 func setupRoutes() {

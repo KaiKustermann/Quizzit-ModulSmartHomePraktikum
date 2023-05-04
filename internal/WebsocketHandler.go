@@ -7,9 +7,10 @@ import (
 	log "github.com/sirupsen/logrus"
 	dto "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/generated-sources/dto"
 	helper "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/helper-functions"
+	quizzit_helpers "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/helper-functions"
 )
 
-func Reader(conn *websocket.Conn) {
+func reader(conn *websocket.Conn) {
 	for {
 		messageType, payload, err := conn.ReadMessage()
 		if err != nil {
@@ -27,22 +28,32 @@ func Reader(conn *websocket.Conn) {
 			}).Debug("Could not unmarshal Websocket Envelope...", decode_err)
 			return
 		}
-		matchHandler(envelope)
+		matchHandler(conn, envelope)
 	}
 }
 
+func clientConnected(conn *websocket.Conn) {
+	log.Info("Successfully connected...", conn)
+	getAndSendNextQuestion(conn)
+}
+
+func Handler(conn *websocket.Conn) {
+	clientConnected(conn)
+	go reader(conn)
+}
+
 // Find the correct handler for the envelope
-func matchHandler(envelope dto.WebsocketMessagePublish) {
+func matchHandler(conn *websocket.Conn, envelope dto.WebsocketMessagePublish) {
 	switch msgType := *envelope.MessageType; msgType {
 	case dto.MessageTypePublishPlayerSlashQuestionSlashSubmitAnswer:
-		handleSubmitAnswer(envelope)
+		handleSubmitAnswer(conn, envelope)
 	default:
 		envelopeLog(envelope).Warn("MessageType unknown")
 	}
 }
 
 // Handler Function for "player/question/SubmitAnswer"
-func handleSubmitAnswer(envelope dto.WebsocketMessagePublish) {
+func handleSubmitAnswer(conn *websocket.Conn, envelope dto.WebsocketMessagePublish) {
 	answer := dto.SubmitAnswer{}
 	err := helper.InterfaceToStruct(envelope.Body, &answer)
 	if err != nil {
@@ -54,6 +65,19 @@ func handleSubmitAnswer(envelope dto.WebsocketMessagePublish) {
 		"question": answer.QuestionId,
 		"answer":   answer.AnswerId,
 	}).Info("Player submitted answer")
+
+	getAndSendNextQuestion(conn)
+
+}
+
+func getAndSendNextQuestion(conn *websocket.Conn) {
+	question := helper.GetNextQuestion()
+	msgType := dto.MessageTypeSubscribeGameSlashQuestionSlashQuestion
+	msg := dto.WebsocketMessageSubscribe{
+		MessageType: &msgType,
+		Body:        question,
+	}
+	quizzit_helpers.WriteWebsocketMessage(conn, msg)
 }
 
 func badBodyForMessageType(envelope dto.WebsocketMessagePublish) {
