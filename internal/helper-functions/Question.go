@@ -1,6 +1,8 @@
 package quizzit_helpers
 
 import (
+	"fmt"
+
 	log "github.com/sirupsen/logrus"
 	dto "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/generated-sources/dto"
 )
@@ -13,20 +15,30 @@ func init() {
 }
 
 func setupStaticExampleQuestions() {
-	questions[0] = dto.Question{Id: "1", Query: "Welcher Fluss ist der längste innerhalb von Deutschland?",
-		Answers: []interface{}{dto.PossibleAnswer{Id: "1", Text: "Rhein", AdditionalProperties: nil}, dto.PossibleAnswer{Id: "2", Text: "Donau", AdditionalProperties: nil}, dto.PossibleAnswer{Id: "3", Text: "Main", AdditionalProperties: nil}, dto.PossibleAnswer{Id: "4", Text: "Neckar", AdditionalProperties: nil}},
+	questions[0] = createQuestion("Welcher Fluss ist der längste innerhalb von Deutschland?",
+		"Rhein", "Donau", "Main", "Neckar")
+	questions[1] = createQuestion("Wer moderierte die Sendung - Dalli Dalli?",
+		"Rudi Carrell", "Hans Rosenthal", "Peter Alexander", "Thomas Gottschalk")
+	questions[2] = createQuestion("Welcher Komponist kommt aus Österreich?",
+		"Johann Sebastian Bach", "Ludwig van Beethoven", "Wolfgang Amadeus Mozart", "Herbert Grönemeyer")
+	questions[3] = createQuestion("Welche Stadt war im Jahr 1980 die Hauptstadt von der Bundesrepublik Deutschland?",
+		"Stuttgart", "Bonn", "Berlin", "Frankfurt")
+	questions[4] = createQuestion("Wann wurde Deutschland das erste Mal Fußball Weltmeister?",
+		"1958 in Stockholm", "1954 in Bern", "1938 in Berlin", "1938 in Paris")
+	for i, v := range questions {
+		v.Id = fmt.Sprintf("question-%d", i)
 	}
-	questions[1] = dto.Question{Id: "2", Query: "Wer moderierte die Sendung - Dalli Dalli?",
-		Answers: []interface{}{dto.PossibleAnswer{Id: "1", Text: "Rudi Carrell", AdditionalProperties: nil}, dto.PossibleAnswer{Id: "2", Text: "Hans Rosenthal", AdditionalProperties: nil}, dto.PossibleAnswer{Id: "3", Text: "Peter Alexander", AdditionalProperties: nil}, dto.PossibleAnswer{Id: "4", Text: "Thomas Gottschalk", AdditionalProperties: nil}},
-	}
-	questions[2] = dto.Question{Id: "3", Query: "Welcher Komponist kommt aus Österreich?",
-		Answers: []interface{}{dto.PossibleAnswer{Id: "1", Text: "Johann Sebastian Bach", AdditionalProperties: nil}, dto.PossibleAnswer{Id: "2", Text: "Ludwig van Beethoven", AdditionalProperties: nil}, dto.PossibleAnswer{Id: "3", Text: "Wolfgang Amadeus Mozart", AdditionalProperties: nil}, dto.PossibleAnswer{Id: "4", Text: "Herbert Grönemeyer", AdditionalProperties: nil}},
-	}
-	questions[3] = dto.Question{Id: "4", Query: "Welche Stadt war im Jahr 1980 die Hauptstadt von der Bundesrepublik Deutschland?",
-		Answers: []interface{}{dto.PossibleAnswer{Id: "1", Text: "Stuttgart", AdditionalProperties: nil}, dto.PossibleAnswer{Id: "2", Text: "Bonn", AdditionalProperties: nil}, dto.PossibleAnswer{Id: "3", Text: "Berlin", AdditionalProperties: nil}, dto.PossibleAnswer{Id: "4", Text: "Frankfurt", AdditionalProperties: nil}},
-	}
-	questions[4] = dto.Question{Id: "5", Query: "Wann wurde Deutschland das erste Mal Fußball Weltmeister?",
-		Answers: []interface{}{dto.PossibleAnswer{Id: "1", Text: "1958 in Stockholm", AdditionalProperties: nil}, dto.PossibleAnswer{Id: "2", Text: "1954 in Bern", AdditionalProperties: nil}, dto.PossibleAnswer{Id: "3", Text: "1938 in Berlin", AdditionalProperties: nil}, dto.PossibleAnswer{Id: "4", Text: "1938 in Paris", AdditionalProperties: nil}},
+}
+
+func createQuestion(query string, a1 string, a2 string, a3 string, a4 string) dto.Question {
+	return dto.Question{
+		Query: query,
+		Answers: []interface{}{
+			dto.PossibleAnswer{Id: "A", Text: a1},
+			dto.PossibleAnswer{Id: "B", Text: a2},
+			dto.PossibleAnswer{Id: "C", Text: a3},
+			dto.PossibleAnswer{Id: "D", Text: a4},
+		},
 	}
 }
 

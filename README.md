@@ -80,8 +80,8 @@ Can use this lovely page here: https://websocketking.com/ and connect to `ws://l
   "CorrelationId": "a-cor-id",
   "MessageType": 0,
   "Body": {
-    "QuestionId": "1",
-    "AnswerId": "3"
+    "QuestionId": "question-0",
+    "AnswerId": "C"
   }
 }
 ```
