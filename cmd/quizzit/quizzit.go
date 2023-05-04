@@ -6,10 +6,13 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"path"
+	"runtime"
 	"time"
 
 	dto "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/generated-sources/dto"
 
+	nested "github.com/antonfisher/nested-logrus-formatter"
 	log "github.com/sirupsen/logrus"
 
 	"github.com/gorilla/websocket"
@@ -86,7 +89,25 @@ func setupRoutes() {
 	http.HandleFunc("/ws", websocketEndpoint)
 }
 
+func setupLogging() {
+	// TODO: Set Log level via process env or args!
+	log.SetLevel(log.DebugLevel)
+	var formatter = nested.Formatter{
+		// HideKeys:        true,
+		CallerFirst:     true,
+		FieldsOrder:     []string{"time", "component", "category"},
+		TimestampFormat: time.RFC3339,
+		CustomCallerFormatter: func(f *runtime.Frame) string {
+			filename := path.Base(f.File)
+			return fmt.Sprintf(" %s:%d::%s()", filename, f.Line, f.Function)
+		},
+	}
+	log.SetFormatter(&formatter)
+	log.SetReportCaller(true)
+}
+
 func main() {
+	setupLogging()
 	setupRoutes()
 	log.Fatal(http.ListenAndServe(":8080", nil))
 }
