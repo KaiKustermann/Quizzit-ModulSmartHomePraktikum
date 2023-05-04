@@ -13,6 +13,8 @@ import (
 	log "github.com/sirupsen/logrus"
 
 	"github.com/gorilla/websocket"
+
+	quizzit_helpers "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/helper-functions"
 )
 
 var upgrader = websocket.Upgrader{
@@ -21,12 +23,25 @@ var upgrader = websocket.Upgrader{
 }
 
 func writeWebsocketMessage(conn *websocket.Conn, msg dto.WebsocketMessageSubscribe) error {
-	data, err := json.Marshal(msg)
+	payload, err := json.Marshal(msg)
 	if err != nil {
 		return err
 	}
-	err = conn.WriteMessage(websocket.TextMessage, []byte(string(data)))
+	err = conn.WriteMessage(websocket.TextMessage, []byte(string(payload)))
 	return err
+}
+
+func readWebsocketMessage(conn *websocket.Conn) (dto.WebsocketMessagePublish, error) {
+	var parsedPayload dto.WebsocketMessagePublish
+	_, payload, err := conn.ReadMessage()
+	if err != nil {
+		return parsedPayload, err
+	}
+	err = json.Unmarshal(payload, &parsedPayload)
+	if err != nil {
+		return parsedPayload, err
+	}
+	return parsedPayload, nil
 }
 
 func healthCheckHttp(w http.ResponseWriter, r *http.Request) {
@@ -37,7 +52,7 @@ func healthCheckHttp(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func healthCheckWs(conn *websocket.Conn) {
+func writeHealthCheckWs(conn *websocket.Conn) {
 	msgType := dto.MessageTypeSubscribe(dto.MessageTypeSubscribeSystemSlashHealth)
 	msg := dto.WebsocketMessageSubscribe{MessageType: &msgType, Body: dto.Health{Healthy: true}}
 	ticker := time.NewTicker(10 * time.Second)
@@ -61,13 +76,36 @@ func reader(conn *websocket.Conn) {
 			log.Error(err)
 			return
 		}
-
-		log.Debug(string(payload), messageType)
+		log.Info(string(payload), messageType)
 	}
 }
 
-func writer(conn *websocket.Conn) {
-	go healthCheckWs(conn)
+func startGameLoop(conn *websocket.Conn) {
+	writeQuestion(conn)
+	for {
+		message, err := readWebsocketMessage(conn)
+		if err != nil {
+			log.Error(err)
+			continue
+		}
+		log.Info(*message.MessageType, message.Body)
+		switch mt := *message.MessageType; mt {
+		case dto.MessageTypePublishPlayerSlashQuestionSlashSubmitAnswer:
+			writeQuestion(conn)
+		default:
+			log.Info("default")
+		}
+	}
+}
+
+func writeQuestion(conn *websocket.Conn) {
+	msgType := dto.MessageTypeSubscribe(dto.MessageTypeSubscribeGameSlashQuestionSlashQuestion)
+	msg := dto.WebsocketMessageSubscribe{MessageType: &msgType, Body: quizzit_helpers.GetNextQuestion()}
+	err := writeWebsocketMessage(conn, msg)
+	if err != nil {
+		log.Error(err)
+		return
+	}
 }
 
 func websocketEndpoint(w http.ResponseWriter, r *http.Request) {
@@ -77,8 +115,8 @@ func websocketEndpoint(w http.ResponseWriter, r *http.Request) {
 		log.Error(err)
 	}
 	log.Info("Successfully connected...")
-	go reader(ws)
-	go writer(ws)
+	go writeHealthCheckWs(ws)
+	go startGameLoop(ws)
 }
 
 func setupRoutes() {
