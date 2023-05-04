@@ -9,7 +9,6 @@ import (
 	"gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/health"
 	helpers "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/helper-functions"
 	"gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/logging"
-	"gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/question"
 )
 
 var upgrader = websocket.Upgrader{
@@ -23,15 +22,15 @@ func WebsocketEndpoint(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		log.Error(err)
 	}
-	go health.HealthCheckWs(ws)
-	go clientConnected(ws)
+	go health.ContinuouslySendHealth(ws)
+	onConnect(ws)
 	go listen(ws)
 }
 
 // Hook to do any work necessary when a client connects
-func clientConnected(conn *websocket.Conn) {
-	log.Info("Successfully connected...", conn.RemoteAddr())
-	helpers.WriteWebsocketMessage(conn, question.GetNextQuestionMessage())
+func onConnect(conn *websocket.Conn) {
+	log.WithField("clientAddress", conn.RemoteAddr()).Info("New connection from client")
+	helpers.WriteWebsocketMessage(conn, GetNextQuestionMessage())
 }
 
 // Listens for incoming Messages on the Websocket
@@ -53,7 +52,7 @@ func listen(conn *websocket.Conn) {
 func routeByMessageType(conn *websocket.Conn, envelope dto.WebsocketMessagePublish) bool {
 	switch mt := envelope.MessageType; *mt {
 	case dto.MessageTypePublishPlayerSlashQuestionSlashSubmitAnswer:
-		return question.HandleSubmitAnswer(conn, envelope)
+		return SubmitAnswerHandler(conn, envelope)
 	default:
 		logging.EnvelopeLog(envelope).Warn("MessageType unknown")
 		return false

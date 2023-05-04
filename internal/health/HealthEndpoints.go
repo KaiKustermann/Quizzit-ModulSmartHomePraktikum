@@ -13,6 +13,7 @@ import (
 	"github.com/gorilla/websocket"
 )
 
+// Handle incoming health requests
 func HealthCheckHttp(w http.ResponseWriter, r *http.Request) {
 	if r.Method == http.MethodGet {
 		fmt.Fprintf(w, "System is running...")
@@ -21,7 +22,8 @@ func HealthCheckHttp(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func HealthCheckWs(conn *websocket.Conn) {
+// Send Health information via Websocket continuously
+func ContinuouslySendHealth(conn *websocket.Conn) {
 	msgType := dto.MessageTypeSubscribe(dto.MessageTypeSubscribeSystemSlashHealth)
 	msg := dto.WebsocketMessageSubscribe{MessageType: &msgType, Body: dto.Health{Healthy: true}}
 	ticker := time.NewTicker(10 * time.Second)

@@ -1,4 +1,4 @@
-package question
+package ws
 
 import (
 	"github.com/gorilla/websocket"
@@ -6,17 +6,18 @@ import (
 	dto "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/generated-sources/dto"
 	helpers "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/helper-functions"
 	"gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/logging"
+	"gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/question"
 )
 
-var questions Questions
+var questions question.Questions
 
 func init() {
-	questions = MakeStaticQuestions()
+	questions = question.MakeStaticQuestions()
 }
 
 // Handler Function for "player/question/SubmitAnswer"
 // Return 'message was handled'
-func HandleSubmitAnswer(conn *websocket.Conn, envelope dto.WebsocketMessagePublish) bool {
+func SubmitAnswerHandler(conn *websocket.Conn, envelope dto.WebsocketMessagePublish) bool {
 	answer := dto.SubmitAnswer{}
 	err := helpers.InterfaceToStruct(envelope.Body, &answer)
 	if err != nil {
