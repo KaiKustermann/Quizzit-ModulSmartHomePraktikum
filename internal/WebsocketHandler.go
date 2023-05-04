@@ -38,13 +38,24 @@ func Reader(conn *websocket.Conn) {
 }
 
 func handleSubmitAnswer(envelope dto.WebsocketMessagePublish) {
-	// TODO: envelope/Body/data meh...
-	answer, ok := envelope.Body.(dto.SubmitAnswer)
-	if ok {
-		log.Info("Player logged in answer %s for question %s", answer.AnswerId, answer.QuestionId)
-	} else {
+	// TODO: Fix this bad workaround to create the needed DTO
+	bytes, err := json.Marshal(envelope.Body)
+	if err != nil {
 		badBodyForMessageType(envelope)
+		return
 	}
+	answer := dto.SubmitAnswer{}
+	decode_err := json.Unmarshal(bytes, &answer)
+
+	if decode_err != nil {
+		badBodyForMessageType(envelope)
+		return
+	}
+
+	log.WithFields(log.Fields{
+		"question": answer.QuestionId,
+		"answer":   answer.AnswerId,
+	}).Info("Player submitted answer")
 }
 
 func badBodyForMessageType(envelope dto.WebsocketMessagePublish) {
