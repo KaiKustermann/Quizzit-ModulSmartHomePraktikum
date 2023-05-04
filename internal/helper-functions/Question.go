@@ -25,8 +25,8 @@ func setupStaticExampleQuestions() {
 		"Stuttgart", "Bonn", "Berlin", "Frankfurt")
 	questions[4] = createQuestion("Wann wurde Deutschland das erste Mal Fußball Weltmeister?",
 		"1958 in Stockholm", "1954 in Bern", "1938 in Berlin", "1938 in Paris")
-	for i, v := range questions {
-		v.Id = fmt.Sprintf("question-%d", i)
+	for i := 0; i < len(questions); i++ {
+		questions[i].Id = fmt.Sprintf("question-%d", i)
 	}
 }
 
