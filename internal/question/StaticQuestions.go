@@ -1,4 +1,4 @@
-package quizzit_helpers
+package question
 
 import (
 	"fmt"
@@ -8,7 +8,6 @@ import (
 )
 
 var questions [5]dto.Question
-var currentQuestion int = 0
 
 func init() {
 	setupStaticExampleQuestions()
@@ -42,13 +41,30 @@ func createQuestion(query string, a1 string, a2 string, a3 string, a4 string) dt
 	}
 }
 
-func GetNextQuestion() dto.Question {
+type staticQuestions struct {
+	currentQuestion int
+}
+
+func (s *staticQuestions) GetNextQuestion() dto.Question {
 	log.Warn("Using Static Sample Questions!")
-	question := currentQuestion
-	if currentQuestion+1 >= len(questions) {
-		currentQuestion = 0
+	question := s.currentQuestion
+	if s.currentQuestion+1 >= len(questions) {
+		s.currentQuestion = 0
 	} else {
-		currentQuestion += 1
+		s.currentQuestion += 1
 	}
 	return questions[question]
+}
+
+func (s staticQuestions) GiveCorrectnessFeedback() dto.CorrectnessFeedback {
+	log.Warn("Using Static Sample Questions!")
+	return dto.CorrectnessFeedback{
+		ChosenAnswerId:  "STUB!",
+		CorrectAnswerId: "STUB!",
+	}
+}
+
+func MakeStaticQuestions() Questions {
+	q := staticQuestions{currentQuestion: 0}
+	return &q
 }

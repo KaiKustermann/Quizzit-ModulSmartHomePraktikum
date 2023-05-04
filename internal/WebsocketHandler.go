@@ -7,8 +7,14 @@ import (
 	log "github.com/sirupsen/logrus"
 	dto "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/generated-sources/dto"
 	helper "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/helper-functions"
-	quizzit_helpers "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/helper-functions"
+	"gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/question"
 )
+
+var questions question.Questions
+
+func init() {
+	questions = question.MakeStaticQuestions()
+}
 
 func reader(conn *websocket.Conn) {
 	for {
@@ -33,7 +39,7 @@ func reader(conn *websocket.Conn) {
 }
 
 func clientConnected(conn *websocket.Conn) {
-	log.Info("Successfully connected...", conn)
+	log.Info("Successfully connected...", conn.RemoteAddr())
 	getAndSendNextQuestion(conn)
 }
 
@@ -71,13 +77,13 @@ func handleSubmitAnswer(conn *websocket.Conn, envelope dto.WebsocketMessagePubli
 }
 
 func getAndSendNextQuestion(conn *websocket.Conn) {
-	question := helper.GetNextQuestion()
+	question := questions.GetNextQuestion()
 	msgType := dto.MessageTypeSubscribeGameSlashQuestionSlashQuestion
 	msg := dto.WebsocketMessageSubscribe{
 		MessageType: &msgType,
 		Body:        question,
 	}
-	quizzit_helpers.WriteWebsocketMessage(conn, msg)
+	helper.WriteWebsocketMessage(conn, msg)
 }
 
 func badBodyForMessageType(envelope dto.WebsocketMessagePublish) {
