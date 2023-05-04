@@ -5,6 +5,6 @@ import (
 )
 
 type Questions interface {
+	// Get a new question
 	GetNextQuestion() dto.Question
-	GiveCorrectnessFeedback() dto.CorrectnessFeedback
 }

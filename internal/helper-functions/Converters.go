@@ -1,4 +1,4 @@
-package quizzit_helpers
+package helpers
 
 import (
 	"encoding/json"
