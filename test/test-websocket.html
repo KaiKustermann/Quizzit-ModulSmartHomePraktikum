@@ -1,24 +1,52 @@
 <!doctype html>
 <html>
-  <head>
-    <title>This is the title of the webpage!</title>
-  </head>
-  <body>
-    <p>test</p>
-    <script>
-        let socket = new WebSocket("ws://localhost:8080/ws")
-        socket.onopen = () => {
-            console.log("connected")
-            socket.send("hi from client")
-        }
 
-        socket.onmessage = (msg) => {
-            console.log(JSON.parse(msg.data))
-        }
+<head>
+  <title>This is the title of the webpage!</title>
+  <script type="module">
+    import WebsocketMessagePublish from "./generated-sources-javascript/WebsocketMessagePublish.js"
+    import SubmitAnswer from "./generated-sources-javascript/SubmitAnswer.js"
 
-        socket.onclose = (event) => {
-            console.log(event, "socket closed")
-        }
-    </script>
-  </body>
+    const inputSubmitAnswer = {
+      questionId: 1,
+      answerId: 1,
+      additionalProperties: {
+      }
+    };
+    const submitAnswer = new SubmitAnswer(inputSubmitAnswer)
+    const inputwebSocketMessagePublish = {
+      correlationId: "1",
+      messageType: 0,
+      body: submitAnswer,
+      additionalProperties: {
+      }
+    }
+    const webSocketMessagePublish = new WebsocketMessagePublish(inputwebSocketMessagePublish)
+    let socket = new WebSocket("ws://localhost:8080/ws")
+    socket.onopen = () => {
+      console.log("connected")
+    }
+
+    socket.onmessage = (msg) => {
+      console.log(JSON.parse(msg.data))
+    }
+
+    socket.onclose = (event) => {
+      console.log(event, "socket closed")
+    }
+
+    const submitAnswerButton = document.querySelector('#submitAnswer');
+    submitAnswerButton.addEventListener('click', () => {
+      socket.send(JSON.stringify(webSocketMessagePublish))
+    });
+  </script>
+</head>
+
+<body>
+  <p>test</p>
+  <p>
+    <button style="width:80px;height:40px;" id="submitAnswer">submit answer</button>
+  </p>
+</body>
+
 </html>
