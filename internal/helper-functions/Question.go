@@ -13,7 +13,6 @@ func init() {
 }
 
 func setupStaticExampleQuestions() {
-	log.Warn("Using Static Sample Questions!")
 	questions[0] = dto.Question{Id: "1", Query: "Welcher Fluss ist der längste innerhalb von Deutschland?",
 		Answers: []interface{}{dto.PossibleAnswer{Id: "1", Text: "Rhein", AdditionalProperties: nil}, dto.PossibleAnswer{Id: "2", Text: "Donau", AdditionalProperties: nil}, dto.PossibleAnswer{Id: "3", Text: "Main", AdditionalProperties: nil}, dto.PossibleAnswer{Id: "4", Text: "Neckar", AdditionalProperties: nil}},
 	}
@@ -32,6 +31,7 @@ func setupStaticExampleQuestions() {
 }
 
 func GetNextQuestion() dto.Question {
+	log.Warn("Using Static Sample Questions!")
 	question := currentQuestion
 	if currentQuestion+1 >= len(questions) {
 		currentQuestion = 0

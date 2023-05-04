@@ -16,26 +16,28 @@ func Reader(conn *websocket.Conn) {
 			log.Error(err)
 			return
 		}
-		contextLog := log.WithFields(log.Fields{
-			"messageType": messageType,
-			"payload":     string(payload),
-		})
 
 		envelope := dto.WebsocketMessagePublish{}
 		decode_err := json.Unmarshal(payload, &envelope)
 
 		if decode_err != nil {
-			contextLog.Debug("Could not unmarshal Websocket Envelope...")
+			log.WithFields(log.Fields{
+				"messageType": messageType,
+				"payload":     string(payload),
+			}).Debug("Could not unmarshal Websocket Envelope...", decode_err)
 			return
 		}
+		matchHandler(envelope)
+	}
+}
 
-		if *envelope.MessageType == dto.MessageTypePublishPlayerSlashQuestionSlashSubmitAnswer {
-			handleSubmitAnswer(envelope)
-			return
-		}
-
-		contextLog.Warn("MessageType unknown")
-
+// Find the correct handler for the envelope
+func matchHandler(envelope dto.WebsocketMessagePublish) {
+	switch msgType := *envelope.MessageType; msgType {
+	case dto.MessageTypePublishPlayerSlashQuestionSlashSubmitAnswer:
+		handleSubmitAnswer(envelope)
+	default:
+		envelopeLog(envelope).Warn("MessageType unknown")
 	}
 }
 
@@ -55,8 +57,13 @@ func handleSubmitAnswer(envelope dto.WebsocketMessagePublish) {
 }
 
 func badBodyForMessageType(envelope dto.WebsocketMessagePublish) {
-	log.WithFields(log.Fields{
-		"body":        envelope.Body,
-		"messageType": *envelope.MessageType,
-	}).Warn("Received bad message body for this messageType")
+	envelopeLog(envelope).Warn("Received bad message body for this messageType")
+}
+
+func envelopeLog(envelope dto.WebsocketMessagePublish) *log.Entry {
+	return log.WithFields(log.Fields{
+		"body":          envelope.Body,
+		"correlationId": envelope.CorrelationId,
+		"messageType":   *envelope.MessageType,
+	})
 }
