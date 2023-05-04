@@ -18,6 +18,7 @@ func init() {
 
 func reader(conn *websocket.Conn) {
 	for {
+		var handled = false
 		messageType, payload, err := conn.ReadMessage()
 		if err != nil {
 			log.Error(err)
@@ -26,15 +27,20 @@ func reader(conn *websocket.Conn) {
 
 		envelope := dto.WebsocketMessagePublish{}
 		decode_err := json.Unmarshal(payload, &envelope)
+		contextLog := log.WithFields(log.Fields{
+			"messageType": messageType,
+			"payload":     string(payload),
+		})
 
 		if decode_err != nil {
-			log.WithFields(log.Fields{
-				"messageType": messageType,
-				"payload":     string(payload),
-			}).Debug("Could not unmarshal Websocket Envelope...", decode_err)
+			contextLog.Debug("Could not unmarshal Websocket Envelope", decode_err)
 			return
 		}
-		matchHandler(conn, envelope)
+		handled = matchHandler(conn, envelope)
+		if !handled {
+			handled = HandlePing(conn, payload)
+		}
+		contextLog.WithField("handled", handled).Info()
 	}
 }
 
@@ -45,26 +51,34 @@ func clientConnected(conn *websocket.Conn) {
 
 func Handler(conn *websocket.Conn) {
 	clientConnected(conn)
-	go reader(conn)
+	reader(conn)
 }
 
 // Find the correct handler for the envelope
-func matchHandler(conn *websocket.Conn, envelope dto.WebsocketMessagePublish) {
-	switch msgType := *envelope.MessageType; msgType {
+// Return 'message was handled'
+func matchHandler(conn *websocket.Conn, envelope dto.WebsocketMessagePublish) bool {
+	msgType := envelope.MessageType
+	if msgType == nil {
+		log.Debug("MessageType is nil")
+		return false
+	}
+	switch *msgType {
 	case dto.MessageTypePublishPlayerSlashQuestionSlashSubmitAnswer:
-		handleSubmitAnswer(conn, envelope)
+		return handleSubmitAnswer(conn, envelope)
 	default:
 		envelopeLog(envelope).Warn("MessageType unknown")
+		return false
 	}
 }
 
 // Handler Function for "player/question/SubmitAnswer"
-func handleSubmitAnswer(conn *websocket.Conn, envelope dto.WebsocketMessagePublish) {
+// Return 'message was handled'
+func handleSubmitAnswer(conn *websocket.Conn, envelope dto.WebsocketMessagePublish) bool {
 	answer := dto.SubmitAnswer{}
 	err := helper.InterfaceToStruct(envelope.Body, &answer)
 	if err != nil {
 		badBodyForMessageType(envelope)
-		return
+		return false
 	}
 
 	log.WithFields(log.Fields{
@@ -73,7 +87,7 @@ func handleSubmitAnswer(conn *websocket.Conn, envelope dto.WebsocketMessagePubli
 	}).Info("Player submitted answer")
 
 	getAndSendNextQuestion(conn)
-
+	return true
 }
 
 func getAndSendNextQuestion(conn *websocket.Conn) {
