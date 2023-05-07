@@ -7,4 +7,5 @@ import (
 type Questions interface {
 	// Get a new question
 	GetNextQuestion() dto.Question
+	GetCorrectnessFeedback(questionId string, answerId string) (*dto.CorrectnessFeedback, error)
 }
