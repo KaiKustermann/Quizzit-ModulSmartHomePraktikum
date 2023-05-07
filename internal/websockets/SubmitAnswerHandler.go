@@ -21,7 +21,7 @@ func SubmitAnswerHandler(conn *websocket.Conn, envelope dto.WebsocketMessagePubl
 	answer := dto.SubmitAnswer{}
 	err := helpers.InterfaceToStruct(envelope.Body, &answer)
 	if err != nil {
-		logging.EnvelopeLog(envelope).Warn("Received bad message body for this messageType")
+		logging.EnvelopeLog(envelope).Warn("Received bad message body for this messageType", envelope.Body)
 		return false
 	}
 
@@ -31,6 +31,7 @@ func SubmitAnswerHandler(conn *websocket.Conn, envelope dto.WebsocketMessagePubl
 	}).Info("Player submitted answer")
 
 	helpers.WriteWebsocketMessage(conn, GetNextQuestionMessage())
+	helpers.WriteWebsocketMessage(conn, GetCorrectnessFeedbackMessage(answer.QuestionId, answer.AnswerId))
 	return true
 }
 
@@ -39,6 +40,21 @@ func GetNextQuestionMessage() dto.WebsocketMessageSubscribe {
 	msg := dto.WebsocketMessageSubscribe{
 		MessageType: "game/question/Question",
 		Body:        question,
+	}
+	return msg
+}
+
+func GetCorrectnessFeedbackMessage(questionId string, answerId string) dto.WebsocketMessageSubscribe {
+	correctnessFeedback, err := questions.GetCorrectnessFeedback(questionId, answerId)
+	// propagate error to frontend? Or leave body: nil, if no proper value is returned and frontend handles null value?
+	// return question id and boolean as correctness feedback?
+	if err != nil {
+		log.Error(err)
+	}
+	msgType := dto.MessageTypeSubscribeGameSlashQuestionSlashCorrectnessFeedback
+	msg := dto.WebsocketMessageSubscribe{
+		MessageType: &msgType,
+		Body:        correctnessFeedback,
 	}
 	return msg
 }
