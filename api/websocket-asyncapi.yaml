@@ -161,9 +161,9 @@ components:
       description: Feedback on the correctness of an answer.
       type: object
       properties:
-        chosenAnswerId:
+        questionId:
           $ref: "#/components/schemas/Id"
-          description: The ID of the answer that was selected by the player.
+          description: The ID of the question that the correctness feedback belongs to.
         correctAnswerId:
           $ref: "#/components/schemas/Id"
           description: The ID of the answer that is the correct answer to the posed question.
