@@ -69,6 +69,23 @@ Golang has a built-in command-line tool called go fmt that automatically formats
 
 *Could be implemented in CI/CD in the future.*
 
+## Testing Websocket
+
+Can use this lovely page here: https://websocketking.com/ and connect to `ws://localhost:8080/ws`.
+
+### Submit an Answer
+
+```json
+{
+  "CorrelationId": "a-cor-id",
+  "MessageType": 0,
+  "Body": {
+    "QuestionId": "question-0",
+    "AnswerId": "C"
+  }
+}
+```
+
 # Related Content
 
 * [API Specification](./api)
