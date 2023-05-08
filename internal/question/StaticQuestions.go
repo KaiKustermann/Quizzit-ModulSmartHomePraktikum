@@ -40,7 +40,7 @@ func (s *staticQuestions) GetCorrectnessFeedback(questionId string, answerId str
 			return &s.correctnessFeedbacks[i], nil
 		}
 	}
-	return nil, errors.New("CorrectnessFeedback for given question not found")
+	return nil, errors.New(fmt.Sprintf("CorrectnessFeedback for given question with questionId %s not found", questionId))
 }
 
 // Populate internal array with hardcoded sample questions
