@@ -46,10 +46,9 @@ func GetNextQuestionMessage() dto.WebsocketMessageSubscribe {
 
 func GetCorrectnessFeedbackMessage(questionId string, answerId string) dto.WebsocketMessageSubscribe {
 	correctnessFeedback, err := questions.GetCorrectnessFeedback(questionId, answerId)
-	// propagate error to frontend? Or leave body: nil, if no proper value is returned and frontend handles null value?
-	// return question id and boolean as correctness feedback?
 	if err != nil {
 		log.Error(err)
+		panic(err)
 	}
 	msgType := dto.MessageTypeSubscribeGameSlashQuestionSlashCorrectnessFeedback
 	msg := dto.WebsocketMessageSubscribe{
