@@ -12,7 +12,7 @@ import (
 
 // Transform the 'msg' into JSON and write to Socket
 func WriteWebsocketMessage(conn *websocket.Conn, msg dto.WebsocketMessageSubscribe) error {
-	data, err := json.Marshal(msg)
+	data, err := MarshalToLowerCamelCaseJSON(msg)
 	if err != nil {
 		log.Error("Could not marshal to JSON", err)
 		return err
