@@ -38,12 +38,18 @@ func onConnect(conn *websocket.Conn) {
 func listen(conn *websocket.Conn) {
 	for {
 		var handled = false
-		envelope, err := helpers.ReadWebsocketMessage(conn)
+		_, payload, err := conn.ReadMessage()
+		if err != nil {
+			log.Warn("Could not read Message", err)
+			break
+		}
+		envelope, err := helpers.ParseWebsocketMessage(payload)
 		if err == nil {
 			handled = routeByMessageType(conn, envelope)
 		}
 		log.WithField("handled", handled).Info()
 	}
+	log.Info("Disconnected listener")
 }
 
 // Find the correct handler for the envelope

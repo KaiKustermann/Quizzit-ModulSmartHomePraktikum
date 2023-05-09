@@ -21,16 +21,11 @@ func WriteWebsocketMessage(conn *websocket.Conn, msg dto.WebsocketMessageSubscri
 	return err
 }
 
-// Read Message from socket and transform to Envelope
+// Parse []byte payload as received by Websocket
 // Also run minimal validation
-func ReadWebsocketMessage(conn *websocket.Conn) (dto.WebsocketMessagePublish, error) {
+func ParseWebsocketMessage(payload []byte) (dto.WebsocketMessagePublish, error) {
 	var parsedPayload dto.WebsocketMessagePublish
-	_, payload, err := conn.ReadMessage()
-	if err != nil {
-		log.Debug("Could not read Message", err)
-		return parsedPayload, err
-	}
-	err = json.Unmarshal(payload, &parsedPayload)
+	err := json.Unmarshal(payload, &parsedPayload)
 	if err != nil {
 		log.Debug("Could not unmarshal JSON", err)
 		return parsedPayload, err
