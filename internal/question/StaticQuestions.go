@@ -34,7 +34,8 @@ func (s *staticQuestions) GetNextQuestion() dto.Question {
 	return s.questions[question]
 }
 
-func (s *staticQuestions) GetCorrectnessFeedback(questionId string, answerId string) (*dto.CorrectnessFeedback, error) {
+// Get the CorrectnessFeedback for a specific question for the given questionId
+func (s *staticQuestions) GetCorrectnessFeedback(questionId string) (*dto.CorrectnessFeedback, error) {
 	for i := 0; i < len(s.correctnessFeedbacks); i++ {
 		if s.correctnessFeedbacks[i].QuestionId == questionId {
 			return &s.correctnessFeedbacks[i], nil

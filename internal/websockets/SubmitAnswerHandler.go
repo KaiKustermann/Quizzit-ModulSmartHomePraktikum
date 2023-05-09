@@ -21,7 +21,7 @@ func SubmitAnswerHandler(conn *websocket.Conn, envelope dto.WebsocketMessagePubl
 	answer := dto.SubmitAnswer{}
 	err := helpers.InterfaceToStruct(envelope.Body, &answer)
 	if err != nil {
-		logging.EnvelopeLog(envelope).Warn("Received bad message body for this messageType", envelope.Body)
+		logging.EnvelopeLog(envelope).Warn("Received bad message body for this messageType")
 		return false
 	}
 
@@ -31,7 +31,7 @@ func SubmitAnswerHandler(conn *websocket.Conn, envelope dto.WebsocketMessagePubl
 	}).Info("Player submitted answer")
 
 	helpers.WriteWebsocketMessage(conn, GetNextQuestionMessage())
-	helpers.WriteWebsocketMessage(conn, GetCorrectnessFeedbackMessage(answer.QuestionId, answer.AnswerId))
+	helpers.WriteWebsocketMessage(conn, GetCorrectnessFeedbackMessage(answer.QuestionId))
 	return true
 }
 
@@ -44,8 +44,8 @@ func GetNextQuestionMessage() dto.WebsocketMessageSubscribe {
 	return msg
 }
 
-func GetCorrectnessFeedbackMessage(questionId string, answerId string) dto.WebsocketMessageSubscribe {
-	correctnessFeedback, err := questions.GetCorrectnessFeedback(questionId, answerId)
+func GetCorrectnessFeedbackMessage(questionId string) dto.WebsocketMessageSubscribe {
+	correctnessFeedback, err := questions.GetCorrectnessFeedback(questionId)
 	if err != nil {
 		log.Error(err)
 		panic(err)
