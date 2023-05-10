@@ -50,3 +50,4 @@ Set an appropriate version in [package.json](./typescript/package.json).
 # Related Content
 
 * [Gitlab NPM Registry Docs](https://docs.gitlab.com/ee/user/packages/npm_registry/)
+* [Modelina (Code Generator for AsyncAPI)](https://github.com/asyncapi/modelina)
