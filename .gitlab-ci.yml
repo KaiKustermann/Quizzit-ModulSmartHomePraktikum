@@ -1,4 +1,5 @@
 stages:
+  - validate
   - api
   - build-and-test
   - upload
@@ -16,13 +17,28 @@ variables:
   WINDOWS_386_BINARY: "quizzit-windows-32.exe"
   PACKAGE_REGISTRY_URL: "${CI_API_V4_URL}/projects/${CI_PROJECT_ID}/packages/generic/quizzit/${PACKAGE_VERSION}"
 
+validate_asyncapi:
+  stage: validate
+  image: docker.io/hdmstuttgartquizzit/asyncapi-generator:0.2.0
+  script:
+    - asyncapi validate api/websocket-asyncapi.yaml
+
 update_typescript_packages:
   stage: api
-  image: docker.io/hdmstuttgartquizzit/asyncapi-generator:0.1.0
+  image: docker.io/hdmstuttgartquizzit/asyncapi-generator:0.2.0
   script:
-    - echo "Generating TYPESCRIPT Source Code from API specifications"
+    - asyncapi --version
+    - tsc --version
+    - echo "TYPESCRIPT - Generating Source Code from API specifications"
     - npm run generate:typescript
+    - echo "TYPESCRIPT - Generating index.ts file"
+    - ls api/typescript/src | grep -v "index.ts" | sed "s/.ts//g" | sed "s/^/export * from '.\//" | sed "s/$/';/" > api/typescript/src/index.ts
+    - echo "TYPESCRIPT - Contents of index.ts:"
+    - cat api/typescript/src/index.ts
+    - echo "TYPESCRIPT - Compiling to js and .d.ts files"
+    - npm run module:typescript
     - cd api/typescript
+    - echo "TYPESCRIPT - Publishing Module"
     - npm publish
   rules:
     - when: manual
