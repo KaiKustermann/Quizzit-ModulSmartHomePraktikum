@@ -60,16 +60,16 @@ components:
       title: Message Type Subscribe
       description: Identifies the type of the message
       type: string
-      enum:
-        - "system/Health"
-        - "game/question/Question"
-        - "game/question/CorrectnessFeedback"
+      # enum:
+      #   - "system/Health"
+      #   - "game/question/Question"
+      #   - "game/question/CorrectnessFeedback"
     MessageTypePublish:
       title: Message Type Publish
       description: Identifies the type of the message
       type: string
-      enum:
-        - "player/question/SubmitAnswer"
+      # enum:
+      #   - "player/question/SubmitAnswer"
     WebsocketMessageSubscribe:
       title: Websocket Message Subscribe
       description: Envelope for WSS Messages
