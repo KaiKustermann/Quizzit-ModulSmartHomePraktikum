@@ -36,9 +36,8 @@ func SubmitAnswerHandler(conn *websocket.Conn, envelope dto.WebsocketMessagePubl
 
 func GetNextQuestionMessage() dto.WebsocketMessageSubscribe {
 	question := questions.GetNextQuestion()
-	msgType := dto.MessageTypeSubscribeGameSlashQuestionSlashQuestion
 	msg := dto.WebsocketMessageSubscribe{
-		MessageType: &msgType,
+		MessageType: "game/question/Question",
 		Body:        question,
 	}
 	return msg

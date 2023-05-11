@@ -24,8 +24,7 @@ func HealthCheckHttp(w http.ResponseWriter, r *http.Request) {
 
 // Send Health information via Websocket continuously
 func ContinuouslySendHealth(conn *websocket.Conn) {
-	msgType := dto.MessageTypeSubscribe(dto.MessageTypeSubscribeSystemSlashHealth)
-	msg := dto.WebsocketMessageSubscribe{MessageType: &msgType, Body: dto.Health{Healthy: true}}
+	msg := dto.WebsocketMessageSubscribe{MessageType: "system/Health", Body: dto.Health{Healthy: true}}
 	ticker := time.NewTicker(10 * time.Second)
 	defer ticker.Stop()
 	for {

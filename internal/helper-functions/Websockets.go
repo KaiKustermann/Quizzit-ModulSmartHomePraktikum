@@ -30,8 +30,8 @@ func ParseWebsocketMessage(payload []byte) (dto.WebsocketMessagePublish, error) 
 		log.Debug("Could not unmarshal JSON", err)
 		return parsedPayload, err
 	}
-	if parsedPayload.MessageType == nil {
-		err = errors.New("envelope message type is <nil>")
+	if parsedPayload.MessageType == "" {
+		err = errors.New("envelope message type is <empty>")
 		log.Debug("Message has no MessageType", err)
 		return parsedPayload, err
 	}

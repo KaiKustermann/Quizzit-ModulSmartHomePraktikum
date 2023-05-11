@@ -33,6 +33,6 @@ func EnvelopeLog(envelope dto.WebsocketMessagePublish) *log.Entry {
 	return log.WithFields(log.Fields{
 		// "body":          envelope.Body,
 		"correlationId": envelope.CorrelationId,
-		"messageType":   *envelope.MessageType,
+		"messageType":   envelope.MessageType,
 	})
 }
