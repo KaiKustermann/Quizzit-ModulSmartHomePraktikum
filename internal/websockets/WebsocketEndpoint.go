@@ -56,8 +56,8 @@ func listen(conn *websocket.Conn) {
 // Expects messageType to be SET
 // Return 'message was handled'
 func routeByMessageType(conn *websocket.Conn, envelope dto.WebsocketMessagePublish) bool {
-	switch mt := envelope.MessageType; *mt {
-	case dto.MessageTypePublishPlayerSlashQuestionSlashSubmitAnswer:
+	switch mt := envelope.MessageType; mt {
+	case "player/question/SubmitAnswer":
 		return SubmitAnswerHandler(conn, envelope)
 	default:
 		logging.EnvelopeLog(envelope).Warn("MessageType unknown")
