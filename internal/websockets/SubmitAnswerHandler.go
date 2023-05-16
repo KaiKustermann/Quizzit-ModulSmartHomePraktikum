@@ -50,9 +50,8 @@ func GetCorrectnessFeedbackMessage(questionId string) dto.WebsocketMessageSubscr
 		log.Error(err)
 		panic(err)
 	}
-	msgType := dto.MessageTypeSubscribeGameSlashQuestionSlashCorrectnessFeedback
 	msg := dto.WebsocketMessageSubscribe{
-		MessageType: &msgType,
+		MessageType: "game/question/CorrectnessFeedback",
 		Body:        correctnessFeedback,
 	}
 	return msg
