@@ -1,6 +1,7 @@
 package question
 
 import (
+	"errors"
 	"fmt"
 
 	log "github.com/sirupsen/logrus"
@@ -8,14 +9,16 @@ import (
 )
 
 type staticQuestions struct {
-	currentQuestion int
-	questions       [5]dto.Question
+	currentQuestion      int
+	questions            [5]dto.Question
+	correctnessFeedbacks [5]dto.CorrectnessFeedback
 }
 
 // Factory method
 func MakeStaticQuestions() Questions {
 	q := staticQuestions{currentQuestion: 0}
 	q.setupStaticExampleQuestions()
+	q.setupStaticExampleCorrectnessFeedback()
 	return &q
 }
 
@@ -29,6 +32,16 @@ func (s *staticQuestions) GetNextQuestion() dto.Question {
 		s.currentQuestion += 1
 	}
 	return s.questions[question]
+}
+
+// Get the CorrectnessFeedback for a specific question for the given questionId
+func (s *staticQuestions) GetCorrectnessFeedback(questionId string) (*dto.CorrectnessFeedback, error) {
+	for i := 0; i < len(s.correctnessFeedbacks); i++ {
+		if s.correctnessFeedbacks[i].QuestionId == questionId {
+			return &s.correctnessFeedbacks[i], nil
+		}
+	}
+	return nil, errors.New(fmt.Sprintf("CorrectnessFeedback for given question with questionId %s not found", questionId))
 }
 
 // Populate internal array with hardcoded sample questions
@@ -45,6 +58,22 @@ func (s *staticQuestions) setupStaticExampleQuestions() {
 		"1958 in Stockholm", "1954 in Bern", "1938 in Berlin", "1938 in Paris")
 	for i := 0; i < len(s.questions); i++ {
 		s.questions[i].Id = fmt.Sprintf("question-%d", i)
+	}
+}
+
+func (s *staticQuestions) setupStaticExampleCorrectnessFeedback() {
+	for i := 0; i < len(s.questions); i++ {
+		s.correctnessFeedbacks[i].QuestionId = fmt.Sprintf("question-%d", i)
+		if i == 0 {
+			s.correctnessFeedbacks[i].CorrectAnswerId = "A"
+		} else if i == 1 {
+			s.correctnessFeedbacks[i].CorrectAnswerId = "B"
+		} else if i == 2 {
+			s.correctnessFeedbacks[i].CorrectAnswerId = "C"
+		} else {
+			s.correctnessFeedbacks[i].CorrectAnswerId = "D"
+		}
+
 	}
 }
 

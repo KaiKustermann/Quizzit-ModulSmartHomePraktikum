@@ -8,18 +8,14 @@
     import SubmitAnswer from "./generated-sources-javascript/SubmitAnswer.js"
 
     const inputSubmitAnswer = {
-      questionId: 1,
-      answerId: 1,
-      additionalProperties: {
-      }
+      questionId: "question-1",
+      answerId: "A"
     };
     const submitAnswer = new SubmitAnswer(inputSubmitAnswer)
     const inputwebSocketMessagePublish = {
       correlationId: "1",
-      messageType: 0,
-      body: submitAnswer,
-      additionalProperties: {
-      }
+      messageType: "player/question/SubmitAnswer",
+      body: submitAnswer
     }
     const webSocketMessagePublish = new WebsocketMessagePublish(inputwebSocketMessagePublish)
     let socket = new WebSocket("ws://localhost:8080/ws")

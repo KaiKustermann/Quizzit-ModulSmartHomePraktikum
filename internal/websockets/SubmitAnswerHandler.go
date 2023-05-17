@@ -31,6 +31,7 @@ func SubmitAnswerHandler(conn *websocket.Conn, envelope dto.WebsocketMessagePubl
 	}).Info("Player submitted answer")
 
 	helpers.WriteWebsocketMessage(conn, GetNextQuestionMessage())
+	helpers.WriteWebsocketMessage(conn, GetCorrectnessFeedbackMessage(answer.QuestionId))
 	return true
 }
 
@@ -39,6 +40,19 @@ func GetNextQuestionMessage() dto.WebsocketMessageSubscribe {
 	msg := dto.WebsocketMessageSubscribe{
 		MessageType: "game/question/Question",
 		Body:        question,
+	}
+	return msg
+}
+
+func GetCorrectnessFeedbackMessage(questionId string) dto.WebsocketMessageSubscribe {
+	correctnessFeedback, err := questions.GetCorrectnessFeedback(questionId)
+	if err != nil {
+		log.Error(err)
+		panic(err)
+	}
+	msg := dto.WebsocketMessageSubscribe{
+		MessageType: "game/question/CorrectnessFeedback",
+		Body:        correctnessFeedback,
 	}
 	return msg
 }
