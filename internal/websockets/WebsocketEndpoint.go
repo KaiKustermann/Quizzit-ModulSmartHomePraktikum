@@ -45,7 +45,7 @@ func BroadCastMessageToAllConnectedClients(msg dto.WebsocketMessageSubscribe) er
 	for i := 0; i < len(clients); i++ {
 		err := helpers.WriteWebsocketMessage(clients[i], msg)
 		if err != nil {
-			log.Error("Message could not be send to client", err)
+			log.Error("Message could not be sent to client", err)
 			return err
 		}
 	}
