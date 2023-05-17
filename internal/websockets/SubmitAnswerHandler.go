@@ -6,14 +6,7 @@ import (
 	dto "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/generated-sources/dto"
 	helpers "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/helper-functions"
 	"gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/logging"
-	"gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/question"
 )
-
-var questions question.Questions
-
-func init() {
-	questions = question.MakeStaticQuestions()
-}
 
 // Handler Function for "player/question/SubmitAnswer"
 // Return 'message was handled'
@@ -30,29 +23,12 @@ func SubmitAnswerHandler(conn *websocket.Conn, envelope dto.WebsocketMessagePubl
 		"answer":   answer.AnswerId,
 	}).Info("Player submitted answer")
 
-	helpers.WriteWebsocketMessage(conn, GetNextQuestionMessage())
-	helpers.WriteWebsocketMessage(conn, GetCorrectnessFeedbackMessage(answer.QuestionId))
+	SendCorrectnessFeedBackByQuestionId(answer.QuestionId)
+	SetActiveQuestion()
 	return true
 }
 
-func GetNextQuestionMessage() dto.WebsocketMessageSubscribe {
-	question := questions.GetNextQuestion()
-	msg := dto.WebsocketMessageSubscribe{
-		MessageType: "game/question/Question",
-		Body:        question,
-	}
-	return msg
-}
-
-func GetCorrectnessFeedbackMessage(questionId string) dto.WebsocketMessageSubscribe {
-	correctnessFeedback, err := questions.GetCorrectnessFeedback(questionId)
-	if err != nil {
-		log.Error(err)
-		panic(err)
-	}
-	msg := dto.WebsocketMessageSubscribe{
-		MessageType: "game/question/CorrectnessFeedback",
-		Body:        correctnessFeedback,
-	}
-	return msg
+func SendCorrectnessFeedBackByQuestionId(questionId string) {
+	correctnessFeedback := GetCorrectnessFeedbackByQuestionId(questionId)
+	BroadCastMessageToAllConnectedClients(helpers.CorrectnessFeedbackToWebsocketMessageSubscribe(*correctnessFeedback))
 }
