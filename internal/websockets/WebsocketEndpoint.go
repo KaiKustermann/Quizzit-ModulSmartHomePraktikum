@@ -67,7 +67,7 @@ func WebsocketEndpoint(w http.ResponseWriter, r *http.Request) {
 func onConnect(conn *websocket.Conn) {
 	AddClient(conn)
 	log.WithField("clientAddress", conn.RemoteAddr()).Info("New connection from client")
-	BroadCastMessageToAllConnectedClients(GetNextQuestionMessage())
+	BroadCastMessageToAllConnectedClients(helpers.QuestionToWebsocketMessageSubscribe(GetActiveQuestion()))
 }
 
 // Hook to do any work necessary when a client disconnects
