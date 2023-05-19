@@ -15,6 +15,9 @@ import (
 var clients []*websocket.Conn
 var clientsMutex sync.Mutex
 
+var handlers []Route
+var onConnectHooks []OnConnectHook
+
 var upgrader = websocket.Upgrader{
 	ReadBufferSize:  1024,
 	WriteBufferSize: 1024,
@@ -52,6 +55,15 @@ func BroadCastMessageToAllConnectedClients(msg dto.WebsocketMessageSubscribe) er
 	return nil
 }
 
+func RegisterMessageHandler(messageType string, handler WebsocketMessageHandler) {
+	route := Route{messageType: messageType, handler: handler}
+	handlers = append(handlers, route)
+}
+
+func RegisterOnConnectHandler(handler OnConnectHook) {
+	onConnectHooks = append(onConnectHooks, handler)
+}
+
 func WebsocketEndpoint(w http.ResponseWriter, r *http.Request) {
 	upgrader.CheckOrigin = func(r *http.Request) bool { return true }
 	ws, err := upgrader.Upgrade(w, r, nil)
@@ -67,7 +79,9 @@ func WebsocketEndpoint(w http.ResponseWriter, r *http.Request) {
 func onConnect(conn *websocket.Conn) {
 	AddClient(conn)
 	log.WithField("clientAddress", conn.RemoteAddr()).Info("New connection from client")
-	BroadCastMessageToAllConnectedClients(helpers.QuestionToWebsocketMessageSubscribe(GetActiveQuestion()))
+	for _, v := range onConnectHooks {
+		v.HandleOnConnect(conn)
+	}
 }
 
 // Hook to do any work necessary when a client disconnects
@@ -100,11 +114,11 @@ func listen(conn *websocket.Conn) {
 // Expects messageType to be SET
 // Return 'message was handled'
 func routeByMessageType(conn *websocket.Conn, envelope dto.WebsocketMessagePublish) bool {
-	switch mt := envelope.MessageType; mt {
-	case "player/question/SubmitAnswer":
-		return SubmitAnswerHandler(conn, envelope)
-	default:
-		logging.EnvelopeLog(envelope).Warn("MessageType unknown")
-		return false
+	for _, v := range handlers {
+		if v.messageType == envelope.MessageType {
+			return v.handler.HandleMessage(conn, envelope)
+		}
 	}
+	logging.EnvelopeLog(envelope).Warn("MessageType unknown")
+	return false
 }

@@ -8,9 +8,12 @@ import (
 	"gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/logging"
 )
 
+type SubmitAnswerHandler struct {
+}
+
 // Handler Function for "player/question/SubmitAnswer"
 // Return 'message was handled'
-func SubmitAnswerHandler(conn *websocket.Conn, envelope dto.WebsocketMessagePublish) bool {
+func (s *SubmitAnswerHandler) HandleMessage(conn *websocket.Conn, envelope dto.WebsocketMessagePublish) bool {
 	answer := dto.SubmitAnswer{}
 	err := helpers.InterfaceToStruct(envelope.Body, &answer)
 	if err != nil {
@@ -26,9 +29,4 @@ func SubmitAnswerHandler(conn *websocket.Conn, envelope dto.WebsocketMessagePubl
 	SendCorrectnessFeedBackByQuestionId(answer.QuestionId)
 	SetActiveQuestion()
 	return true
-}
-
-func SendCorrectnessFeedBackByQuestionId(questionId string) {
-	correctnessFeedback := GetCorrectnessFeedbackByQuestionId(questionId)
-	BroadCastMessageToAllConnectedClients(helpers.CorrectnessFeedbackToWebsocketMessageSubscribe(*correctnessFeedback))
 }

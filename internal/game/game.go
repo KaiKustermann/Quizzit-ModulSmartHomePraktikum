@@ -5,12 +5,15 @@ import (
 	dto "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/generated-sources/dto"
 	helpers "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/helper-functions"
 	"gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/question"
+	ws "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/websockets"
 )
 
 var questions question.Questions
 var activeQuestion dto.Question
 
 func SetupGame() {
+	ws.RegisterMessageHandler("player/question/SubmitAnswer", &SubmitAnswerHandler{})
+	ws.RegisterOnConnectHandler(&OnConnectHandler{})
 	questions = question.MakeStaticQuestions()
 	activeQuestion = questions.GetNextQuestion()
 }
@@ -25,7 +28,7 @@ func SetActiveQuestion() {
 }
 
 func handleActiveQuestionChange() {
-	BroadCastMessageToAllConnectedClients(helpers.QuestionToWebsocketMessageSubscribe(activeQuestion))
+	ws.BroadCastMessageToAllConnectedClients(helpers.QuestionToWebsocketMessageSubscribe(activeQuestion))
 }
 
 func GetCorrectnessFeedbackByQuestionId(questionId string) *dto.CorrectnessFeedback {
@@ -35,4 +38,9 @@ func GetCorrectnessFeedbackByQuestionId(questionId string) *dto.CorrectnessFeedb
 		panic(err)
 	}
 	return correctnessFeedback
+}
+
+func SendCorrectnessFeedBackByQuestionId(questionId string) {
+	correctnessFeedback := GetCorrectnessFeedbackByQuestionId(questionId)
+	ws.BroadCastMessageToAllConnectedClients(helpers.CorrectnessFeedbackToWebsocketMessageSubscribe(*correctnessFeedback))
 }
