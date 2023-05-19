@@ -1,4 +1,4 @@
-package ws
+package game
 
 import (
 	"github.com/gorilla/websocket"
@@ -10,5 +10,5 @@ type OnConnectHandler struct {
 }
 
 func (s *OnConnectHandler) HandleOnConnect(conn *websocket.Conn) {
-	ws.BroadCastMessageToAllConnectedClients(helpers.QuestionToWebsocketMessageSubscribe(GetActiveQuestion()))
+	ws.BroadCast(helpers.QuestionToWebsocketMessageSubscribe(GetActiveQuestion()))
 }

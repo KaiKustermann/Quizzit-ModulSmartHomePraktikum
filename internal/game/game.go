@@ -1,4 +1,4 @@
-package ws
+package game
 
 import (
 	log "github.com/sirupsen/logrus"
@@ -9,38 +9,39 @@ import (
 )
 
 var questions question.Questions
-var activeQuestion dto.Question
+var _activeQuestion dto.Question
 
+// Setup method to apply any necessary configuration.
+// To be run as early as possible!
 func SetupGame() {
 	ws.RegisterMessageHandler("player/question/SubmitAnswer", &SubmitAnswerHandler{})
 	ws.RegisterOnConnectHandler(&OnConnectHandler{})
 	questions = question.MakeStaticQuestions()
-	activeQuestion = questions.GetNextQuestion()
+	MoveToNextQuestion()
 }
 
+// Retrieve the currently active question
 func GetActiveQuestion() dto.Question {
-	return activeQuestion
+	return _activeQuestion
 }
 
-func SetActiveQuestion() {
-	activeQuestion = questions.GetNextQuestion()
-	handleActiveQuestionChange()
+// Move on to the next question
+func MoveToNextQuestion() {
+	setActiveQuestion(questions.GetNextQuestion())
 }
 
-func handleActiveQuestionChange() {
-	ws.BroadCastMessageToAllConnectedClients(helpers.QuestionToWebsocketMessageSubscribe(activeQuestion))
+// Setter for _activeQuestion
+func setActiveQuestion(question dto.Question) {
+	_activeQuestion = question
+	ws.BroadCast(helpers.QuestionToWebsocketMessageSubscribe(_activeQuestion))
 }
 
-func GetCorrectnessFeedbackByQuestionId(questionId string) *dto.CorrectnessFeedback {
+// Get the correct answer to the given question and send it.
+func GiveCorrectnessFeedback(questionId string) {
 	correctnessFeedback, err := questions.GetCorrectnessFeedback(questionId)
 	if err != nil {
 		log.Error(err)
 		panic(err)
 	}
-	return correctnessFeedback
-}
-
-func SendCorrectnessFeedBackByQuestionId(questionId string) {
-	correctnessFeedback := GetCorrectnessFeedbackByQuestionId(questionId)
-	ws.BroadCastMessageToAllConnectedClients(helpers.CorrectnessFeedbackToWebsocketMessageSubscribe(*correctnessFeedback))
+	ws.BroadCast(helpers.CorrectnessFeedbackToWebsocketMessageSubscribe(*correctnessFeedback))
 }

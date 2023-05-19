@@ -12,12 +12,19 @@ import (
 	"gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/logging"
 )
 
+// Keeping track of connected clients
 var clients []*websocket.Conn
+
+// Mutex to deal with concurrency issues
 var clientsMutex sync.Mutex
 
-var handlers []Route
+// Registered routes to handle message envelopes
+var routes []Route
+
+// Hooks to run when a new client connects
 var onConnectHooks []OnConnectHook
 
+// Websocket configuration
 var upgrader = websocket.Upgrader{
 	ReadBufferSize:  1024,
 	WriteBufferSize: 1024,
@@ -44,7 +51,7 @@ func RemoveClient(conn *websocket.Conn) {
 }
 
 // Broadcasts a message to all connected clients
-func BroadCastMessageToAllConnectedClients(msg dto.WebsocketMessageSubscribe) error {
+func BroadCast(msg dto.WebsocketMessageSubscribe) error {
 	for i := 0; i < len(clients); i++ {
 		err := helpers.WriteWebsocketMessage(clients[i], msg)
 		if err != nil {
@@ -55,11 +62,13 @@ func BroadCastMessageToAllConnectedClients(msg dto.WebsocketMessageSubscribe) er
 	return nil
 }
 
+// Register a handler that gets invoked when the messageType matches
 func RegisterMessageHandler(messageType string, handler WebsocketMessageHandler) {
 	route := Route{messageType: messageType, handler: handler}
-	handlers = append(handlers, route)
+	routes = append(routes, route)
 }
 
+// Register a handler that gets invoked when a new client connects.
 func RegisterOnConnectHandler(handler OnConnectHook) {
 	onConnectHooks = append(onConnectHooks, handler)
 }
@@ -114,7 +123,7 @@ func listen(conn *websocket.Conn) {
 // Expects messageType to be SET
 // Return 'message was handled'
 func routeByMessageType(conn *websocket.Conn, envelope dto.WebsocketMessagePublish) bool {
-	for _, v := range handlers {
+	for _, v := range routes {
 		if v.messageType == envelope.MessageType {
 			return v.handler.HandleMessage(conn, envelope)
 		}

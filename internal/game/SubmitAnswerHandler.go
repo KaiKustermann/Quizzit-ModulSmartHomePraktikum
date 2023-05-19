@@ -1,4 +1,4 @@
-package ws
+package game
 
 import (
 	"github.com/gorilla/websocket"
@@ -26,7 +26,7 @@ func (s *SubmitAnswerHandler) HandleMessage(conn *websocket.Conn, envelope dto.W
 		"answer":   answer.AnswerId,
 	}).Info("Player submitted answer")
 
-	SendCorrectnessFeedBackByQuestionId(answer.QuestionId)
-	SetActiveQuestion()
+	GiveCorrectnessFeedback(answer.QuestionId)
+	MoveToNextQuestion()
 	return true
 }
