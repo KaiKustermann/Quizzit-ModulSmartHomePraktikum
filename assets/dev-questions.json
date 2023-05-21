@@ -1,0 +1,49 @@
+{
+  "source": "local, this file",
+  "questions": [
+    {
+      "id": "dev-question-longest-river-in-germany",
+      "query": "Welcher Fluss ist der längste innerhalb von Deutschland?",
+      "answers": [
+        {
+          "id": "dev-question-longest-river-in-germany-answer-A",
+          "text": "Rhein"
+        },
+        {
+          "id": "dev-question-longest-river-in-germany-answer-B",
+          "text": "Donau"
+        },
+        {
+          "id": "dev-question-longest-river-in-germany-answer-C",
+          "text": "Main"
+        },
+        {
+          "id": "dev-question-longest-river-in-germany-answer-D",
+          "text": "Neckar"
+        }
+      ]
+    },
+    {
+      "id": "dev-question-moderation-dalli-dalli",
+      "query": "Wer moderierte die Sendung - Dalli Dalli?",
+      "answers": [
+        {
+          "id": "dev-question-moderation-dalli-dalli-A",
+          "text": "Rudi Carrell"
+        },
+        {
+          "id": "dev-question-moderation-dalli-dalli-answer-B",
+          "text": "Hans Rosenthal"
+        },
+        {
+          "id": "dev-question-moderation-dalli-dalli-answer-C",
+          "text": "Peter Alexander"
+        },
+        {
+          "id": "dev-question-moderation-dalli-dalli-answer-D",
+          "text": "Thomas Gottschalk"
+        }
+      ]
+    }
+  ]
+}

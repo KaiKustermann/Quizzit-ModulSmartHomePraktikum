@@ -17,7 +17,7 @@ func main() {
 	logging.SetUpLogging()
 	http.HandleFunc("/health", health.HealthCheckHttp)
 	http.HandleFunc("/ws", ws.WebsocketEndpoint)
-	questions, _ := saveload.LoadQuestionsFromFile()
+	questions, _ := saveload.LoadQuestions()
 	log.Info(questions)
 	log.Fatal(http.ListenAndServe(":8080", nil))
 }
