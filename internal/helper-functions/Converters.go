@@ -7,6 +7,7 @@ import (
 	"unicode/utf8"
 
 	log "github.com/sirupsen/logrus"
+	dto "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/generated-sources/dto"
 )
 
 // Takes 'input' and writes to 'output'.
@@ -50,6 +51,21 @@ func MarshalToLowerCamelCaseJSON(data any) ([]byte, error) {
 			return match
 		},
 	)
-
 	return converted, err
+}
+
+func QuestionToWebsocketMessageSubscribe(question dto.Question) dto.WebsocketMessageSubscribe {
+	msg := dto.WebsocketMessageSubscribe{
+		MessageType: "game/question/Question",
+		Body:        question,
+	}
+	return msg
+}
+
+func CorrectnessFeedbackToWebsocketMessageSubscribe(correctnessFeedback dto.CorrectnessFeedback) dto.WebsocketMessageSubscribe {
+	msg := dto.WebsocketMessageSubscribe{
+		MessageType: "game/question/CorrectnessFeedback",
+		Body:        correctnessFeedback,
+	}
+	return msg
 }

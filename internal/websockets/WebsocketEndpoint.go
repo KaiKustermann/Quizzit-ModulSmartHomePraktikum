@@ -12,9 +12,19 @@ import (
 	"gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/logging"
 )
 
+// Keeping track of connected clients
 var clients []*websocket.Conn
+
+// Mutex to deal with concurrency issues
 var clientsMutex sync.Mutex
 
+// Registered routes to handle message envelopes
+var routes []Route
+
+// Hooks to run when a new client connects
+var onConnectHooks []OnConnectHook
+
+// Websocket configuration
 var upgrader = websocket.Upgrader{
 	ReadBufferSize:  1024,
 	WriteBufferSize: 1024,
@@ -41,15 +51,26 @@ func RemoveClient(conn *websocket.Conn) {
 }
 
 // Broadcasts a message to all connected clients
-func BroadCastMessageToAllConnectedClients(msg dto.WebsocketMessageSubscribe) error {
+func BroadCast(msg dto.WebsocketMessageSubscribe) error {
 	for i := 0; i < len(clients); i++ {
 		err := helpers.WriteWebsocketMessage(clients[i], msg)
 		if err != nil {
-			log.Error("Message could not be send to client", err)
+			log.Error("Message could not be sent to client", err)
 			return err
 		}
 	}
 	return nil
+}
+
+// Register a handler that gets invoked when the messageType matches
+func RegisterMessageHandler(messageType string, handler WebsocketMessageHandler) {
+	route := Route{messageType: messageType, handler: handler}
+	routes = append(routes, route)
+}
+
+// Register a handler that gets invoked when a new client connects.
+func RegisterOnConnectHandler(handler OnConnectHook) {
+	onConnectHooks = append(onConnectHooks, handler)
 }
 
 func WebsocketEndpoint(w http.ResponseWriter, r *http.Request) {
@@ -67,7 +88,9 @@ func WebsocketEndpoint(w http.ResponseWriter, r *http.Request) {
 func onConnect(conn *websocket.Conn) {
 	AddClient(conn)
 	log.WithField("clientAddress", conn.RemoteAddr()).Info("New connection from client")
-	BroadCastMessageToAllConnectedClients(GetNextQuestionMessage())
+	for _, v := range onConnectHooks {
+		v.HandleOnConnect(conn)
+	}
 }
 
 // Hook to do any work necessary when a client disconnects
@@ -100,11 +123,11 @@ func listen(conn *websocket.Conn) {
 // Expects messageType to be SET
 // Return 'message was handled'
 func routeByMessageType(conn *websocket.Conn, envelope dto.WebsocketMessagePublish) bool {
-	switch mt := envelope.MessageType; mt {
-	case "player/question/SubmitAnswer":
-		return SubmitAnswerHandler(conn, envelope)
-	default:
-		logging.EnvelopeLog(envelope).Warn("MessageType unknown")
-		return false
+	for _, v := range routes {
+		if v.messageType == envelope.MessageType {
+			return v.handler.HandleMessage(conn, envelope)
+		}
 	}
+	logging.EnvelopeLog(envelope).Warn("MessageType unknown")
+	return false
 }
