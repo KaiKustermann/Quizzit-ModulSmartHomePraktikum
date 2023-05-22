@@ -37,10 +37,11 @@ func setActiveQuestion(question dto.Question) {
 }
 
 // Get the correct answer to the given question and send it.
-func GiveCorrectnessFeedback(questionId string) {
-	correctnessFeedback, err := questions.GetCorrectnessFeedback(questionId)
+func GiveCorrectnessFeedback(answer dto.SubmitAnswer) {
+	correctnessFeedback, err := questions.GetCorrectnessFeedback(answer)
 	if err != nil {
 		log.Error(err)
+		// TODO: sinnvoll dass wir panicen? (jemand kann uns damit mit einer uns unbekannten ID für frage oder antwort das game abschießen.)
 		panic(err)
 	}
 	ws.BroadCast(helpers.CorrectnessFeedbackToWebsocketMessageSubscribe(*correctnessFeedback))
