@@ -167,13 +167,20 @@ components:
       description: Feedback on the correctness of an answer.
       type: object
       properties:
-        questionId:
-          $ref: "#/components/schemas/Id"
-          description: The ID of the question that the correctness feedback belongs to.
-        correctAnswerId:
-          $ref: "#/components/schemas/Id"
-          description: The ID of the answer that is the correct answer to the posed question.
+        selectedAnswerIsCorrect:
+          type: boolean
+        correctAnswer:
+          $ref: "#/components/schemas/PossibleAnswer"
+          description: The correct answer to the posed question.
+        selectedAnswer:
+          $ref: "#/components/schemas/PossibleAnswer"
+          description: The answer selected by the player.
+        question:
+          $ref: "#/components/schemas/Question"
+          description: The posed question.
       additionalProperties: false
       required:
-        - chosenAnswerId
-        - correctAnswerId
+        - selectedAnswerIsCorrect
+        - correctAnswer
+        - selectedAnswer
+        - question

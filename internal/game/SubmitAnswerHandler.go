@@ -26,7 +26,7 @@ func (s *SubmitAnswerHandler) HandleMessage(conn *websocket.Conn, envelope dto.W
 		"answer":   answer.AnswerId,
 	}).Info("Player submitted answer")
 
-	GiveCorrectnessFeedback(answer.QuestionId)
+	GiveCorrectnessFeedback(answer)
 	MoveToNextQuestion()
 	return true
 }

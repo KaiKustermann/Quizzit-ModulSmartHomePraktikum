@@ -1,7 +1,6 @@
 package question
 
 import (
-	"errors"
 	"fmt"
 
 	log "github.com/sirupsen/logrus"
@@ -35,13 +34,29 @@ func (s *staticQuestions) GetNextQuestion() dto.Question {
 }
 
 // Get the CorrectnessFeedback for a specific question for the given questionId
-func (s *staticQuestions) GetCorrectnessFeedback(questionId string) (*dto.CorrectnessFeedback, error) {
+func (s *staticQuestions) GetCorrectnessFeedback(answer dto.SubmitAnswer) (*dto.CorrectnessFeedback, error) {
 	for i := 0; i < len(s.correctnessFeedbacks); i++ {
-		if s.correctnessFeedbacks[i].QuestionId == questionId {
-			return &s.correctnessFeedbacks[i], nil
+		if s.correctnessFeedbacks[i].Question.Id == answer.QuestionId {
+			feedback := s.correctnessFeedbacks[i]
+			selectedAnswer, err := getAnswerById(*feedback.Question, answer.AnswerId)
+			feedback.SelectedAnswer = &selectedAnswer
+			feedback.SelectedAnswerIsCorrect = (feedback.CorrectAnswer.Id == feedback.SelectedAnswer.Id)
+			return &feedback, err
 		}
 	}
-	return nil, errors.New(fmt.Sprintf("CorrectnessFeedback for given question with questionId %s not found", questionId))
+	return nil, fmt.Errorf("CorrectnessFeedback for given question with questionId %s not found", answer.QuestionId)
+}
+
+// Get the CorrectnessFeedback for a specific question for the given questionId
+func getAnswerById(question dto.Question, answerId string) (answer dto.PossibleAnswer, err error) {
+	for i := 0; i < len(question.Answers); i++ {
+		pA, _ := question.Answers[i].(dto.PossibleAnswer)
+		if pA.Id == answerId {
+			answer = pA
+			return
+		}
+	}
+	return answer, fmt.Errorf("question with questionId %s does not have an answer with id %s", question.Id, answerId)
 }
 
 // Populate internal array with hardcoded sample questions
@@ -62,18 +77,15 @@ func (s *staticQuestions) setupStaticExampleQuestions() {
 }
 
 func (s *staticQuestions) setupStaticExampleCorrectnessFeedback() {
+	var correctAnswer dto.PossibleAnswer
 	for i := 0; i < len(s.questions); i++ {
-		s.correctnessFeedbacks[i].QuestionId = fmt.Sprintf("question-%d", i)
-		if i == 0 {
-			s.correctnessFeedbacks[i].CorrectAnswerId = "A"
-		} else if i == 1 {
-			s.correctnessFeedbacks[i].CorrectAnswerId = "B"
-		} else if i == 2 {
-			s.correctnessFeedbacks[i].CorrectAnswerId = "C"
+		s.correctnessFeedbacks[i].Question = &s.questions[i]
+		if i < 4 {
+			correctAnswer = s.questions[i].Answers[i].(dto.PossibleAnswer)
 		} else {
-			s.correctnessFeedbacks[i].CorrectAnswerId = "D"
+			correctAnswer = s.questions[i].Answers[3].(dto.PossibleAnswer)
 		}
-
+		s.correctnessFeedbacks[i].CorrectAnswer = &correctAnswer
 	}
 }
 
