@@ -116,14 +116,14 @@ components:
       properties:
         id:
           $ref: "#/components/schemas/Id"
-        text:
-          title: Text
+        answer:
+          title: Answer Text
           description: The actual answer text to be displayed to the player during the game.
           type: string
       additionalProperties: false
       required:
         - id
-        - text
+        - answer
     Question:
       title: Question
       description: Represents a question inside the game

@@ -94,10 +94,10 @@ func createQuestion(query string, a1 string, a2 string, a3 string, a4 string) dt
 	return dto.Question{
 		Query: query,
 		Answers: []interface{}{
-			dto.PossibleAnswer{Id: "A", Text: a1},
-			dto.PossibleAnswer{Id: "B", Text: a2},
-			dto.PossibleAnswer{Id: "C", Text: a3},
-			dto.PossibleAnswer{Id: "D", Text: a4},
+			dto.PossibleAnswer{Id: "A", Answer: a1},
+			dto.PossibleAnswer{Id: "B", Answer: a2},
+			dto.PossibleAnswer{Id: "C", Answer: a3},
+			dto.PossibleAnswer{Id: "D", Answer: a4},
 		},
 	}
 }
