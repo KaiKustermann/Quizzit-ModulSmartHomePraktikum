@@ -184,3 +184,42 @@ components:
         - correctAnswer
         - selectedAnswer
         - question
+    Board:
+      title: Board 
+      description: Board of the game.
+      type: object
+      properties:        
+        fields:
+          title: Fields 
+          description: The fields of the board, where players can move on.
+          type: array
+          minItems: 24
+          maxItems: 24
+          items:
+            $ref: "#/components/schemas/Field"
+      additionalProperties: false
+      required:
+        - fields
+    Field:
+      title: Field 
+      description: Field on the gameboard.
+      type: object
+      properties:        
+        players:
+          title: Players 
+          description: The player that currently are on the filed.
+          type: array
+          minItems: 0
+          items:
+            $ref: "#/components/schemas/Player"
+        category:
+          title: "Category"
+          description: "The category of the field. It can have the values start, end or can be a question category."
+          type: string
+      additionalProperties: false
+      required:
+        - players
+    Player:
+      title: Player 
+      description: Player on the gameboard.
+      type: object
