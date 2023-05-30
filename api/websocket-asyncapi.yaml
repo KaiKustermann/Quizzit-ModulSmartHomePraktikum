@@ -230,9 +230,13 @@ components:
       properties:
         pips: 
           title: Pips
-          description: The pips of the dice result (Würfelaugen)
+          description: The pips of the dice result (Würfelaugen).
           type: integer
     DiceThrowRequest:
       title: Dice Request
-      description: The request for a dice throw (if the frontend is used as controller instead of the real dice).
+      description: A request for a dice throw (if the frontend is used as controller instead of the real dice).
+      type: object
+    ContinuationRequest:
+      title: Continuation Request
+      description: A request for the continuation of the game flow.
       type: object
