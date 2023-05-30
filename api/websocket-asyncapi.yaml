@@ -223,3 +223,16 @@ components:
       title: Player 
       description: Player on the gameboard.
       type: object
+    DiceResult:
+      title: Dice Result
+      description: The result of the dice throw, which is generated in the backend.
+      type: object
+      properties:
+        pips: 
+          title: Pips
+          description: The pips of the dice result (Würfelaugen)
+          type: integer
+    DiceThrowRequest:
+      title: Dice Request
+      description: The request for a dice throw (if the frontend is used as controller instead of the real dice).
+      type: object
