@@ -5,16 +5,17 @@ import (
 	"gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/question"
 )
 
+// Statefully handle the catalog of questions and the active question
 type questionManager struct {
 	questions      question.Questions
 	activeQuestion dto.Question
 }
 
+// Constructs a new QuestionManager
 func NewQuestionManager() (qc questionManager) {
 	qc = questionManager{
 		questions: question.MakeStaticQuestions(),
 	}
-	qc.MoveToNextQuestion()
 	return
 }
 
@@ -34,7 +35,7 @@ func (qc *questionManager) setActiveQuestion(question dto.Question) {
 	qc.activeQuestion = question
 }
 
-// Pass-Through -> See Questions.GetCorrectnessFeedback
+// Convenience passthrough to Questions.GetCorrectnessFeedback
 func (qc *questionManager) GetCorrectnessFeedback(answer dto.SubmitAnswer) dto.CorrectnessFeedback {
 	return qc.questions.GetCorrectnessFeedback(answer)
 }
