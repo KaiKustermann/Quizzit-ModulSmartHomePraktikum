@@ -71,7 +71,7 @@ components:
       type: string
       # enum:
       #   - "player/question/SubmitAnswer"
-      #   - "player/generic/Continue"
+      #   - "player/generic/Confirm"
     WebsocketMessageSubscribe:
       title: Websocket Message Subscribe
       description: Envelope for WSS Messages
@@ -87,6 +87,7 @@ components:
             - $ref: "#/components/schemas/Health"
             - $ref: "#/components/schemas/Question"
             - $ref: "#/components/schemas/CorrectnessFeedback"
+            - $ref: "#/components/schemas/PlayerConfirm"
       additionalProperties: false
       required:
         - correlationId
@@ -185,8 +186,8 @@ components:
         - correctAnswer
         - selectedAnswer
         - question
-    Continue:
-      title: Continue
-      description: Generic message to continue the game flow (e.G. when waiting for a user confirmation)
+    PlayerConfirm:
+      title: Player confirm
+      description: Generic message to continue the game flow (e.G. when waiting for a player confirmation)
       type: object
       additionalProperties: false
