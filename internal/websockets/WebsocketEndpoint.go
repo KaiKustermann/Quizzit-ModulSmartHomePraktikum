@@ -22,7 +22,7 @@ var clientsMutex sync.Mutex
 var routes []Route
 
 // Hooks to run when a new client connects
-var onConnectHooks []OnConnectHook
+var onConnectHooks []func(conn *websocket.Conn)
 
 // Websocket configuration
 var upgrader = websocket.Upgrader{
@@ -63,13 +63,13 @@ func BroadCast(msg dto.WebsocketMessageSubscribe) error {
 }
 
 // Register a handler that gets invoked when the messageType matches
-func RegisterMessageHandler(messageType string, handler WebsocketMessageHandler) {
-	route := Route{messageType: messageType, handler: handler}
+func RegisterMessageHandler(messageType string, handle func(envelope dto.WebsocketMessagePublish) bool) {
+	route := Route{messageType: messageType, handle: handle}
 	routes = append(routes, route)
 }
 
 // Register a handler that gets invoked when a new client connects.
-func RegisterOnConnectHandler(handler OnConnectHook) {
+func RegisterOnConnectHandler(handler func(conn *websocket.Conn)) {
 	onConnectHooks = append(onConnectHooks, handler)
 }
 
@@ -89,7 +89,7 @@ func onConnect(conn *websocket.Conn) {
 	AddClient(conn)
 	log.WithField("clientAddress", conn.RemoteAddr()).Info("New connection from client")
 	for _, v := range onConnectHooks {
-		v.HandleOnConnect(conn)
+		v(conn)
 	}
 }
 
@@ -122,12 +122,16 @@ func listen(conn *websocket.Conn) {
 // Find the correct handler for the envelope
 // Expects messageType to be SET
 // Return 'message was handled'
-func routeByMessageType(conn *websocket.Conn, envelope dto.WebsocketMessagePublish) bool {
+func routeByMessageType(conn *websocket.Conn, envelope dto.WebsocketMessagePublish) (handled bool) {
+	handled = false
 	for _, v := range routes {
 		if v.messageType == envelope.MessageType {
-			return v.handler.HandleMessage(conn, envelope)
+			handled = v.handle(envelope)
+			if handled {
+				return
+			}
 		}
 	}
 	logging.EnvelopeLog(envelope).Warn("MessageType unknown")
-	return false
+	return
 }

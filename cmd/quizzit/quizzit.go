@@ -15,7 +15,7 @@ import (
 
 func main() {
 	logging.SetUpLogging()
-	game.SetupGame()
+	game.NewGameLoop()
 	http.HandleFunc("/health", health.HealthCheckHttp)
 	http.HandleFunc("/ws", ws.WebsocketEndpoint)
 	log.Fatal(http.ListenAndServe(":8080", nil))

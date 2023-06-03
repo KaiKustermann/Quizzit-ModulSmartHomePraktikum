@@ -8,5 +8,5 @@ type Questions interface {
 	// Get a new question
 	GetNextQuestion() dto.Question
 	// Get the CorrectnessFeedback for a specific question for the given questionId
-	GetCorrectnessFeedback(answer dto.SubmitAnswer) (*dto.CorrectnessFeedback, error)
+	GetCorrectnessFeedback(answer dto.SubmitAnswer) dto.CorrectnessFeedback
 }
