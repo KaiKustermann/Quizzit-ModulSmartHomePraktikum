@@ -71,6 +71,7 @@ components:
       type: string
       # enum:
       #   - "player/question/SubmitAnswer"
+      #   - "player/generic/Continue"
     WebsocketMessageSubscribe:
       title: Websocket Message Subscribe
       description: Envelope for WSS Messages
@@ -184,3 +185,8 @@ components:
         - correctAnswer
         - selectedAnswer
         - question
+    Continue:
+      title: Continue
+      description: Generic message to continue the game flow (e.G. when waiting for a user confirmation)
+      type: object
+      additionalProperties: false
