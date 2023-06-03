@@ -11,7 +11,7 @@ func (loop *Game) constructLoop() *Game {
 
 	// Add 'previous' Node, as we can already point to the successor Node.
 	gsCorrectnessFeedback := gameStep{Name: "Correctness Feedback"}
-	gsCorrectnessFeedback.addAction("player/generic/continue", func(envelope dto.WebsocketMessagePublish) {
+	gsCorrectnessFeedback.addAction("player/generic/Confirm", func(envelope dto.WebsocketMessagePublish) {
 		loop.transitionToNewQuestion(gsQuestion)
 	})
 

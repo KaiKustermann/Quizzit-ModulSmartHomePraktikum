@@ -42,7 +42,7 @@ func (loop *Game) handleOnConnect(conn *websocket.Conn) {
 func (loop *Game) registerHandlers() *Game {
 	// Register for any MessageTypes we are interested in
 	ws.RegisterMessageHandler("player/question/SubmitAnswer", loop.handleMessage)
-	ws.RegisterMessageHandler("player/generic/continue", loop.handleMessage)
+	ws.RegisterMessageHandler("player/generic/Confirm", loop.handleMessage)
 	// Register our onConnect function
 	ws.RegisterOnConnectHandler(loop.handleOnConnect)
 	return loop
