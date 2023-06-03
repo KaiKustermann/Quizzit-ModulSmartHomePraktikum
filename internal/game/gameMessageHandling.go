@@ -10,7 +10,7 @@ import (
 
 // Generic handler for incoming messages
 // Check the current GameState and call the appropriate handler function
-func (loop *Game) handleMessage(envelope dto.WebsocketMessagePublish) bool {
+func (loop *Game) handleMessage(conn *websocket.Conn, envelope dto.WebsocketMessagePublish) bool {
 	msgType := envelope.MessageType
 	contextLogger := log.WithFields(log.Fields{
 		"GameStep":    loop.currentStep.Name,
@@ -25,7 +25,9 @@ func (loop *Game) handleMessage(envelope dto.WebsocketMessagePublish) bool {
 			return true
 		}
 	}
-	contextLogger.Info("MessageType not appropriate for GameStep ")
+	feedback := buildErrorFeedback(loop.currentStep, envelope)
+	contextLogger.Info(feedback.ErrorMessage + " ")
+	helpers.WriteWebsocketMessage(conn, helpers.ErrorFeedbackToWebsocketMessageSubscribe(feedback))
 	return false
 }
 
@@ -46,4 +48,17 @@ func (loop *Game) registerHandlers() *Game {
 	// Register our onConnect function
 	ws.RegisterOnConnectHandler(loop.handleOnConnect)
 	return loop
+}
+
+func buildErrorFeedback(gs gameStep, envelope dto.WebsocketMessagePublish) (fb dto.ErrorFeedback) {
+	allowedMessageTypes := []string{}
+	props := make(map[string]interface{})
+	for i := 0; i < len(gs.possibleActions); i++ {
+		allowedMessageTypes = append(allowedMessageTypes, gs.possibleActions[i].Action)
+	}
+	props["supportedMessageTypes"] = allowedMessageTypes
+	fb.ErrorMessage = "MessageType not appropriate for GameStep"
+	fb.ReceivedMessage = &envelope
+	fb.AdditionalProperties = props
+	return
 }

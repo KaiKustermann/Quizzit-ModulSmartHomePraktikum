@@ -63,7 +63,7 @@ func BroadCast(msg dto.WebsocketMessageSubscribe) error {
 }
 
 // Register a handler that gets invoked when the messageType matches
-func RegisterMessageHandler(messageType string, handle func(envelope dto.WebsocketMessagePublish) bool) {
+func RegisterMessageHandler(messageType string, handle func(conn *websocket.Conn, envelope dto.WebsocketMessagePublish) bool) {
 	route := Route{messageType: messageType, handle: handle}
 	routes = append(routes, route)
 }
@@ -124,14 +124,23 @@ func listen(conn *websocket.Conn) {
 // Return 'message was handled'
 func routeByMessageType(conn *websocket.Conn, envelope dto.WebsocketMessagePublish) (handled bool) {
 	handled = false
+	knownMsgType := false
 	for _, v := range routes {
 		if v.messageType == envelope.MessageType {
-			handled = v.handle(envelope)
+			knownMsgType = true
+			handled = v.handle(conn, envelope)
 			if handled {
 				return
 			}
 		}
 	}
-	logging.EnvelopeLog(envelope).Warn("MessageType unknown")
+	if !knownMsgType {
+		feedback := dto.ErrorFeedback{
+			ReceivedMessage: &envelope,
+			ErrorMessage:    "MessageType unknown",
+		}
+		logging.EnvelopeLog(envelope).Warn(feedback.ErrorMessage + " ")
+		helpers.WriteWebsocketMessage(conn, helpers.ErrorFeedbackToWebsocketMessageSubscribe(feedback))
+	}
 	return
 }

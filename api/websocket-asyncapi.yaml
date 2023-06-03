@@ -63,6 +63,7 @@ components:
       type: string
       # enum:
       #   - "system/Health"
+      #   - "game/generic/ErrorFeedback"
       #   - "game/question/Question"
       #   - "game/question/CorrectnessFeedback"
     MessageTypePublish:
@@ -88,6 +89,7 @@ components:
             - $ref: "#/components/schemas/Question"
             - $ref: "#/components/schemas/CorrectnessFeedback"
             - $ref: "#/components/schemas/PlayerConfirm"
+            - $ref: "#/components/schemas/ErrorFeedback"
       additionalProperties: false
       required:
         - correlationId
@@ -191,3 +193,13 @@ components:
       description: Generic message to continue the game flow (e.G. when waiting for a player confirmation)
       type: object
       additionalProperties: false
+    ErrorFeedback:
+      title: Error Feedback
+      description: Feedback when receiving a Message that cannot be handled
+      type: object
+      properties: 
+        receivedMessage:
+          $ref: "#/components/schemas/WebsocketMessagePublish"
+        errorMessage:
+          type: string
+      additionalProperties: true
