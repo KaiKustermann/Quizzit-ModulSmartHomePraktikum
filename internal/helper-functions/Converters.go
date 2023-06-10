@@ -69,3 +69,12 @@ func CorrectnessFeedbackToWebsocketMessageSubscribe(correctnessFeedback dto.Corr
 	}
 	return msg
 }
+
+func ErrorFeedbackToWebsocketMessageSubscribe(iMsg dto.ErrorFeedback) dto.WebsocketMessageSubscribe {
+	msg := dto.WebsocketMessageSubscribe{
+		MessageType:   "game/generic/InappropriateMessage",
+		Body:          iMsg,
+		CorrelationId: iMsg.ReceivedMessage.CorrelationId,
+	}
+	return msg
+}

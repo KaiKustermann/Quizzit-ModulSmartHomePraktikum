@@ -34,29 +34,34 @@ func (s *staticQuestions) GetNextQuestion() dto.Question {
 }
 
 // Get the CorrectnessFeedback for a specific question for the given questionId
-func (s *staticQuestions) GetCorrectnessFeedback(answer dto.SubmitAnswer) (*dto.CorrectnessFeedback, error) {
+func (s *staticQuestions) GetCorrectnessFeedback(answer dto.SubmitAnswer) (feedback dto.CorrectnessFeedback) {
+	selectedAnswer := dto.PossibleAnswer{}
 	for i := 0; i < len(s.correctnessFeedbacks); i++ {
 		if s.correctnessFeedbacks[i].Question.Id == answer.QuestionId {
-			feedback := s.correctnessFeedbacks[i]
-			selectedAnswer, err := getAnswerById(*feedback.Question, answer.AnswerId)
+			feedback = s.correctnessFeedbacks[i]
+			selectedAnswer = getAnswerById(*feedback.Question, answer.AnswerId)
 			feedback.SelectedAnswer = &selectedAnswer
 			feedback.SelectedAnswerIsCorrect = (feedback.CorrectAnswer.Id == feedback.SelectedAnswer.Id)
-			return &feedback, err
+			return feedback
 		}
 	}
-	return nil, fmt.Errorf("CorrectnessFeedback for given question with questionId %s not found", answer.QuestionId)
+	return feedback
 }
 
 // Get the CorrectnessFeedback for a specific question for the given questionId
-func getAnswerById(question dto.Question, answerId string) (answer dto.PossibleAnswer, err error) {
+func getAnswerById(question dto.Question, answerId string) dto.PossibleAnswer {
 	for i := 0; i < len(question.Answers); i++ {
 		pA, _ := question.Answers[i].(dto.PossibleAnswer)
 		if pA.Id == answerId {
-			answer = pA
-			return
+			return pA
 		}
 	}
-	return answer, fmt.Errorf("question with questionId %s does not have an answer with id %s", question.Id, answerId)
+	log.WithFields(log.Fields{
+		"question": question,
+		"answerId": answerId,
+	}).Warn("Question does not have an answer with given ID, returning first possible Answer")
+	pA, _ := question.Answers[0].(dto.PossibleAnswer)
+	return pA
 }
 
 // Populate internal array with hardcoded sample questions
