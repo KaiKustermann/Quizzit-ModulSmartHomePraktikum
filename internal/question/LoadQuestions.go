@@ -17,21 +17,31 @@ const ASSETS_QUESTION_FILE_PATH = "./assets/dev-questions.json"
 func LoadQuestions() (questions []Question) {
 	questions, success := loadQuestionsFromEnvPath()
 	if success {
-		return questions
+		if validateQuestions(questions) {
+			return questions
+		}
+		panic("Validation of question failed")
 	}
 	questions, success = loadFromExecDir()
 	if success {
-		return questions
+		if validateQuestions(questions) {
+			return questions
+		}
+		panic("Validation of question failed")
 	}
 	// Room for other loaders in order of precendence
 	questions, success = loadDevQuestions()
 	if success {
-		return questions
+		if validateQuestions(questions) {
+			return questions
+		}
+		panic("Validation of question failed")
 	}
-	var errorMessage string = fmt.Sprintf(`Could not load questions! The application will look in the following places and take the first valid file:
-	1. '%s' as specified by the environment variable,
-	2. '%s' file next to the binary, 
-	3. '%s' (the assets directory for development)`,
+	var errorMessage string = fmt.Sprintf(
+		`Could not load questions! The application will look in the following places and take the first valid file:
+		1. '%s' as specified by the environment variable,
+		2. '%s' file next to the binary, 
+		3. '%s' (the assets directory for development)`,
 		ENV_NAME_PATH, QUESTION_FILE_NAME, ASSETS_QUESTION_FILE_PATH)
 	log.Error(errorMessage)
 	panic(errorMessage)
@@ -111,5 +121,56 @@ func loadQuestionsFromAbsolutePath(absPath string) (questions []Question, succes
 	}
 
 	return questions, true
+}
 
+// validates the questions with a set of rules; returns false if the validation fails and true if it succeeds
+func validateQuestions(questions []Question) bool {
+	// Validate uniqueness of question IDs and answerIDs, as well as IsCorrect flag of the answers
+	questionIdSet := make(map[string]bool)
+	for _, question := range questions {
+		if question.Id == "" {
+			log.Error(fmt.Sprintf("In question with ID %s, the field Id was not set properly.", question.Id))
+			return false
+		}
+		if question.Query == "" {
+			log.Error(fmt.Sprintf("In question with ID %s, the field Query was not set properly.", question.Id))
+			return false
+		}
+
+		// commented out because we do not have categories yet
+
+		// if question.Category == "" || question.Category == nil {
+		// 	log.Error(fmt.Sprintf("In question with ID %s, the field Category was not set properly", question.Id))
+		// 	return false
+		// }
+
+		if questionIdSet[question.Id] {
+			log.Error(fmt.Sprintf("A duplicate question ID was found: %s.", question.Id))
+			return false
+		}
+		questionIdSet[question.Id] = true
+
+		isCorrectCount := 0
+		answerIdSet := make(map[string]bool)
+		for _, answer := range question.Answers {
+			if answerIdSet[answer.Id] {
+				log.Error(fmt.Sprintf("In question with ID %s, a duplicate answer ID was found: %s.", question.Id, answer.Id))
+				return false
+			}
+			answerIdSet[answer.Id] = true
+			if answer.IsCorrect == true {
+				isCorrectCount += 1
+			}
+		}
+		if isCorrectCount > 1 {
+			log.Error(fmt.Sprintf("In question with ID %s, two or more answers set the IsCorrect flag as true. Only one answer should be correct for a given question.", question.Id))
+			return false
+		}
+		if isCorrectCount == 0 {
+			log.Error(fmt.Sprintf("In question with ID %s, no answer was set the Iscorrect flag to true. One answer should be correct for a given question.", question.Id))
+			return false
+		}
+		isCorrectCount = 0
+	}
+	return true
 }
