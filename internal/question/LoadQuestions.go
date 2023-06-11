@@ -12,7 +12,7 @@ import (
 
 const ENV_NAME_PATH = "QUIZZIT_QUESTIONS_PATH"
 const QUESTION_FILE_NAME = "questions.json"
-const ASSETS_QUESTION_FILE_PATH = "../../assets/dev-questions.json"
+const ASSETS_QUESTION_FILE_PATH = "./assets/dev-questions.json"
 
 func LoadQuestions() (questions []Question) {
 	questions, success := loadQuestionsFromEnvPath()
