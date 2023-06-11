@@ -86,6 +86,17 @@ Can use this lovely page here: https://websocketking.com/ and connect to `ws://l
 }
 ```
 
+### Submit a generic confirm
+
+```json
+{
+  "CorrelationId": "a-cor-id",
+  "MessageType": "player/generic/Confirm",
+  "Body": {
+  }
+}
+```
+
 # Related Content
 
 * [API Specification](./api)
