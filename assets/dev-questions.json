@@ -43,12 +43,12 @@
             },
             {
                 "Id": "C",
-                "Answer": "Kirche",
+                "Answer": "Stadtkirche",
                 "IsCorrect": false
             },
             {
                 "Id": "D",
-                "Answer": "Fluss",
+                "Answer": "Stutenbach",
                 "IsCorrect": false
             }
         ]
@@ -163,28 +163,28 @@
     },
     {
         "Id": "7",
-        "Query": "Seit wann gibt es Farbfernsehen?",
+        "Query": "Seit wann gibt es Farbfernsehen in Deutschland?",
         "Category": null,
         "Answers": [
             {
                 "Id": "A",
-                "Answer": "",
+                "Answer": "1980",
                 "IsCorrect": false
             },
             {
                 "Id": "B",
-                "Answer": "",
+                "Answer": "1957",
                 "IsCorrect": false
             },
             {
                 "Id": "C",
-                "Answer": "",
-                "IsCorrect": false
+                "Answer": "1967",
+                "IsCorrect": true
             },
             {
                 "Id": "D",
-                "Answer": "",
-                "IsCorrect": true
+                "Answer": "1930",
+                "IsCorrect": false
             }
         ]
     },
@@ -195,7 +195,7 @@
         "Answers": [
             {
                 "Id": "A",
-                "Answer": "",
+                "Answer": "Peter",
                 "IsCorrect": false
             },
             {
@@ -205,12 +205,12 @@
             },
             {
                 "Id": "C",
-                "Answer": "",
+                "Answer": "Tim",
                 "IsCorrect": false
             },
             {
                 "Id": "D",
-                "Answer": "",
+                "Answer": "Georg",
                 "IsCorrect": false
             }
         ]
@@ -238,6 +238,114 @@
             {
                 "Id": "D",
                 "Answer": "Golf",
+                "IsCorrect": false
+            }
+        ]
+    },
+    {
+        "Id": "10",
+        "Query": "Wer moderierte die Sendung - Dalli Dalli?",
+        "Category": null,
+        "Answers": [
+            {
+                "Id": "A",
+                "Answer": "Rudi Carrell",
+                "IsCorrect": true
+            },
+            {
+                "Id": "B",
+                "Answer": "Hans Rosenthal",
+                "IsCorrect": false
+            },
+            {
+                "Id": "C",
+                "Answer": "Peter Alexander",
+                "IsCorrect": false
+            },
+            {
+                "Id": "D",
+                "Answer": "Thomas Gottschalk",
+                "IsCorrect": false
+            }
+        ]
+    },
+    {
+        "Id": "11",
+        "Query": "Welcher Komponist kommt aus Österreich?",
+        "Category": null,
+        "Answers": [
+            {
+                "Id": "A",
+                "Answer": "Johann Sebastian Bach",
+                "IsCorrect": false
+            },
+            {
+                "Id": "B",
+                "Answer": "Ludwig van Beethoven",
+                "IsCorrect": false
+            },
+            {
+                "Id": "C",
+                "Answer": "Wolfgang Amadeus Mozart",
+                "IsCorrect": true
+            },
+            {
+                "Id": "D",
+                "Answer": "Herbert Grönemeyer",
+                "IsCorrect": false
+            }
+        ]
+    },
+    {
+        "Id": "12",
+        "Query": "Welche Stadt war im Jahr 1980 die Hauptstadt von der Bundesrepublik Deutschland?",
+        "Category": null,
+        "Answers": [
+            {
+                "Id": "A",
+                "Answer": "Stuttgart",
+                "IsCorrect": false
+            },
+            {
+                "Id": "B",
+                "Answer": "Bonn",
+                "IsCorrect": true
+            },
+            {
+                "Id": "C",
+                "Answer": "Berlin",
+                "IsCorrect": false
+            },
+            {
+                "Id": "D",
+                "Answer": "Frankfurt",
+                "IsCorrect": false
+            }
+        ]
+    },
+    {
+        "Id": "13",
+        "Query": "Wann wurde Deutschland das erste Mal Fußball Weltmeister?",
+        "Category": null,
+        "Answers": [
+            {
+                "Id": "A",
+                "Answer": "1958 in Stockholm",
+                "IsCorrect": false
+            },
+            {
+                "Id": "B",
+                "Answer": "1954 in Bern",
+                "IsCorrect": true
+            },
+            {
+                "Id": "C",
+                "Answer": "1938 in Berlin",
+                "IsCorrect": false
+            },
+            {
+                "Id": "D",
+                "Answer": "1938 in Paris",
                 "IsCorrect": false
             }
         ]
