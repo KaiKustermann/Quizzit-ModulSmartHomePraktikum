@@ -78,7 +78,7 @@ Can use this lovely page here: https://websocketking.com/ and connect to `ws://l
 ```json
 {
   "CorrelationId": "a-cor-id",
-  "MessageType": 0,
+  "MessageType": "player/question/SubmitAnswer",
   "Body": {
     "QuestionId": "question-0",
     "AnswerId": "C"
