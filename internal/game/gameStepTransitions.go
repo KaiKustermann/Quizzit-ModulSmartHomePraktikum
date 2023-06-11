@@ -24,7 +24,7 @@ func (gl *Game) transitionToState(next gameStep, stateMessage dto.WebsocketMessa
 // Sets stateMessage to the question Prompt
 func (loop *Game) transitionToNewQuestion(gsQuestion gameStep) {
 	nextQuestion := loop.managers.questionManager.MoveToNextQuestion()
-	stateMessage := helpers.QuestionToWebsocketMessageSubscribe(nextQuestion)
+	stateMessage := helpers.QuestionToWebsocketMessageSubscribe(*nextQuestion.ConvertToDTO())
 	loop.transitionToState(gsQuestion, stateMessage)
 }
 
