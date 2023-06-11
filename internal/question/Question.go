@@ -24,11 +24,11 @@ type Question struct {
 
 // Convert an internal Question a DTO of type Question
 func (q Question) ConvertToDTO() *dto.Question {
-	var interfaceSlice []interface{}
+	var answers []interface{}
 	for _, a := range q.Answers {
-		interfaceSlice = append(interfaceSlice, a)
+		answers = append(answers, a.ConvertToDTO())
 	}
-	return &dto.Question{Id: q.Id, Query: q.Query, Answers: interfaceSlice}
+	return &dto.Question{Id: q.Id, Query: q.Query, Answers: answers}
 }
 
 // Convert an DTO of type Question to an internal Question, some information like the field
