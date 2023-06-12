@@ -5,7 +5,7 @@
   "scripts": {
     "tsc": "tsc",
     "clear:typescript": "rm -rf ./api/typescript/src",
-    "generate:typescript": "asyncapi generate models typescript ./api/websocket-asyncapi.yaml -o ./api/typescript/src --tsModuleSystem=CJS --tsExportType=named --tsEnumType=enum --tsModelType=class",
+    "generate:typescript": "asyncapi generate models typescript ./api/websocket-asyncapi.yaml -o ./api/typescript/src --tsModuleSystem=CJS --tsExportType=named --tsEnumType=enum --tsModelType=interface",
     "regenerate:typescript": "npm run clear:typescript && npm run generate:typescript",
     "module:typescript": "tsc api/typescript/src/index.ts -d --lib esnext --outDir api/typescript/dist",
     "clear:golang": "rm -rf ./internal/generated-sources/dto",
