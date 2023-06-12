@@ -1,4 +1,4 @@
-package question
+package gameobjects
 
 import (
 	dto "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/generated-sources/dto"

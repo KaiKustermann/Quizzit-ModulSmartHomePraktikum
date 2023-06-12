@@ -1,32 +1,32 @@
 package game
 
 import (
+	gameobjects "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/game/game-objects"
 	dto "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/generated-sources/dto"
-	"gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/question"
 )
 
 // Statefully handle the catalog of questions and the active question
 type questionManager struct {
-	questions           []question.Question
-	activeQuestion      question.Question
+	questions           []gameobjects.Question
+	activeQuestion      gameobjects.Question
 	activeQuestionIndex int
 }
 
 // Constructs a new QuestionManager
 func NewQuestionManager() (qc questionManager) {
 	qc = questionManager{
-		questions: question.LoadQuestions(),
+		questions: gameobjects.LoadQuestions(),
 	}
 	return
 }
 
 // Retrieve the currently active question
-func (qc *questionManager) GetActiveQuestion() question.Question {
+func (qc *questionManager) GetActiveQuestion() gameobjects.Question {
 	return qc.activeQuestion
 }
 
 // Move on to the next question and return it
-func (qc *questionManager) MoveToNextQuestion() question.Question {
+func (qc *questionManager) MoveToNextQuestion() gameobjects.Question {
 	if qc.activeQuestionIndex+1 >= len(qc.questions) {
 		qc.activeQuestionIndex = 0
 	} else {
@@ -47,7 +47,7 @@ func (qc *questionManager) getActiveQuestionIndex() int {
 }
 
 // Setter for activeQuestion
-func (qc *questionManager) setActiveQuestion(question question.Question) {
+func (qc *questionManager) setActiveQuestion(question gameobjects.Question) {
 	qc.activeQuestion = question
 }
 
