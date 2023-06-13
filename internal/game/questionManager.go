@@ -173,7 +173,7 @@ func validateQuestions(questions []gameobjects.Question) bool {
 	questionIdSet := make(map[string]bool)
 	for _, question := range questions {
 		if question.Id == "" {
-			log.Error(fmt.Sprintf("In question with ID %s, the field Id was not set properly.", question.Id))
+			log.Error(fmt.Sprintf("In question with query %s, the field Id was not set properly.", question.Query))
 			return false
 		}
 		if question.Query == "" {
