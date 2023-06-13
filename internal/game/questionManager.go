@@ -167,46 +167,24 @@ func loadQuestionsFromAbsolutePath(absPath string) (questions []gameobjects.Ques
 	return questions, true
 }
 
-// validates the questions with a set of rules; returns false if the validation fails and true if it succeeds
+// validates the questions with a set of validators; returns false if the validation fails and true if it succeeds
 func validateQuestions(questions []gameobjects.Question) bool {
-	// Validate uniqueness of question IDs and answerIDs, as well as IsCorrect flag of the answers
-	questionIdSet := make(map[string]bool)
 	for _, question := range questions {
-		if question.Id == "" {
-			log.Error(fmt.Sprintf("In question with query %s, the field Id was not set properly.", question.Query))
+		if !question.ValidateAnswerIdUniqueness() {
 			return false
 		}
-		if question.Query == "" {
-			log.Error(fmt.Sprintf("In question with ID %s, the field Query was not set properly.", question.Id))
+		if !question.ValidateCorrectAnswerCount() {
 			return false
 		}
-		if questionIdSet[question.Id] {
-			log.Error(fmt.Sprintf("A duplicate question ID was found: %s.", question.Id))
+		if !question.ValidateId() {
 			return false
 		}
-		questionIdSet[question.Id] = true
-
-		isCorrectCount := 0
-		answerIdSet := make(map[string]bool)
-		for _, answer := range question.Answers {
-			if answerIdSet[answer.Id] {
-				log.Error(fmt.Sprintf("In question with ID %s, a duplicate answer ID was found: %s.", question.Id, answer.Id))
-				return false
-			}
-			answerIdSet[answer.Id] = true
-			if answer.IsCorrect == true {
-				isCorrectCount += 1
-			}
-		}
-		if isCorrectCount > 1 {
-			log.Error(fmt.Sprintf("In question with ID %s, two or more answers set the IsCorrect flag as true. Only one answer should be correct for a given question.", question.Id))
+		if !question.ValidateQuery() {
 			return false
 		}
-		if isCorrectCount == 0 {
-			log.Error(fmt.Sprintf("In question with ID %s, no answer was set the Iscorrect flag to true. One answer should be correct for a given question.", question.Id))
-			return false
-		}
-		isCorrectCount = 0
+	}
+	if !gameobjects.ValidateIdUniqueness(questions) {
+		return false
 	}
 	return true
 }
