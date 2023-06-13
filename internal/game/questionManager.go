@@ -48,16 +48,6 @@ func (qc *questionManager) MoveToNextQuestion() gameobjects.Question {
 	return qc.GetActiveQuestion()
 }
 
-// Get the index of the active question in the list of questions
-func (qc *questionManager) getActiveQuestionIndex() int {
-	for idx, q := range qc.questions {
-		if q.Id == qc.activeQuestion.Id {
-			return idx
-		}
-	}
-	return -1
-}
-
 // Setter for activeQuestion
 func (qc *questionManager) setActiveQuestion(question gameobjects.Question) {
 	qc.activeQuestion = question
