@@ -180,14 +180,6 @@ func validateQuestions(questions []gameobjects.Question) bool {
 			log.Error(fmt.Sprintf("In question with ID %s, the field Query was not set properly.", question.Id))
 			return false
 		}
-
-		// commented out because we do not have categories yet
-
-		// if question.Category == "" || question.Category == nil {
-		// 	log.Error(fmt.Sprintf("In question with ID %s, the field Category was not set properly", question.Id))
-		// 	return false
-		// }
-
 		if questionIdSet[question.Id] {
 			log.Error(fmt.Sprintf("A duplicate question ID was found: %s.", question.Id))
 			return false
