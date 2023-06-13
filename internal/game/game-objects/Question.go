@@ -1,7 +1,7 @@
 package gameobjects
 
 import (
-	"log"
+	log "github.com/sirupsen/logrus"
 
 	dto "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/generated-sources/dto"
 )
@@ -38,7 +38,7 @@ func ConvertDTOToQuestion(q dto.Question) Question {
 		answer, ok := v.(dto.PossibleAnswer)
 		if !ok {
 			// Handle the case where the conversion fails
-			log.Println("Unable to convert to PossibleAnswer type")
+			log.Warn("Unable to convert to PossibleAnswer type")
 			continue
 		}
 		answerSlice = append(answerSlice, ConvertDTOToAnswer(answer))
