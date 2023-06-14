@@ -51,6 +51,30 @@ To start the server:
 
 The server will start listening on http://localhost:8080.
 
+## Debug in VS-Code
+
+Possible VS-Code `.vscode/launch.json` configuration:
+
+```json
+{
+  // Use IntelliSense to learn about possible attributes.
+  // Hover to view descriptions of existing attributes.
+  // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Quizzit GO",
+      "type": "go",
+      "request": "launch",
+      "mode": "auto",
+      "program": "${workspaceFolder}/backend/cmd/quizzit/quizzit.go",
+      "cwd": "${workspaceFolder}/backend",
+      "trace": "trace"
+    }
+  ]
+}
+```
+
 ## Test
 
     go test ./test
