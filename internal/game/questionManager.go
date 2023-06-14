@@ -9,8 +9,8 @@ import (
 
 	log "github.com/sirupsen/logrus"
 
-	gameobjects "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/game/game-objects"
 	dto "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/generated-sources/dto"
+	question "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/question"
 )
 
 const ENV_NAME_PATH = "QUIZZIT_QUESTIONS_PATH"
@@ -19,8 +19,8 @@ const ASSETS_QUESTION_FILE_PATH = "./assets/dev-questions.json"
 
 // Statefully handle the catalog of questions and the active question
 type questionManager struct {
-	questions           []gameobjects.Question
-	activeQuestion      gameobjects.Question
+	questions           []question.Question
+	activeQuestion      question.Question
 	activeQuestionIndex int
 }
 
@@ -33,12 +33,12 @@ func NewQuestionManager() (qc questionManager) {
 }
 
 // Retrieve the currently active question
-func (qc *questionManager) GetActiveQuestion() gameobjects.Question {
+func (qc *questionManager) GetActiveQuestion() question.Question {
 	return qc.activeQuestion
 }
 
 // Move on to the next question and return it
-func (qc *questionManager) MoveToNextQuestion() gameobjects.Question {
+func (qc *questionManager) MoveToNextQuestion() question.Question {
 	if qc.activeQuestionIndex+1 >= len(qc.questions) {
 		qc.activeQuestionIndex = 0
 	} else {
@@ -49,7 +49,7 @@ func (qc *questionManager) MoveToNextQuestion() gameobjects.Question {
 }
 
 // Setter for activeQuestion
-func (qc *questionManager) setActiveQuestion(question gameobjects.Question) {
+func (qc *questionManager) setActiveQuestion(question question.Question) {
 	qc.activeQuestion = question
 }
 
@@ -58,28 +58,22 @@ func (qc *questionManager) GetCorrectnessFeedback(answer dto.SubmitAnswer) dto.C
 	return qc.activeQuestion.GetCorrectnessFeedback(answer)
 }
 
-func LoadQuestions() (questions []gameobjects.Question) {
+func LoadQuestions() (questions []question.Question) {
 	questions, success := loadQuestionsFromEnvPath()
 	if success {
-		if validateQuestions(questions) {
-			return questions
-		}
-		panic("Validation of question failed")
+		validateQuestions(questions)
+		return questions
 	}
 	questions, success = loadFromExecDir()
 	if success {
-		if validateQuestions(questions) {
-			return questions
-		}
-		panic("Validation of question failed")
+		validateQuestions(questions)
+		return questions
 	}
 	// Room for other loaders in order of precendence
 	questions, success = loadDevQuestions()
 	if success {
-		if validateQuestions(questions) {
-			return questions
-		}
-		panic("Validation of question failed")
+		validateQuestions(questions)
+		return questions
 	}
 	var errorMessage string = fmt.Sprintf(
 		`Could not load questions! The application will look in the following places and take the first valid file:
@@ -91,14 +85,22 @@ func LoadQuestions() (questions []gameobjects.Question) {
 	panic(errorMessage)
 }
 
-func loadQuestionsFromEnvPath() (questions []gameobjects.Question, success bool) {
+func validateQuestions(questions []question.Question) {
+	if ok, errors := question.ValidateQuestions(questions); !ok {
+		question.LogValidationErrors(errors)
+		panic("Validation of questions failed")
+	}
+	log.Info("Validation of questions succeeded")
+}
+
+func loadQuestionsFromEnvPath() (questions []question.Question, success bool) {
 	envPath, isset := os.LookupEnv(ENV_NAME_PATH)
 	if !isset {
 		log.Debug(fmt.Sprintf("ENV '%s' is not set ", ENV_NAME_PATH))
 		return questions, false
 	}
 	contextLogger := log.WithField("filename", envPath)
-	contextLogger.Info("Attempting to read questions as defined by '%s' ", ENV_NAME_PATH)
+	contextLogger.Info(fmt.Sprintf("Attempting to read questions as defined by '%s' ", ENV_NAME_PATH))
 
 	absPath, err := filepath.Abs(envPath)
 	if err != nil {
@@ -110,7 +112,7 @@ func loadQuestionsFromEnvPath() (questions []gameobjects.Question, success bool)
 
 // Loads questions from 'questions.json'
 // The json put next to executable
-func loadFromExecDir() (questions []gameobjects.Question, success bool) {
+func loadFromExecDir() (questions []question.Question, success bool) {
 	log.WithField("filename", QUESTION_FILE_NAME).Info("Reading questions from exec directory ")
 	_, err := os.Stat(QUESTION_FILE_NAME)
 	if err != nil {
@@ -122,12 +124,12 @@ func loadFromExecDir() (questions []gameobjects.Question, success bool) {
 
 // Loads questions from '../../assets/dev-questions.json'
 // Fallback, or: When running in a development environment
-func loadDevQuestions() (questions []gameobjects.Question, success bool) {
+func loadDevQuestions() (questions []question.Question, success bool) {
 	log.WithField("filename", ASSETS_QUESTION_FILE_PATH).Warn("Falling back to DEV Questions ")
 	return loadQuestionsFromRelativePath(ASSETS_QUESTION_FILE_PATH)
 }
 
-func loadQuestionsFromRelativePath(relPath string) (questions []gameobjects.Question, success bool) {
+func loadQuestionsFromRelativePath(relPath string) (questions []question.Question, success bool) {
 	absPath, err := filepath.Abs(relPath)
 	if err != nil {
 		log.WithField("filename", relPath).Error("Could resolve file ", err)
@@ -136,7 +138,7 @@ func loadQuestionsFromRelativePath(relPath string) (questions []gameobjects.Ques
 	return loadQuestionsFromAbsolutePath(absPath)
 }
 
-func loadQuestionsFromAbsolutePath(absPath string) (questions []gameobjects.Question, success bool) {
+func loadQuestionsFromAbsolutePath(absPath string) (questions []question.Question, success bool) {
 	contextLogger := log.WithField("filename", absPath)
 	contextLogger.Info("Loading questions ")
 
@@ -165,26 +167,4 @@ func loadQuestionsFromAbsolutePath(absPath string) (questions []gameobjects.Ques
 	}
 
 	return questions, true
-}
-
-// validates the questions with a set of validators; returns false if the validation fails and true if it succeeds
-func validateQuestions(questions []gameobjects.Question) bool {
-	for _, question := range questions {
-		if !question.ValidateAnswerIdUniqueness() {
-			return false
-		}
-		if !question.ValidateCorrectAnswerCount() {
-			return false
-		}
-		if !question.ValidateId() {
-			return false
-		}
-		if !question.ValidateQuery() {
-			return false
-		}
-	}
-	if !gameobjects.ValidateIdUniqueness(questions) {
-		return false
-	}
-	return true
 }
