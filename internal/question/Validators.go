@@ -85,7 +85,9 @@ func validateIdUniqueness(questions []Question) (ok bool, errors []ValidationErr
 	return
 }
 
-// validates the questions with a set of validators; returns false if the validation fails and true if it succeeds
+// validates the questions with a set of validators;
+// ok = true => no errors found
+// ok = false => errors field contains the validation errors
 func ValidateQuestions(questions []Question) (ok bool, errors []ValidationError) {
 	ok = true
 	for _, question := range questions {

@@ -58,6 +58,7 @@ func (qc *questionManager) GetCorrectnessFeedback(answer dto.SubmitAnswer) dto.C
 	return qc.activeQuestion.GetCorrectnessFeedback(answer)
 }
 
+// Attempt to load the questions from multiple locations
 func LoadQuestions() (questions []question.Question) {
 	questions, success := loadQuestionsFromEnvPath()
 	if success {
@@ -85,6 +86,7 @@ func LoadQuestions() (questions []question.Question) {
 	panic(errorMessage)
 }
 
+// Call validators on the list of questions, log errors and panic if validation fails.
 func validateQuestions(questions []question.Question) {
 	if ok, errors := question.ValidateQuestions(questions); !ok {
 		question.LogValidationErrors(errors)
@@ -93,6 +95,7 @@ func validateQuestions(questions []question.Question) {
 	log.Info("Validation of questions succeeded")
 }
 
+// Attempt loading questions from location as defined by the ENV var
 func loadQuestionsFromEnvPath() (questions []question.Question, success bool) {
 	envPath, isset := os.LookupEnv(ENV_NAME_PATH)
 	if !isset {
