@@ -108,6 +108,7 @@ components:
           description: Message content
           oneOf: 
             - $ref: "#/components/schemas/SubmitAnswer"
+            - $ref: "#/components/schemas/PlayerConfirm"
       additionalProperties: false
       required:
         - correlationId
