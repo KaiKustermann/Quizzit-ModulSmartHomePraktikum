@@ -4,9 +4,46 @@ import (
 	dto "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/generated-sources/dto"
 )
 
+// the interface will not be used anymore in the future; It is only there for StaticQuestions.go
 type Questions interface {
 	// Get a new question
 	GetNextQuestion() dto.Question
 	// Get the CorrectnessFeedback for a specific question for the given questionId
 	GetCorrectnessFeedback(answer dto.SubmitAnswer) dto.CorrectnessFeedback
+}
+
+// Type question for internal use in the backend
+type Question struct {
+	Id       string
+	Query    string
+	Category interface{}
+	Answers  []Answer
+}
+
+// Convert an internal Question a DTO of type Question
+func (q Question) ConvertToDTO() *dto.Question {
+	var answers []interface{}
+	for _, a := range q.Answers {
+		answers = append(answers, a.ConvertToDTO())
+	}
+	return &dto.Question{Id: q.Id, Query: q.Query, Answers: answers}
+}
+
+// Get the correctnessFeedback for a given question and SubmitAnswer, returns a DTO of type CorrectnessFeedback
+func (q Question) GetCorrectnessFeedback(submitAnswer dto.SubmitAnswer) dto.CorrectnessFeedback {
+	var selectedAnswerIsCorrect bool = false
+	var correctAnswer *dto.PossibleAnswer
+	var selectedAnswer *dto.PossibleAnswer
+	for _, a := range q.Answers {
+		if a.IsCorrect == true {
+			correctAnswer = a.ConvertToDTO()
+			if a.Id == submitAnswer.AnswerId {
+				selectedAnswerIsCorrect = true
+			}
+		}
+		if a.Id == submitAnswer.AnswerId {
+			selectedAnswer = a.ConvertToDTO()
+		}
+	}
+	return dto.CorrectnessFeedback{SelectedAnswerIsCorrect: selectedAnswerIsCorrect, CorrectAnswer: correctAnswer, SelectedAnswer: selectedAnswer, Question: q.ConvertToDTO()}
 }
