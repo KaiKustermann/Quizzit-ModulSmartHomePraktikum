@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"math/rand"
 	"os"
 	"path/filepath"
 
@@ -56,6 +57,19 @@ func (qc *questionManager) setActiveQuestion(question question.Question) {
 // Get the corrextness feedback for the active question
 func (qc *questionManager) GetCorrectnessFeedback(answer dto.SubmitAnswer) dto.CorrectnessFeedback {
 	return qc.activeQuestion.GetCorrectnessFeedback(answer)
+}
+
+// Get the corrextness feedback for the active question
+func (qc *questionManager) GetRandomCategory() string {
+	categories := []string{
+		"geographie",
+		"geschichte",
+		"lokale Fragen (Heimat)",
+		"Wissensschaft",
+		"Sport",
+		"Pflanzen & Tiere",
+	}
+	return categories[rand.Intn(5)]
 }
 
 // Attempt to load the questions from multiple locations
