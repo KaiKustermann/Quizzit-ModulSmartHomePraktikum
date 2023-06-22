@@ -21,6 +21,7 @@ const ASSETS_QUESTION_FILE_PATH = "./assets/dev-questions.json"
 // Statefully handle the catalog of questions and the active question
 type questionManager struct {
 	questions           []question.Question
+	activeCategory      string
 	activeQuestion      question.Question
 	activeQuestionIndex int
 }
@@ -59,8 +60,13 @@ func (qc *questionManager) GetCorrectnessFeedback(answer dto.SubmitAnswer) dto.C
 	return qc.activeQuestion.GetCorrectnessFeedback(answer)
 }
 
-// Get the corrextness feedback for the active question
-func (qc *questionManager) GetRandomCategory() string {
+// Returns the active category
+func (qc *questionManager) GetActiveCategory() string {
+	return qc.activeCategory
+}
+
+// Set self to a random question category, Returns the category for convenience
+func (qc *questionManager) SetRandomCategory() string {
 	categories := []string{
 		"geographie",
 		"geschichte",
@@ -69,7 +75,8 @@ func (qc *questionManager) GetRandomCategory() string {
 		"Sport",
 		"Pflanzen & Tiere",
 	}
-	return categories[rand.Intn(5)]
+	qc.activeCategory = categories[rand.Intn(5)]
+	return qc.GetActiveCategory()
 }
 
 // Attempt to load the questions from multiple locations

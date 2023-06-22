@@ -30,8 +30,12 @@ func (loop *Game) constructLoop() *Game {
 
 	// TRANSITION TO SPECIFIC PLAYER
 	gsTransitionToSpecificPlayer.addAction(string(msgType.Player_Generic_Confirm), func(envelope dto.WebsocketMessagePublish) {
+		playerState := loop.managers.playerManager.GetPlayerState()
 		loop.transitionToState(gsCategoryRoll, dto.WebsocketMessageSubscribe{
 			MessageType: string(msgType.Game_Die_RollCategoryPrompt),
+			Body: dto.RollCategoryPrompt{
+				PlayerState: &playerState,
+			},
 		})
 	})
 

@@ -1,8 +1,6 @@
 package game
 
 import (
-	"math/rand"
-
 	log "github.com/sirupsen/logrus"
 	dto "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/generated-sources/dto"
 	helpers "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/helper-functions"
@@ -27,7 +25,10 @@ func (gl *Game) transitionToState(next gameStep, stateMessage dto.WebsocketMessa
 // Sets stateMessage to the question Prompt
 func (loop *Game) transitionToNewQuestion(gsQuestion gameStep) {
 	nextQuestion := loop.managers.questionManager.MoveToNextQuestion()
-	stateMessage := helpers.QuestionToWebsocketMessageSubscribe(*nextQuestion.ConvertToDTO())
+	nextQuestionDTO := nextQuestion.ConvertToDTO()
+	playerState := loop.managers.playerManager.GetPlayerState()
+	nextQuestionDTO.PlayerState = &playerState
+	stateMessage := helpers.QuestionToWebsocketMessageSubscribe(*nextQuestionDTO)
 	loop.transitionToState(gsQuestion, stateMessage)
 }
 
@@ -41,6 +42,11 @@ func (loop *Game) transitionToCorrectnessFeedback(gsCorrectnessFeedback gameStep
 		return
 	}
 	feedback := loop.managers.questionManager.GetCorrectnessFeedback(answer)
+	if feedback.SelectedAnswerIsCorrect {
+		loop.managers.playerManager.IncreaseScoreOfActivePlayer()
+	}
+	playerState := loop.managers.playerManager.GetPlayerState()
+	feedback.PlayerState = &playerState
 	stateMessage := helpers.CorrectnessFeedbackToWebsocketMessageSubscribe(feedback)
 	loop.transitionToState(gsCorrectnessFeedback, stateMessage)
 }
@@ -54,30 +60,19 @@ func (loop *Game) handlePlayerCountAndTransitionToSpecificPlayer(gsPlayerTransit
 		return
 	}
 	pC := int(pCasFloat)
-	// TODO: actually save the player count
-	logging.EnvelopeLog(envelope).Warnf("TODO: Actually set player count to %d", pC)
+	loop.managers.playerManager = NewPlayerManager(pC)
+	logging.EnvelopeLog(envelope).Infof("Setting player count to %d", pC)
 	loop.transitionToSpecificPlayer(gsPlayerTransition)
-}
-
-func mockPlayerState() (state dto.PlayerState) {
-	log.Warn("Using mocked Player State!")
-	state.ActivePlayerId = 0
-	for i := 0; i < 5; i++ {
-		state.Scores = append(state.Scores, i)
-	}
-	return
 }
 
 // Sets the next GameState to PassToSpecificPlayer
 // Sets stateMessage to the pass-to-player message
 func (loop *Game) transitionToSpecificPlayer(gsPlayerTransition gameStep) {
-	// TODO: use actual playerState
-	log.Warn("TODO: actually keep track of players and use proper next player")
-	playerState := mockPlayerState()
+	playerState := loop.managers.playerManager.MoveToNextPlayer()
 	stateMessage := dto.WebsocketMessageSubscribe{
 		MessageType: string(msgType.Game_Turn_PassToSpecificPlayer),
 		Body: dto.PassToSpecificPlayerPrompt{
-			TargetPlayerId: rand.Intn(4),
+			TargetPlayerId: playerState.ActivePlayerId,
 			PlayerState:    &playerState,
 		},
 	}
@@ -87,12 +82,15 @@ func (loop *Game) transitionToSpecificPlayer(gsPlayerTransition gameStep) {
 // Sets the next GameState to displaying CategoryResponse
 // Sets stateMessage to the rolled category
 func (loop *Game) transitionToCategoryResponse(gsCategoryResult gameStep) {
-	cat := loop.managers.questionManager.GetRandomCategory()
-	//TODO: actually remember the category!
-	log.Warn("TODO: Save the category we drafted!")
+	cat := loop.managers.questionManager.SetRandomCategory()
+	log.Infof("Drafted category '%s'", cat)
+	playerState := loop.managers.playerManager.GetPlayerState()
 	stateMessage := dto.WebsocketMessageSubscribe{
 		MessageType: string(msgType.Game_Die_CategoryResult),
-		Body:        cat,
+		Body: dto.CategoryResult{
+			Category:    cat,
+			PlayerState: &playerState,
+		},
 	}
 	loop.transitionToState(gsCategoryResult, stateMessage)
 }
