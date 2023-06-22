@@ -66,6 +66,11 @@ components:
       #   - "game/generic/ErrorFeedback"
       #   - "game/question/Question"
       #   - "game/question/CorrectnessFeedback"
+      #   - "game/setup/Welcome"
+      #   - "game/setup/SelectPlayerCount"
+      #   - "game/turn/PassToSpecificPlayer"
+      #   - "game/die/RollCategoryPrompt"
+      #   - "game/die/CategoryResult"
     MessageTypePublish:
       title: Message Type Publish
       description: Identifies the type of the message
@@ -73,6 +78,8 @@ components:
       # enum:
       #   - "player/question/SubmitAnswer"
       #   - "player/generic/Confirm"
+      #   - "player/setup/SubmitPlayerCount"
+      #   - "player/die/DigitalCategoryRollRequest"
     WebsocketMessageSubscribe:
       title: Websocket Message Subscribe
       description: Envelope for WSS Messages
@@ -147,6 +154,8 @@ components:
           maxItems: 4
           items:
             $ref: "#/components/schemas/PossibleAnswer"
+        gameState:
+          $ref: "#/components/schemas/GameState"
       additionalProperties: false
       required:
         - id
@@ -183,6 +192,8 @@ components:
         question:
           $ref: "#/components/schemas/Question"
           description: The posed question.
+        gameState:
+          $ref: "#/components/schemas/GameState"
       additionalProperties: false
       required:
         - selectedAnswerIsCorrect
@@ -204,3 +215,71 @@ components:
         errorMessage:
           type: string
       additionalProperties: true
+    Welcome:
+      title: Welcome
+      description: Welcome message from backend as initial message when starting the game.
+      type: object
+      additionalProperties: false
+    SelectPlayerCount:
+      title: Select the player count
+      description: Selecting the number of players.
+      type: object
+      additionalProperties: false
+    SubmitPlayerCount:
+      title: 
+      description: 
+      type: integer
+      additionalProperties: false
+    PassToSpecificPlayer:
+      title: 
+      description: 
+      type: object
+      properties: 
+        targetPlayerId:
+          type: integer
+        gameState:
+          $ref: "#/components/schemas/GameState"
+      additionalProperties: false
+    Scores:
+      title: 
+      description: 
+      type: array
+      items:
+        type: integer
+    RollCategoryPrompt:
+      title: 
+      description: 
+      type: object
+      properties:
+        gameState:
+          $ref: "#/components/schemas/GameState"
+      additionalProperties: false
+    GameState:
+      title: 
+      description:   
+      type: object
+      properties:
+        activePlayerId: 
+          type: integer
+        scores:
+          $ref: "#/components/schemas/Scores"
+      additionalProperties: false
+    DigitalCategoryRollRequest:
+      title: 
+      description:   
+      type: object
+      additionalProperties: false
+    CategoryResult:
+        title: 
+        description:   
+        type: object
+        properties:
+          category:
+            type: string
+          gameState:
+            $ref: "#/components/schemas/GameState"
+        additionalProperties: false
+
+
+
+  
