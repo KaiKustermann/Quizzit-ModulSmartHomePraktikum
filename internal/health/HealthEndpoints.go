@@ -7,6 +7,7 @@ import (
 
 	dto "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/generated-sources/dto"
 	helpers "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/helper-functions"
+	messagetypes "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/message-types"
 
 	log "github.com/sirupsen/logrus"
 
@@ -24,7 +25,7 @@ func HealthCheckHttp(w http.ResponseWriter, r *http.Request) {
 
 // Send Health information via Websocket continuously
 func ContinuouslySendHealth(conn *websocket.Conn) {
-	msg := dto.WebsocketMessageSubscribe{MessageType: "system/Health", Body: dto.Health{Healthy: true}}
+	msg := dto.WebsocketMessageSubscribe{MessageType: string(messagetypes.System_Health), Body: dto.Health{Healthy: true}}
 	ticker := time.NewTicker(10 * time.Second)
 	defer ticker.Stop()
 	for {

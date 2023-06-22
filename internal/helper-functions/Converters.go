@@ -8,6 +8,7 @@ import (
 
 	log "github.com/sirupsen/logrus"
 	dto "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/generated-sources/dto"
+	messagetypes "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/message-types"
 )
 
 // Takes 'input' and writes to 'output'.
@@ -56,7 +57,7 @@ func MarshalToLowerCamelCaseJSON(data any) ([]byte, error) {
 
 func QuestionToWebsocketMessageSubscribe(question dto.Question) dto.WebsocketMessageSubscribe {
 	msg := dto.WebsocketMessageSubscribe{
-		MessageType: "game/question/Question",
+		MessageType: string(messagetypes.Game_Question_Question),
 		Body:        question,
 	}
 	return msg
@@ -64,7 +65,7 @@ func QuestionToWebsocketMessageSubscribe(question dto.Question) dto.WebsocketMes
 
 func CorrectnessFeedbackToWebsocketMessageSubscribe(correctnessFeedback dto.CorrectnessFeedback) dto.WebsocketMessageSubscribe {
 	msg := dto.WebsocketMessageSubscribe{
-		MessageType: "game/question/CorrectnessFeedback",
+		MessageType: string(messagetypes.Game_Question_CorrectnessFeedback),
 		Body:        correctnessFeedback,
 	}
 	return msg
@@ -72,7 +73,7 @@ func CorrectnessFeedbackToWebsocketMessageSubscribe(correctnessFeedback dto.Corr
 
 func ErrorFeedbackToWebsocketMessageSubscribe(iMsg dto.ErrorFeedback) dto.WebsocketMessageSubscribe {
 	msg := dto.WebsocketMessageSubscribe{
-		MessageType:   "game/generic/InappropriateMessage",
+		MessageType:   string(messagetypes.Game_Generic_ErrorFeedback),
 		Body:          iMsg,
 		CorrelationId: iMsg.ReceivedMessage.CorrelationId,
 	}

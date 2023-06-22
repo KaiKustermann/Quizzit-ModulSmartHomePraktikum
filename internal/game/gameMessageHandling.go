@@ -5,6 +5,7 @@ import (
 	log "github.com/sirupsen/logrus"
 	dto "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/generated-sources/dto"
 	helpers "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/helper-functions"
+	msgType "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/message-types"
 	ws "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/websockets"
 )
 
@@ -42,9 +43,10 @@ func (loop *Game) handleOnConnect(conn *websocket.Conn) {
 
 // Register Hooks for the Websocket connection
 func (loop *Game) registerHandlers() *Game {
-	// Register for any MessageTypes we are interested in
-	ws.RegisterMessageHandler("player/question/SubmitAnswer", loop.handleMessage)
-	ws.RegisterMessageHandler("player/generic/Confirm", loop.handleMessage)
+	messageTypes := msgType.GetAllMessageTypePublish()
+	for i := 0; i < len(messageTypes); i++ {
+		ws.RegisterMessageHandler(string(messageTypes[i]), loop.handleMessage)
+	}
 	// Register our onConnect function
 	ws.RegisterOnConnectHandler(loop.handleOnConnect)
 	return loop
