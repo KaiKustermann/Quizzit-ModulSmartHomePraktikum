@@ -8,8 +8,8 @@ tags:
     description: Event sent by the client (e.G. 'player')
 info:
   title: Quizzit
-  description: An adaptive hybrid boardgame
-  version: 0.1.0
+  description: A quiz game for elderly people
+  version: 0.7.0
   license:
     name: not licensed
   contact:
@@ -18,7 +18,7 @@ info:
     url: "https://github.com/h3rby7"
 servers:
   local:
-    url: localhost
+    url: localhost:8080/ws
     protocol: websocket
     description: Local development
 channels:
@@ -29,7 +29,7 @@ channels:
       operationId: "process"
       message:
         messageId: "processMessage"
-        description: An event sent by the backend.
+        description: "An event sent by the backend."
         payload:
           $ref: "#/components/schemas/WebsocketMessageSubscribe"
     publish:
@@ -43,10 +43,9 @@ channels:
           $ref: "#/components/schemas/WebsocketMessagePublish"
 components:
   schemas:
-    Id:
-      title: Identifier
-      description: A unique ID
-      type: string
+    # *************************************************************************
+    # **** START SYSTEM SCHEMAS ***********************************************
+    # *************************************************************************
     Health:
       title: Health
       description: Health Information
@@ -57,11 +56,19 @@ components:
       additionalProperties: false
       required:
         - "healthy"
+    # *************************************************************************
+    # **** END SYSTEM SCHEMAS *************************************************
+    # **** START UTILITY SCHEMAS **********************************************
+    # *************************************************************************
+    Id:
+      title: Identifier
+      description: A unique ID
+      type: string
     MessageTypeSubscribe:
       title: Message Type Subscribe
-      description: Identifies the type of the message
+      description: Sent by backend -> Identifies the type of the message
       type: string
-      # enum:
+      # POSSIBLE CONTENTS:
       #   - "system/Health"
       #   - "game/generic/ErrorFeedback"
       #   - "game/question/Question"
@@ -71,18 +78,10 @@ components:
       #   - "game/turn/PassToSpecificPlayer"
       #   - "game/die/RollCategoryPrompt"
       #   - "game/die/CategoryResult"
-    MessageTypePublish:
-      title: Message Type Publish
-      description: Identifies the type of the message
-      type: string
-      # enum:
-      #   - "player/question/SubmitAnswer"
-      #   - "player/generic/Confirm"
-      #   - "player/setup/SubmitPlayerCount"
-      #   - "player/die/DigitalCategoryRollRequest"
+      # note: the 'enum' code generation produces incompatible code for golang and ts, so we use strings
     WebsocketMessageSubscribe:
       title: Websocket Message Subscribe
-      description: Envelope for WSS Messages
+      description: Sent by backend -> Envelope for WSS Messages
       type: object
       properties:
         correlationId:
@@ -97,14 +96,29 @@ components:
             - $ref: "#/components/schemas/CorrectnessFeedback"
             - $ref: "#/components/schemas/PlayerConfirm"
             - $ref: "#/components/schemas/ErrorFeedback"
+            - $ref: "#/components/schemas/WelcomePrompt"
+            - $ref: "#/components/schemas/SelectPlayerCountPrompt"
+            - $ref: "#/components/schemas/PassToSpecificPlayerPrompt"
+            - $ref: "#/components/schemas/RollCategoryPrompt"
+            - $ref: "#/components/schemas/CategoryResult"
       additionalProperties: false
       required:
         - correlationId
         - messageType
         - body
+    MessageTypePublish:
+      title: Message Type Publish
+      description: Sent by client(s) -> Identifies the type of the message
+      type: string
+      # POSSIBLE CONTENTS:
+      #   - "player/question/SubmitAnswer"
+      #   - "player/generic/Confirm"
+      #   - "player/setup/SubmitPlayerCount"
+      #   - "player/die/DigitalCategoryRollRequest"
+      # note: the 'enum' code generation produces incompatible code for golang and ts, so we use strings
     WebsocketMessagePublish:
       title: Websocket Message Publish
-      description: Envelope for WSS Messages
+      description: Sent by client(s) -> Envelope for WSS Messages
       type: object
       properties:
         correlationId:
@@ -116,11 +130,17 @@ components:
           oneOf: 
             - $ref: "#/components/schemas/SubmitAnswer"
             - $ref: "#/components/schemas/PlayerConfirm"
+            - $ref: "#/components/schemas/SubmitPlayerCount"
+            - $ref: "#/components/schemas/DigitalCategoryRollRequest"
       additionalProperties: false
       required:
         - correlationId
         - messageType
         - body
+    # *************************************************************************
+    # **** END UTILITY SCHEMAS ************************************************
+    # **** START GAME SCHEMAS *************************************************
+    # *************************************************************************
     PossibleAnswer:
       title: Possible Answer
       description: One possible answer to a question.
@@ -154,13 +174,14 @@ components:
           maxItems: 4
           items:
             $ref: "#/components/schemas/PossibleAnswer"
-        gameState:
-          $ref: "#/components/schemas/GameState"
+        playerState:
+          $ref: "#/components/schemas/PlayerState"
       additionalProperties: false
       required:
         - id
         - query
         - answers
+        - playerState
     SubmitAnswer:
       title: Submit Answer
       description: The submitted answer of a player to a question.
@@ -192,14 +213,15 @@ components:
         question:
           $ref: "#/components/schemas/Question"
           description: The posed question.
-        gameState:
-          $ref: "#/components/schemas/GameState"
+        playerState:
+          $ref: "#/components/schemas/PlayerState"
       additionalProperties: false
       required:
         - selectedAnswerIsCorrect
         - correctAnswer
         - selectedAnswer
         - question
+        - playerState
     PlayerConfirm:
       title: Player confirm
       description: Generic message to continue the game flow (e.G. when waiting for a player confirmation)
@@ -215,71 +237,80 @@ components:
         errorMessage:
           type: string
       additionalProperties: true
-    Welcome:
-      title: Welcome
-      description: Welcome message from backend as initial message when starting the game.
-      type: object
-      additionalProperties: false
-    SelectPlayerCount:
-      title: Select the player count
-      description: Selecting the number of players.
-      type: object
-      additionalProperties: false
-    SubmitPlayerCount:
-      title: 
-      description: 
-      type: integer
-      additionalProperties: false
-    PassToSpecificPlayer:
-      title: 
-      description: 
-      type: object
-      properties: 
-        targetPlayerId:
-          type: integer
-        gameState:
-          $ref: "#/components/schemas/GameState"
-      additionalProperties: false
-    Scores:
-      title: 
-      description: 
+    PlayerScores:
+      title: "Player Scores"
+      description: "List containing player scores. PlayerID = index (e.g. player 0's score is at index 0, 1 at 1, 2 at 2, etc.)"
       type: array
       items:
         type: integer
-    RollCategoryPrompt:
-      title: 
-      description: 
-      type: object
-      properties:
-        gameState:
-          $ref: "#/components/schemas/GameState"
-      additionalProperties: false
-    GameState:
-      title: 
-      description:   
+    PlayerState:
+      title: "Player State"
+      description: "Contains the active player and player scores."
       type: object
       properties:
         activePlayerId: 
           type: integer
         scores:
-          $ref: "#/components/schemas/Scores"
+          $ref: "#/components/schemas/PlayerScores"
       additionalProperties: false
+      required:
+        - activePlayerId
+        - scores
+    WelcomePrompt:
+      title: Welcome Prompt
+      description: Prompt to -> Display the Welcome Message
+      type: object
+      additionalProperties: false
+    SelectPlayerCountPrompt:
+      title: Select Player Count Prompt
+      description: "Prompts the player to select the player count"
+      type: object
+      additionalProperties: false
+    SubmitPlayerCount:
+      title: Submit player count
+      description: Inform backend of the chosen player count
+      type: integer
+      additionalProperties: false
+    PassToSpecificPlayerPrompt:
+      title: Pass to specific player prompt
+      description: "Prompts the player to pass the controller to the given other player (that already knows their color)"
+      type: object
+      properties: 
+        targetPlayerId:
+          type: integer
+        playerState:
+          $ref: "#/components/schemas/PlayerState"
+      additionalProperties: false
+      required:
+        - targetPlayerId
+        - playerState
+    RollCategoryPrompt:
+      title: "Roll Category Prompt"
+      description: "Prompts the player to roll a category"
+      type: object
+      properties:
+        playerState:
+          $ref: "#/components/schemas/PlayerState"
+      additionalProperties: false
+      required:
+        - playerState
     DigitalCategoryRollRequest:
-      title: 
-      description:   
+      title: "Digital Category Roll Request"
+      description: "Player requests from backend a digital category roll (as opposed to using an analog die)"
       type: object
       additionalProperties: false
     CategoryResult:
-        title: 
-        description:   
+        title: "Category Result"
+        description: "Transfer to game step -> Display the rolled category"
         type: object
         properties:
           category:
             type: string
-          gameState:
-            $ref: "#/components/schemas/GameState"
+          playerState:
+            $ref: "#/components/schemas/PlayerState"
         additionalProperties: false
-
-
-
-  
+        required:
+          - category
+          - playerState
+    # *************************************************************************
+    # **** END GAME SCHEMAS ***************************************************
