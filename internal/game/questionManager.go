@@ -20,10 +20,9 @@ const ASSETS_QUESTION_FILE_PATH = "./assets/dev-questions.json"
 
 // Statefully handle the catalog of questions and the active question
 type questionManager struct {
-	questions           []question.Question
-	activeCategory      string
-	activeQuestion      question.Question
-	activeQuestionIndex int
+	questions      []question.Question
+	activeQuestion question.Question
+	activeCategory string
 }
 
 // Constructs a new QuestionManager
@@ -39,20 +38,52 @@ func (qc *questionManager) GetActiveQuestion() question.Question {
 	return qc.activeQuestion
 }
 
-// Move on to the next question and return it
-func (qc *questionManager) MoveToNextQuestion() question.Question {
-	if qc.activeQuestionIndex+1 >= len(qc.questions) {
-		qc.activeQuestionIndex = 0
-	} else {
-		qc.activeQuestionIndex += 1
-	}
-	qc.setActiveQuestion(qc.questions[qc.activeQuestionIndex])
-	return qc.GetActiveQuestion()
-}
-
 // Setter for activeQuestion
 func (qc *questionManager) setActiveQuestion(question question.Question) {
 	qc.activeQuestion = question
+}
+
+// Move on to the next question by the active category and return it,
+// Selects a random question with the same category as active category,
+// Ensures that a given question is set to the active question only once by removing it from the list of questions after setting it active
+func (qc *questionManager) MoveToNextQuestion() question.Question {
+	questionsByActiveCategory := qc.getQuestionsByActiveCategory()
+	nextQuestion := questionsByActiveCategory[rand.Intn(len(questionsByActiveCategory))]
+	qc.setActiveQuestion(nextQuestion)
+	qc.removeActiveQuestionFromAllQuestions()
+	return qc.GetActiveQuestion()
+}
+
+func (qc *questionManager) getQuestionsByActiveCategory() []question.Question {
+	var questionsByActiveCategory []question.Question
+	for _, question := range qc.questions {
+		if question.Category == qc.activeCategory {
+			questionsByActiveCategory = append(questionsByActiveCategory, question)
+		}
+	}
+	return questionsByActiveCategory
+}
+
+// Removes the activeQuestion from the slice of questions,
+// If the removal would lead to an empty slice, the same questions are loaded again
+func (qc *questionManager) removeActiveQuestionFromAllQuestions() {
+	activeQuestionIndex := -1
+	for index, question := range qc.questions {
+		if question.Id == qc.activeQuestion.Id {
+			activeQuestionIndex = index
+		}
+	}
+	if activeQuestionIndex == -1 {
+		log.Error("Active question was not found in slice of questions")
+		return
+	} else if len(qc.questions) == 1 {
+		log.Warn("Every question out of all available questions was active once. Loading the same questions again, so a given question will be set to active multiple times.")
+		qc.questions = LoadQuestions()
+		return
+	} else {
+		qc.questions = append(qc.questions[:activeQuestionIndex], qc.questions[activeQuestionIndex+1:]...)
+		return
+	}
 }
 
 // Get the corrextness feedback for the active question
@@ -65,18 +96,37 @@ func (qc *questionManager) GetActiveCategory() string {
 	return qc.activeCategory
 }
 
-// Set self to a random question category, Returns the category for convenience
+// Sets the active category
+func (qc *questionManager) SetActiveCategory(category string) {
+	qc.activeCategory = category
+}
+
+// Set activeCategory to a random question category, returns the category for convenience,
+// At least one remaining question has the set category as category
 func (qc *questionManager) SetRandomCategory() string {
-	categories := []string{
-		"geographie",
-		"geschichte",
-		"lokale Fragen (Heimat)",
-		"Wissensschaft",
-		"Sport",
-		"Pflanzen & Tiere",
+	categories := make(map[string]struct{})
+	for _, question := range qc.questions {
+		categories[question.Category] = struct{}{}
 	}
-	qc.activeCategory = categories[rand.Intn(5)]
+	category := getRandomKey(categories)
+	qc.SetActiveCategory(category)
+	log.Infof("Drafted category '%s'", qc.GetActiveCategory())
 	return qc.GetActiveCategory()
+}
+
+// Function to get a random key from the set
+func getRandomKey(set map[string]struct{}) string {
+	// Create a slice to hold the keys
+	keys := make([]string, 0, len(set))
+	// Populate the slice with the keys from the set
+	for key := range set {
+		keys = append(keys, key)
+	}
+	// Generate a random index
+	randomIndex := rand.Intn(len(keys))
+	// Retrieve the key at the random index
+	randomKey := keys[randomIndex]
+	return randomKey
 }
 
 // Attempt to load the questions from multiple locations
