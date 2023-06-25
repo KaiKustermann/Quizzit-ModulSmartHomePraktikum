@@ -176,6 +176,9 @@ components:
           maxItems: 4
           items:
             $ref: "#/components/schemas/PossibleAnswer"
+        category: 
+          type: string
+          description: The category of the question. 
       additionalProperties: false
       required:
         - id
