@@ -22,5 +22,5 @@ func ConvertDTOToQuestion(q dto.Question) Question {
 		}
 		answerSlice = append(answerSlice, ConvertDTOToAnswer(answer))
 	}
-	return Question{Id: q.Id, Query: q.Query, Answers: answerSlice}
+	return Question{Id: q.Id, Query: q.Query, Answers: answerSlice, Category: q.Category}
 }
