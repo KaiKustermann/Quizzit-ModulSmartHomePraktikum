@@ -2,7 +2,7 @@
     {
         "Id": "1",
         "Query": "Welcher Fluss ist der längste innerhalb von Deutschland?",
-        "Category": null,
+        "Category": "Geographie",
         "Answers": [
             {
                 "Id": "A",
@@ -29,7 +29,7 @@
     {
         "Id": "2",
         "Query": "Woher kommt der Name Stuttgart?",
-        "Category": null,
+        "Category": "Heimat",
         "Answers": [
             {
                 "Id": "A",
@@ -56,7 +56,7 @@
     {
         "Id": "3",
         "Query": "Wie heißt der Fluss der ursprünglisch durch Stuttgart floss?",
-        "Category": null,
+        "Category": "Heimat",
         "Answers": [
             {
                 "Id": "A",
@@ -83,7 +83,7 @@
     {
         "Id": "4",
         "Query": "Was ist das Besondere am Stuttgarter Rathaus?",
-        "Category": null,
+        "Category": "Heimat",
         "Answers": [
             {
                 "Id": "A",
@@ -110,7 +110,7 @@
     {
         "Id": "5",
         "Query": "Wann war die erste Mondlandung?",
-        "Category": null,
+        "Category": "Geschichte",
         "Answers": [
             {
                 "Id": "A",
@@ -137,7 +137,7 @@
     {
         "Id": "6",
         "Query": "Wer war Bundeskanzler während der Wiedervereinigung?",
-        "Category": null,
+        "Category": "Geschichte",
         "Answers": [
             {
                 "Id": "A",
@@ -164,7 +164,7 @@
     {
         "Id": "7",
         "Query": "Seit wann gibt es Farbfernsehen in Deutschland?",
-        "Category": null,
+        "Category": "Geschichte",
         "Answers": [
             {
                 "Id": "A",
@@ -191,7 +191,7 @@
     {
         "Id": "8",
         "Query": "Vervollständige dieses Sprichwort: Stolz wie...?",
-        "Category": null,
+        "Category": "Sprichwörter",
         "Answers": [
             {
                 "Id": "A",
@@ -218,7 +218,7 @@
     {
         "Id": "9",
         "Query": "Welche dieser Automodelle stammt nicht von VW?",
-        "Category": null,
+        "Category": "Geschichte",
         "Answers": [
             {
                 "Id": "A",
@@ -245,7 +245,7 @@
     {
         "Id": "10",
         "Query": "Wer moderierte die Sendung - Dalli Dalli?",
-        "Category": null,
+        "Category": "Geschichte",
         "Answers": [
             {
                 "Id": "A",
@@ -272,7 +272,7 @@
     {
         "Id": "11",
         "Query": "Welcher Komponist kommt aus Österreich?",
-        "Category": null,
+        "Category": "Geschichte",
         "Answers": [
             {
                 "Id": "A",
@@ -299,7 +299,7 @@
     {
         "Id": "12",
         "Query": "Welche Stadt war im Jahr 1980 die Hauptstadt von der Bundesrepublik Deutschland?",
-        "Category": null,
+        "Category": "Geschichte",
         "Answers": [
             {
                 "Id": "A",
@@ -326,7 +326,7 @@
     {
         "Id": "13",
         "Query": "Wann wurde Deutschland das erste Mal Fußball Weltmeister?",
-        "Category": null,
+        "Category": "Sport",
         "Answers": [
             {
                 "Id": "A",
@@ -353,7 +353,7 @@
     {
         "Id": "14",
         "Query": "Wer malte das Gemälde 'Die Mona Lisa'?",
-        "Category": null,
+        "Category": "Geschichte",
         "Answers": [
             {
                 "Id": "A",
@@ -380,7 +380,7 @@
     {
         "Id": "15",
         "Query": "Welche Band ist für Hits wie 'Imagine' und 'Hey Jude' bekannt?",
-        "Category": null,
+        "Category": "Geschichte",
         "Answers": [
             {
                 "Id": "A",
@@ -407,7 +407,7 @@
     {
         "Id": "16",
         "Query": "Vervollständige dieses Sprichwort: Reden ist Silber...",
-        "Category": null,
+        "Category": "Sprichwörter",
         "Answers": [
             {
                 "Id": "A",
@@ -434,7 +434,7 @@
     {
         "Id": "17",
         "Query": "Welche deutsche Stadt ist für den weltberühmten Oktoberfest bekannt?",
-        "Category": null,
+        "Category": "Heimat",
         "Answers": [
             {
                 "Id": "A",
@@ -461,7 +461,7 @@
     {
         "Id": "18",
         "Query": "Wer gewann im Jahr 1982 den Grand Prix Eurovision de la Chanson mit dem Lied 'Ein bisschen Frieden'?",
-        "Category": null,
+        "Category": "Geschichte",
         "Answers": [
             {
                 "Id": "A",
@@ -488,7 +488,7 @@
     {
         "Id": "19",
         "Query": "Welches Obst verbirgt sich hinter dem Namen 'Williams Christ'?",
-        "Category": null,
+        "Category": "Heimat",
         "Answers": [
             {
                 "Id": "A",
@@ -515,7 +515,7 @@
     {
         "Id": "20",
         "Query": "Welcher Berg ist der höchste in Deutschland?",
-        "Category": null,
+        "Category": "Geographie",
         "Answers": [
             {
                 "Id": "A",
