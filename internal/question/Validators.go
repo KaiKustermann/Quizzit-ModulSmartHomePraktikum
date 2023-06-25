@@ -85,6 +85,24 @@ func validateIdUniqueness(questions []Question) (ok bool, errors []ValidationErr
 	return
 }
 
+func (question Question) validateCategory() (ok bool, error ValidationError) {
+	ok = true
+	categorySupported := false
+	supportedCategories := GetSupportedQuestionCategories()
+	for _, category := range supportedCategories {
+		if category == question.Category {
+			categorySupported = true
+		}
+	}
+	if categorySupported == false {
+		ok = false
+		error.Problem = fmt.Sprintf("The category is defined as %s, but should be one of the following: %v", question.Category, supportedCategories)
+		error.Question = question
+		return
+	}
+	return
+}
+
 // validates the questions with a set of validators;
 // ok = true => no errors found
 // ok = false => errors field contains the validation errors
@@ -104,6 +122,10 @@ func ValidateQuestions(questions []Question) (ok bool, errors []ValidationError)
 			errors = append(errors, err)
 		}
 		if _ok, err := question.validateQuery(); !_ok {
+			ok = false
+			errors = append(errors, err)
+		}
+		if _ok, err := question.validateCategory(); !_ok {
 			ok = false
 			errors = append(errors, err)
 		}
