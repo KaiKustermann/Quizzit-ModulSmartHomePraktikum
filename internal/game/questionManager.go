@@ -11,6 +11,7 @@ import (
 	log "github.com/sirupsen/logrus"
 
 	dto "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/generated-sources/dto"
+	helpers "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/helper-functions"
 	question "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/question"
 )
 
@@ -108,25 +109,10 @@ func (qc *questionManager) SetRandomCategory() string {
 	for _, question := range qc.questions {
 		categories[question.Category] = struct{}{}
 	}
-	category := getRandomKey(categories)
+	category := helpers.GetRandomKey(categories)
 	qc.SetActiveCategory(category)
 	log.Infof("Drafted category '%s'", qc.GetActiveCategory())
 	return qc.GetActiveCategory()
-}
-
-// Function to get a random key from the set
-func getRandomKey(set map[string]struct{}) string {
-	// Create a slice to hold the keys
-	keys := make([]string, 0, len(set))
-	// Populate the slice with the keys from the set
-	for key := range set {
-		keys = append(keys, key)
-	}
-	// Generate a random index
-	randomIndex := rand.Intn(len(keys))
-	// Retrieve the key at the random index
-	randomKey := keys[randomIndex]
-	return randomKey
 }
 
 // Attempt to load the questions from multiple locations
