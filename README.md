@@ -97,27 +97,40 @@ Golang has a built-in command-line tool called go fmt that automatically formats
 
 Can use this lovely page here: https://websocketking.com/ and connect to `ws://localhost:8080/ws`.
 
-### Submit an Answer
-
-```json
-{
-  "CorrelationId": "a-cor-id",
-  "MessageType": "player/question/SubmitAnswer",
-  "Body": {
-    "QuestionId": "question-0",
-    "AnswerId": "C"
-  }
-}
-```
-
 ### Submit a generic confirm
 
 ```json
 {
-  "CorrelationId": "a-cor-id",
-  "MessageType": "player/generic/Confirm",
-  "Body": {
-  }
+  "messageType": "player/generic/Confirm"
+}
+```
+
+### Submit player count
+
+```json
+{
+  "messageType": "player/setup/SubmitPlayerCount",
+  "body": 3
+}
+```
+
+### Roll a category
+
+```json
+{
+  "messageType": "player/die/DigitalCategoryRollRequest"
+}
+```
+
+### Submit an Answer
+
+```json
+{
+  "messageType": "player/question/SubmitAnswer",
+  "body": {
+    "questionId": "question-1",
+    "answerId": "C"
+  } 
 }
 ```
 
