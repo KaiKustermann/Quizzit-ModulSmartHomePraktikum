@@ -33,9 +33,7 @@ func (loop *Game) constructLoop() *Game {
 		playerState := loop.managers.playerManager.GetPlayerState()
 		loop.transitionToState(gsCategoryRoll, dto.WebsocketMessageSubscribe{
 			MessageType: string(msgType.Game_Die_RollCategoryPrompt),
-			Body: dto.RollCategoryPrompt{
-				PlayerState: &playerState,
-			},
+			PlayerState: &playerState,
 		})
 	})
 

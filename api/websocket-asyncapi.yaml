@@ -101,6 +101,8 @@ components:
             - $ref: "#/components/schemas/PassToSpecificPlayerPrompt"
             - $ref: "#/components/schemas/RollCategoryPrompt"
             - $ref: "#/components/schemas/CategoryResult"
+        playerState:
+          $ref: "#/components/schemas/PlayerState"
       additionalProperties: false
       required:
         - correlationId
@@ -174,14 +176,11 @@ components:
           maxItems: 4
           items:
             $ref: "#/components/schemas/PossibleAnswer"
-        playerState:
-          $ref: "#/components/schemas/PlayerState"
       additionalProperties: false
       required:
         - id
         - query
         - answers
-        - playerState
     SubmitAnswer:
       title: Submit Answer
       description: The submitted answer of a player to a question.
@@ -213,15 +212,12 @@ components:
         question:
           $ref: "#/components/schemas/Question"
           description: The posed question.
-        playerState:
-          $ref: "#/components/schemas/PlayerState"
       additionalProperties: false
       required:
         - selectedAnswerIsCorrect
         - correctAnswer
         - selectedAnswer
         - question
-        - playerState
     PlayerConfirm:
       title: Player confirm
       description: Generic message to continue the game flow (e.G. when waiting for a player confirmation)
@@ -278,22 +274,14 @@ components:
       properties: 
         targetPlayerId:
           type: integer
-        playerState:
-          $ref: "#/components/schemas/PlayerState"
       additionalProperties: false
       required:
         - targetPlayerId
-        - playerState
     RollCategoryPrompt:
       title: "Roll Category Prompt"
       description: "Prompts the player to roll a category"
       type: object
-      properties:
-        playerState:
-          $ref: "#/components/schemas/PlayerState"
       additionalProperties: false
-      required:
-        - playerState
     DigitalCategoryRollRequest:
       title: "Digital Category Roll Request"
       description: "Player requests from backend a digital category roll (as opposed to using an analog die)"
@@ -306,11 +294,8 @@ components:
         properties:
           category:
             type: string
-          playerState:
-            $ref: "#/components/schemas/PlayerState"
         additionalProperties: false
         required:
           - category
-          - playerState
     # *************************************************************************
     # **** END GAME SCHEMAS ***************************************************

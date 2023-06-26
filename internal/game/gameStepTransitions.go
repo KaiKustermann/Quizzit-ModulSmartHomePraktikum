@@ -27,8 +27,7 @@ func (loop *Game) transitionToNewQuestion(gsQuestion gameStep) {
 	nextQuestion := loop.managers.questionManager.MoveToNextQuestion()
 	nextQuestionDTO := nextQuestion.ConvertToDTO()
 	playerState := loop.managers.playerManager.GetPlayerState()
-	nextQuestionDTO.PlayerState = &playerState
-	stateMessage := helpers.QuestionToWebsocketMessageSubscribe(*nextQuestionDTO)
+	stateMessage := helpers.QuestionToWebsocketMessageSubscribe(*nextQuestionDTO, playerState)
 	loop.transitionToState(gsQuestion, stateMessage)
 }
 
@@ -46,8 +45,7 @@ func (loop *Game) transitionToCorrectnessFeedback(gsCorrectnessFeedback gameStep
 		loop.managers.playerManager.IncreaseScoreOfActivePlayer()
 	}
 	playerState := loop.managers.playerManager.GetPlayerState()
-	feedback.PlayerState = &playerState
-	stateMessage := helpers.CorrectnessFeedbackToWebsocketMessageSubscribe(feedback)
+	stateMessage := helpers.CorrectnessFeedbackToWebsocketMessageSubscribe(feedback, playerState)
 	loop.transitionToState(gsCorrectnessFeedback, stateMessage)
 }
 
@@ -73,8 +71,8 @@ func (loop *Game) transitionToSpecificPlayer(gsPlayerTransition gameStep) {
 		MessageType: string(msgType.Game_Turn_PassToSpecificPlayer),
 		Body: dto.PassToSpecificPlayerPrompt{
 			TargetPlayerId: playerState.ActivePlayerId,
-			PlayerState:    &playerState,
 		},
+		PlayerState: &playerState,
 	}
 	loop.transitionToState(gsPlayerTransition, stateMessage)
 }
@@ -88,9 +86,9 @@ func (loop *Game) transitionToCategoryResponse(gsCategoryResult gameStep) {
 	stateMessage := dto.WebsocketMessageSubscribe{
 		MessageType: string(msgType.Game_Die_CategoryResult),
 		Body: dto.CategoryResult{
-			Category:    cat,
-			PlayerState: &playerState,
+			Category: cat,
 		},
+		PlayerState: &playerState,
 	}
 	loop.transitionToState(gsCategoryResult, stateMessage)
 }
