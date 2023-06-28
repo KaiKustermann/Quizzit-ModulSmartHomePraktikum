@@ -10,10 +10,9 @@ func GetSupportedQuestionCategories() []string {
 		"Geographie",
 		"Geschichte",
 		"Heimat",
-		"Wissensschaft",
-		"Sport",
-		"Pflanzen und Tiere",
+		"Unterhaltung",
 		"Sprichwörter",
+		"Überraschung",
 	}
 	return categories
 }
