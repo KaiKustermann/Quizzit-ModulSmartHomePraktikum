@@ -514,7 +514,7 @@
         ]
     },
     {
-        "Id": "19",
+        "Id": "20",
         "Query": "Vervollständige dieses Sprichwort: Der frühe Vogel fängt...",
         "Category": "Sprichwörter",
         "Answers": [
@@ -541,7 +541,7 @@
         ]
     },
     {
-        "Id": "20",
+        "Id": "21",
         "Query": "Welches Obst verbirgt sich hinter dem Namen 'Williams Christ'?",
         "Category": "Überraschung",
         "Answers": [
@@ -569,7 +569,7 @@
     },
     
     {
-        "Id": "21",
+        "Id": "22",
         "Query": "Welche dieser Automodelle stammt nicht von VW?",
         "Category": "Überraschung",
         "Answers": [
@@ -597,7 +597,7 @@
     },
     
     {
-        "Id": "22",
+        "Id": "23",
         "Query": "Welche deutsche Stadt ist für den weltberühmten Oktoberfest bekannt?",
         "Category": "Überraschung",
         "Answers": [
@@ -625,7 +625,7 @@
     },
     
     {
-        "Id": "23",
+        "Id": "24",
         "Query": "Wer malte das Gemälde 'Mona Lisa'?",
         "Category": "Überraschung",
         "Answers": [
