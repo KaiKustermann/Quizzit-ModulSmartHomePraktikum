@@ -40,7 +40,7 @@ func (qc *questionManager) GetActiveQuestion() question.Question {
 }
 
 // Setter for activeQuestion
-func (qc *questionManager) setActiveQuestion(question question.Question) {
+func (qc *questionManager) SetActiveQuestion(question question.Question) {
 	qc.activeQuestion = question
 }
 
@@ -50,7 +50,7 @@ func (qc *questionManager) setActiveQuestion(question question.Question) {
 func (qc *questionManager) MoveToNextQuestion() question.Question {
 	questionsByActiveCategory := qc.getQuestionsByActiveCategory()
 	nextQuestion := questionsByActiveCategory[rand.Intn(len(questionsByActiveCategory))]
-	qc.setActiveQuestion(nextQuestion)
+	qc.SetActiveQuestion(nextQuestion)
 	qc.removeActiveQuestionFromAllQuestions()
 	return qc.GetActiveQuestion()
 }
