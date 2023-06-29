@@ -11,7 +11,6 @@ import (
 	log "github.com/sirupsen/logrus"
 
 	dto "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/generated-sources/dto"
-	helpers "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/helper-functions"
 	question "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/question"
 )
 
@@ -105,12 +104,8 @@ func (qc *questionManager) SetActiveCategory(category string) {
 // Set activeCategory to a random question category, returns the category for convenience,
 // At least one remaining question has the set category as category
 func (qc *questionManager) SetRandomCategory() string {
-	categories := make(map[string]struct{})
-	for _, question := range qc.questions {
-		categories[question.Category] = struct{}{}
-	}
-	category := helpers.GetRandomKey(categories)
-	qc.SetActiveCategory(category)
+	categories := question.GetSupportedQuestionCategories()
+	qc.SetActiveCategory(categories[rand.Intn(len(categories))])
 	log.Infof("Drafted category '%s'", qc.GetActiveCategory())
 	return qc.GetActiveCategory()
 }
