@@ -101,8 +101,7 @@ func (qc *questionManager) SetActiveCategory(category string) {
 	qc.activeCategory = category
 }
 
-// Set activeCategory to a random question category, returns the category for convenience,
-// At least one remaining question has the set category as category
+// Set activeCategory to a random question category, returns the category for convenience
 func (qc *questionManager) SetRandomCategory() string {
 	categories := question.GetSupportedQuestionCategories()
 	qc.SetActiveCategory(categories[rand.Intn(len(categories))])
