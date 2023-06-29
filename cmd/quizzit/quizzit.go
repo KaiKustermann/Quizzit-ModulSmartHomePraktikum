@@ -5,12 +5,13 @@ package main
 import (
 	"net/http"
 
+	"os"
+
+	log "github.com/sirupsen/logrus"
 	game "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/game"
 	"gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/health"
 	"gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/logging"
 	ws "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/websockets"
-
-	log "github.com/sirupsen/logrus"
 )
 
 func main() {
@@ -18,5 +19,11 @@ func main() {
 	game.NewGame()
 	http.HandleFunc("/health", health.HealthCheckHttp)
 	http.HandleFunc("/ws", ws.WebsocketEndpoint)
-	log.Fatal(http.ListenAndServe(":8080", nil))
+	port := os.Getenv("HTTP_SERVER_PORT")
+	if port == "" {
+		log.Info("Falling back to default port (80)")
+		port = "80"
+	}
+	log.Info("Serving at :" + port)
+	log.Fatal(http.ListenAndServe(":"+port, nil))
 }
