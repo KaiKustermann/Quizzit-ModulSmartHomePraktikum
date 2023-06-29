@@ -76,10 +76,6 @@ func (qc *questionManager) removeActiveQuestionFromAllQuestions() {
 	if activeQuestionIndex == -1 {
 		log.Error("Active question was not found in slice of questions")
 		return
-	} else if len(qc.questions) == 1 {
-		log.Warn("Every question out of all available questions was active once. Loading the same questions again, so a given question will be set to active multiple times.")
-		qc.questions = LoadQuestions()
-		return
 	} else {
 		qc.questions = append(qc.questions[:activeQuestionIndex], qc.questions[activeQuestionIndex+1:]...)
 		return
@@ -105,8 +101,24 @@ func (qc *questionManager) SetActiveCategory(category string) {
 func (qc *questionManager) SetRandomCategory() string {
 	categories := question.GetSupportedQuestionCategories()
 	qc.SetActiveCategory(categories[rand.Intn(len(categories))])
+	questionAvailable := qc.IsQuestionWithGivenCategoryAvailable(qc.GetActiveCategory())
+	if !questionAvailable {
+		qc.questions = append(qc.questions, LoadQuestionsByCategory(qc.GetActiveCategory())...)
+	}
 	log.Infof("Drafted category '%s'", qc.GetActiveCategory())
 	return qc.GetActiveCategory()
+}
+
+func (qc *questionManager) IsQuestionWithGivenCategoryAvailable(category string) bool {
+	categories := make(map[string]struct{})
+	for _, question := range qc.questions {
+		categories[question.Category] = struct{}{}
+	}
+	_, ok := categories[category]
+	if ok {
+		return true
+	}
+	return false
 }
 
 // Attempt to load the questions from multiple locations
