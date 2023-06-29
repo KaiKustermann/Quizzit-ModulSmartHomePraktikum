@@ -137,6 +137,17 @@ func LoadQuestions() (questions []question.Question) {
 	panic(errorMessage)
 }
 
+func LoadQuestionsByCategory(category string) (questions []question.Question) {
+	allQuestions := LoadQuestions()
+	var questionsByCategory []question.Question
+	for _, question := range allQuestions {
+		if question.Category == category {
+			questionsByCategory = append(questionsByCategory, question)
+		}
+	}
+	return questionsByCategory
+}
+
 // Call validators on the list of questions, log errors and panic if validation fails.
 func validateQuestions(questions []question.Question) {
 	if ok, errors := question.ValidateQuestions(questions); !ok {
