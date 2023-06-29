@@ -4,19 +4,24 @@ import (
 	dto "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/generated-sources/dto"
 )
 
-// the interface will not be used anymore in the future; It is only there for StaticQuestions.go
-type Questions interface {
-	// Get a new question
-	GetNextQuestion() dto.Question
-	// Get the CorrectnessFeedback for a specific question for the given questionId
-	GetCorrectnessFeedback(answer dto.SubmitAnswer) dto.CorrectnessFeedback
+// Get the question categories that are supported
+func GetSupportedQuestionCategories() []string {
+	categories := []string{
+		"Geographie",
+		"Geschichte",
+		"Heimat",
+		"Unterhaltung",
+		"Sprichwörter",
+		"Überraschung",
+	}
+	return categories
 }
 
 // Type question for internal use in the backend
 type Question struct {
 	Id       string
 	Query    string
-	Category interface{}
+	Category string
 	Answers  []Answer
 }
 
@@ -26,7 +31,7 @@ func (q Question) ConvertToDTO() *dto.Question {
 	for _, a := range q.Answers {
 		answers = append(answers, a.ConvertToDTO())
 	}
-	return &dto.Question{Id: q.Id, Query: q.Query, Answers: answers}
+	return &dto.Question{Id: q.Id, Query: q.Query, Answers: answers, Category: string(q.Category)}
 }
 
 // Get the correctnessFeedback for a given question and SubmitAnswer, returns a DTO of type CorrectnessFeedback

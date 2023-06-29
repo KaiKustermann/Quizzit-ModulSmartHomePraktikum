@@ -2,7 +2,7 @@
     {
         "Id": "1",
         "Query": "Welcher Fluss ist der längste innerhalb von Deutschland?",
-        "Category": null,
+        "Category": "Geographie",
         "Answers": [
             {
                 "Id": "A",
@@ -28,81 +28,81 @@
     },
     {
         "Id": "2",
-        "Query": "Woher kommt der Name Stuttgart?",
-        "Category": null,
+        "Query": "Welcher Berg ist der höchste in Deutschland?",
+        "Category": "Geographie",
         "Answers": [
             {
                 "Id": "A",
-                "Answer": "Stutengarten",
-                "IsCorrect": true
-            },
-            {
-                "Id": "B",
-                "Answer": "Bauernhof",
+                "Answer": "Matterhorn",
                 "IsCorrect": false
             },
             {
+                "Id": "B",
+                "Answer": "Zugspitze",
+                "IsCorrect": true
+            },
+            {
                 "Id": "C",
-                "Answer": "Stadtkirche",
+                "Answer": "Watzmann",
                 "IsCorrect": false
             },
             {
                 "Id": "D",
-                "Answer": "Stutenbach",
+                "Answer": "Hochgrat",
                 "IsCorrect": false
             }
         ]
     },
     {
         "Id": "3",
-        "Query": "Wie heißt der Fluss der ursprünglisch durch Stuttgart floss?",
-        "Category": null,
+        "Query": "Welches Land granzt nicht an Deutschland an?",
+        "Category": "Geographie",
         "Answers": [
             {
                 "Id": "A",
-                "Answer": "Neckar",
+                "Answer": "Niederlande",
                 "IsCorrect": false
             },
             {
                 "Id": "B",
-                "Answer": "Nesenbach",
+                "Answer": "Tschechien",
                 "IsCorrect": true
             },
             {
                 "Id": "C",
-                "Answer": "Stutenbach",
+                "Answer": "Slowenien",
                 "IsCorrect": false
             },
             {
                 "Id": "D",
-                "Answer": "Rems",
+                "Answer": "Dänemark",
                 "IsCorrect": false
             }
         ]
     },
     {
         "Id": "4",
-        "Query": "Was ist das Besondere am Stuttgarter Rathaus?",
-        "Category": null,
+        "Query": "Welches Bundesland grenzt nicht an Baden-Württemberg?",
+        "Category": "Geographie",
         "Answers": [
             {
                 "Id": "A",
-                "Answer": "Anzahl der Fenster",
+                "Answer": "Bayern",
                 "IsCorrect": false
             },
             {
                 "Id": "B",
-                "Answer": "Fachwerk",
-                "IsCorrect": false
-            },
-            {
-                "Id": "C",
-                "Answer": "Paternoster",
+                "Answer": "Saarland",
                 "IsCorrect": true
             },
             {
+                "Id": "C",
+                "Answer": "Rheinland-Pfalz",
+                "IsCorrect": false
+            },
+            {
                 "Id": "D",
-                "Answer": "Rosa Farbe",
+                "Answer": "Hessen",
                 "IsCorrect": false
             }
         ]
@@ -110,26 +110,26 @@
     {
         "Id": "5",
         "Query": "Wann war die erste Mondlandung?",
-        "Category": null,
+        "Category": "Geschichte",
         "Answers": [
             {
                 "Id": "A",
-                "Answer": "Juli 1969",
+                "Answer": "1969",
                 "IsCorrect": true
             },
             {
                 "Id": "B",
-                "Answer": "September 1969",
+                "Answer": "1965",
                 "IsCorrect": false
             },
             {
                 "Id": "C",
-                "Answer": "August 1968",
+                "Answer": "1980",
                 "IsCorrect": false
             },
             {
                 "Id": "D",
-                "Answer": "September 1968",
+                "Answer": "1966",
                 "IsCorrect": false
             }
         ]
@@ -137,7 +137,7 @@
     {
         "Id": "6",
         "Query": "Wer war Bundeskanzler während der Wiedervereinigung?",
-        "Category": null,
+        "Category": "Geschichte",
         "Answers": [
             {
                 "Id": "A",
@@ -164,7 +164,7 @@
     {
         "Id": "7",
         "Query": "Seit wann gibt es Farbfernsehen in Deutschland?",
-        "Category": null,
+        "Category": "Geschichte",
         "Answers": [
             {
                 "Id": "A",
@@ -190,116 +190,8 @@
     },
     {
         "Id": "8",
-        "Query": "Vervollständige dieses Sprichwort: Stolz wie...?",
-        "Category": null,
-        "Answers": [
-            {
-                "Id": "A",
-                "Answer": "Peter",
-                "IsCorrect": false
-            },
-            {
-                "Id": "B",
-                "Answer": "Oskar",
-                "IsCorrect": true
-            },
-            {
-                "Id": "C",
-                "Answer": "Tim",
-                "IsCorrect": false
-            },
-            {
-                "Id": "D",
-                "Answer": "Georg",
-                "IsCorrect": false
-            }
-        ]
-    },
-    {
-        "Id": "9",
-        "Query": "Welche dieser Automodelle stammt nicht von VW?",
-        "Category": null,
-        "Answers": [
-            {
-                "Id": "A",
-                "Answer": "Polo",
-                "IsCorrect": false
-            },
-            {
-                "Id": "B",
-                "Answer": "Käfer",
-                "IsCorrect": false
-            },
-            {
-                "Id": "C",
-                "Answer": "Ente",
-                "IsCorrect": true
-            },
-            {
-                "Id": "D",
-                "Answer": "Golf",
-                "IsCorrect": false
-            }
-        ]
-    },
-    {
-        "Id": "10",
-        "Query": "Wer moderierte die Sendung - Dalli Dalli?",
-        "Category": null,
-        "Answers": [
-            {
-                "Id": "A",
-                "Answer": "Rudi Carrell",
-                "IsCorrect": true
-            },
-            {
-                "Id": "B",
-                "Answer": "Hans Rosenthal",
-                "IsCorrect": false
-            },
-            {
-                "Id": "C",
-                "Answer": "Peter Alexander",
-                "IsCorrect": false
-            },
-            {
-                "Id": "D",
-                "Answer": "Thomas Gottschalk",
-                "IsCorrect": false
-            }
-        ]
-    },
-    {
-        "Id": "11",
-        "Query": "Welcher Komponist kommt aus Österreich?",
-        "Category": null,
-        "Answers": [
-            {
-                "Id": "A",
-                "Answer": "Johann Sebastian Bach",
-                "IsCorrect": false
-            },
-            {
-                "Id": "B",
-                "Answer": "Ludwig van Beethoven",
-                "IsCorrect": false
-            },
-            {
-                "Id": "C",
-                "Answer": "Wolfgang Amadeus Mozart",
-                "IsCorrect": true
-            },
-            {
-                "Id": "D",
-                "Answer": "Herbert Grönemeyer",
-                "IsCorrect": false
-            }
-        ]
-    },
-    {
-        "Id": "12",
         "Query": "Welche Stadt war im Jahr 1980 die Hauptstadt von der Bundesrepublik Deutschland?",
-        "Category": null,
+        "Category": "Geschichte",
         "Answers": [
             {
                 "Id": "A",
@@ -324,9 +216,144 @@
         ]
     },
     {
+        "Id": "9",
+        "Query": "Woher kommt der Name Stuttgart?",
+        "Category": "Heimat",
+        "Answers": [
+            {
+                "Id": "A",
+                "Answer": "Stutengarten",
+                "IsCorrect": true
+            },
+            {
+                "Id": "B",
+                "Answer": "Bauernhof",
+                "IsCorrect": false
+            },
+            {
+                "Id": "C",
+                "Answer": "Stadtkirche",
+                "IsCorrect": false
+            },
+            {
+                "Id": "D",
+                "Answer": "Stutenbach",
+                "IsCorrect": false
+            }
+        ]
+    },
+    {
+        "Id": "10",
+        "Query": "Wie heißt der Fluss der ursprünglisch durch Stuttgart floss?",
+        "Category": "Heimat",
+        "Answers": [
+            {
+                "Id": "A",
+                "Answer": "Neckar",
+                "IsCorrect": false
+            },
+            {
+                "Id": "B",
+                "Answer": "Nesenbach",
+                "IsCorrect": true
+            },
+            {
+                "Id": "C",
+                "Answer": "Stutenbach",
+                "IsCorrect": false
+            },
+            {
+                "Id": "D",
+                "Answer": "Rems",
+                "IsCorrect": false
+            }
+        ]
+    },
+    {
+        "Id": "11",
+        "Query": "Was ist das Besondere am Stuttgarter Rathaus?",
+        "Category": "Heimat",
+        "Answers": [
+            {
+                "Id": "A",
+                "Answer": "Anzahl der Fenster",
+                "IsCorrect": false
+            },
+            {
+                "Id": "B",
+                "Answer": "Fachwerk",
+                "IsCorrect": false
+            },
+            {
+                "Id": "C",
+                "Answer": "Paternoster",
+                "IsCorrect": true
+            },
+            {
+                "Id": "D",
+                "Answer": "Rosa Farbe",
+                "IsCorrect": false
+            }
+        ]
+    },
+    {
+        "Id": "12",
+        "Query": "Welches Essen ist nicht schwäbisch?",
+        "Category": "Heimat",
+        "Answers": [
+            {
+                "Id": "A",
+                "Answer": "Wibele",
+                "IsCorrect": false
+            },
+            {
+                "Id": "B",
+                "Answer": "Maultaschen",
+                "IsCorrect": false
+            },
+            {
+                "Id": "C",
+                "Answer": "Kaiserscharrn",
+                "IsCorrect": true
+            },
+            {
+                "Id": "D",
+                "Answer": "Dinette",
+                "IsCorrect": false
+            }
+        ]
+    },
+    {
         "Id": "13",
+        "Query": "Wer moderierte die Sendung - Dalli Dalli?",
+        "Category": "Unterhaltung",
+        "Answers": [
+            {
+                "Id": "A",
+                "Answer": "Rudi Carrell",
+                "IsCorrect": true
+            },
+            {
+                "Id": "B",
+                "Answer": "Hans Rosenthal",
+                "IsCorrect": false
+            },
+            {
+                "Id": "C",
+                "Answer": "Peter Alexander",
+                "IsCorrect": false
+            },
+            {
+                "Id": "D",
+                "Answer": "Thomas Gottschalk",
+                "IsCorrect": false
+            }
+        ]
+    },
+    {
+        "Id": "14",
         "Query": "Wann wurde Deutschland das erste Mal Fußball Weltmeister?",
-        "Category": null,
+        "Category": "Unterhaltung",
         "Answers": [
             {
                 "Id": "A",
@@ -350,37 +377,11 @@
             }
         ]
     },
-    {
-        "Id": "14",
-        "Query": "Wer malte das Gemälde 'Die Mona Lisa'?",
-        "Category": null,
-        "Answers": [
-            {
-                "Id": "A",
-                "Answer": "Vincent van Gogh",
-                "IsCorrect": false
-            },
-            {
-                "Id": "B",
-                "Answer": "Leonardo da Vinci",
-                "IsCorrect": true
-            },
-            {
-                "Id": "C",
-                "Answer": "Pablo Picasso",
-                "IsCorrect": false
-            },
-            {
-                "Id": "D",
-                "Answer": "Michelangelo",
-                "IsCorrect": false
-            }
-        ]
-    },
+    
     {
         "Id": "15",
         "Query": "Welche Band ist für Hits wie 'Imagine' und 'Hey Jude' bekannt?",
-        "Category": null,
+        "Category": "Unterhaltung",
         "Answers": [
             {
                 "Id": "A",
@@ -406,62 +407,8 @@
     },
     {
         "Id": "16",
-        "Query": "Vervollständige dieses Sprichwort: Reden ist Silber...",
-        "Category": null,
-        "Answers": [
-            {
-                "Id": "A",
-                "Answer": "Handeln ist Gold",
-                "IsCorrect": true
-            },
-            {
-                "Id": "B",
-                "Answer": "Zuhören ist Gold",
-                "IsCorrect": false
-            },
-            {
-                "Id": "C",
-                "Answer": "Schweigen ist Gold",
-                "IsCorrect": false
-            },
-            {
-                "Id": "D",
-                "Answer": "Verstehen ist Gold",
-                "IsCorrect": false
-            }
-        ]
-    },
-    {
-        "Id": "17",
-        "Query": "Welche deutsche Stadt ist für den weltberühmten Oktoberfest bekannt?",
-        "Category": null,
-        "Answers": [
-            {
-                "Id": "A",
-                "Answer": "Stuttgart",
-                "IsCorrect": false
-            },
-            {
-                "Id": "B",
-                "Answer": "Berlin",
-                "IsCorrect": false
-            },
-            {
-                "Id": "C",
-                "Answer": "Köln",
-                "IsCorrect": false
-            },
-            {
-                "Id": "D",
-                "Answer": "München",
-                "IsCorrect": true
-            }
-        ]
-    },
-    {
-        "Id": "18",
         "Query": "Wer gewann im Jahr 1982 den Grand Prix Eurovision de la Chanson mit dem Lied 'Ein bisschen Frieden'?",
-        "Category": null,
+        "Category": "Unterhaltung",
         "Answers": [
             {
                 "Id": "A",
@@ -486,9 +433,117 @@
         ]
     },
     {
+        "Id": "17",
+        "Query": "Vervollständige dieses Sprichwort: Reden ist Silber...",
+        "Category": "Sprichwörter",
+        "Answers": [
+            {
+                "Id": "A",
+                "Answer": "Handeln ist Gold",
+                "IsCorrect": false
+            },
+            {
+                "Id": "B",
+                "Answer": "Zuhören ist Gold",
+                "IsCorrect": false
+            },
+            {
+                "Id": "C",
+                "Answer": "Schweigen ist Gold",
+                "IsCorrect": true
+            },
+            {
+                "Id": "D",
+                "Answer": "Verstehen ist Gold",
+                "IsCorrect": false
+            }
+        ]
+    },
+    {
+        "Id": "18",
+        "Query": "Vervollständige dieses Sprichwort: Stolz wie...?",
+        "Category": "Sprichwörter",
+        "Answers": [
+            {
+                "Id": "A",
+                "Answer": "Peter",
+                "IsCorrect": false
+            },
+            {
+                "Id": "B",
+                "Answer": "Oskar",
+                "IsCorrect": true
+            },
+            {
+                "Id": "C",
+                "Answer": "Tim",
+                "IsCorrect": false
+            },
+            {
+                "Id": "D",
+                "Answer": "Georg",
+                "IsCorrect": false
+            }
+        ]
+    },
+    {
         "Id": "19",
+        "Query": "Vervollständige dieses Sprichwort: Den Morgen nicht vor dem Abend...",
+        "Category": "Sprichwörter",
+        "Answers": [
+            {
+                "Id": "A",
+                "Answer": "loben",
+                "IsCorrect": true
+            },
+            {
+                "Id": "B",
+                "Answer": "verehren",
+                "IsCorrect": false
+            },
+            {
+                "Id": "C",
+                "Answer": "beginnen",
+                "IsCorrect": false
+            },
+            {
+                "Id": "D",
+                "Answer": "zählen",
+                "IsCorrect": false
+            }
+        ]
+    },
+    {
+        "Id": "20",
+        "Query": "Vervollständige dieses Sprichwort: Der frühe Vogel fängt...",
+        "Category": "Sprichwörter",
+        "Answers": [
+            {
+                "Id": "A",
+                "Answer": "die Katz",
+                "IsCorrect": false
+            },
+            {
+                "Id": "B",
+                "Answer": "den Wurm",
+                "IsCorrect": true
+            },
+            {
+                "Id": "C",
+                "Answer": "die Maus",
+                "IsCorrect": false
+            },
+            {
+                "Id": "D",
+                "Answer": "die Schnecke",
+                "IsCorrect": false
+            }
+        ]
+    },
+    {
+        "Id": "21",
         "Query": "Welches Obst verbirgt sich hinter dem Namen 'Williams Christ'?",
-        "Category": null,
+        "Category": "Überraschung",
         "Answers": [
             {
                 "Id": "A",
@@ -512,29 +567,86 @@
             }
         ]
     },
+    
     {
-        "Id": "20",
-        "Query": "Welcher Berg ist der höchste in Deutschland?",
-        "Category": null,
+        "Id": "22",
+        "Query": "Welche dieser Automodelle stammt nicht von VW?",
+        "Category": "Überraschung",
         "Answers": [
             {
                 "Id": "A",
-                "Answer": "Matterhorn",
+                "Answer": "Polo",
                 "IsCorrect": false
             },
             {
                 "Id": "B",
-                "Answer": "Zugspitze",
-                "IsCorrect": true
+                "Answer": "Käfer",
+                "IsCorrect": false
             },
             {
                 "Id": "C",
-                "Answer": "Watzmann",
+                "Answer": "Ente",
+                "IsCorrect": true
+            },
+            {
+                "Id": "D",
+                "Answer": "Golf",
+                "IsCorrect": false
+            }
+        ]
+    },
+    
+    {
+        "Id": "23",
+        "Query": "Welche deutsche Stadt ist für den weltberühmten Oktoberfest bekannt?",
+        "Category": "Überraschung",
+        "Answers": [
+            {
+                "Id": "A",
+                "Answer": "Stuttgart",
+                "IsCorrect": false
+            },
+            {
+                "Id": "B",
+                "Answer": "Berlin",
+                "IsCorrect": false
+            },
+            {
+                "Id": "C",
+                "Answer": "Köln",
                 "IsCorrect": false
             },
             {
                 "Id": "D",
-                "Answer": "Hochgrat",
+                "Answer": "München",
+                "IsCorrect": true
+            }
+        ]
+    },
+    
+    {
+        "Id": "24",
+        "Query": "Wer malte das Gemälde 'Mona Lisa'?",
+        "Category": "Überraschung",
+        "Answers": [
+            {
+                "Id": "A",
+                "Answer": "Vincent van Gogh",
+                "IsCorrect": false
+            },
+            {
+                "Id": "B",
+                "Answer": "Leonardo da Vinci",
+                "IsCorrect": true
+            },
+            {
+                "Id": "C",
+                "Answer": "Pablo Picasso",
+                "IsCorrect": false
+            },
+            {
+                "Id": "D",
+                "Answer": "Michelangelo",
                 "IsCorrect": false
             }
         ]
