@@ -85,6 +85,7 @@ func validateIdUniqueness(questions []Question) (ok bool, errors []ValidationErr
 	return
 }
 
+// Validates that the category of a given question is part of the supported categories of the game
 func (question Question) validateCategory() (ok bool, error ValidationError) {
 	ok = true
 	categorySupported := false
@@ -99,6 +100,27 @@ func (question Question) validateCategory() (ok bool, error ValidationError) {
 		error.Problem = fmt.Sprintf("The category is defined as %s, but should be one of the following: %v", question.Category, supportedCategories)
 		error.Question = question
 		return
+	}
+	return
+}
+
+// Validates that there is at least one question for a given supported category
+func validateCategoryVariety(questions []Question) (ok bool, errors []ValidationError) {
+	ok = true
+	supportedCategories := GetSupportedQuestionCategories()
+	for _, category := range supportedCategories {
+		categoryCount := 0
+		for _, question := range questions {
+			if category == question.Category {
+				categoryCount += 1
+			}
+		}
+		if categoryCount == 0 {
+			ok = false
+			errors = append(errors, ValidationError{
+				Problem: fmt.Sprintf("At least one question should have the category %s set as category", category),
+			})
+		}
 	}
 	return
 }
@@ -131,6 +153,10 @@ func ValidateQuestions(questions []Question) (ok bool, errors []ValidationError)
 		}
 	}
 	if _ok, err := validateIdUniqueness(questions); !_ok {
+		ok = false
+		errors = append(errors, err...)
+	}
+	if _ok, err := validateCategoryVariety(questions); !_ok {
 		ok = false
 		errors = append(errors, err...)
 	}
