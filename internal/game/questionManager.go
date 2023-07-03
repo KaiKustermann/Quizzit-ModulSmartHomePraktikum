@@ -44,9 +44,14 @@ func (qc *questionManager) SetActiveQuestion(question question.Question) {
 }
 
 // Move on to the next question by the active category and return it,
-// Selects a random question with the same category as active category,
-// Ensures that a given question is set to the active question only once by removing it from the list of questions after setting it active
+// Ensure that one or more questions with the active category as category is available in the question pool
+// Select a random question with the same category as active category
+// Ensure that a given question is set to the active question only once by removing it from the list of questions after setting it active
 func (qc *questionManager) MoveToNextQuestion() question.Question {
+	questionAvailable := qc.IsQuestionWithGivenCategoryAvailable(qc.GetActiveCategory())
+	if !questionAvailable {
+		qc.questions = append(qc.questions, LoadQuestionsByCategory(qc.GetActiveCategory())...)
+	}
 	questionsByActiveCategory := qc.getQuestionsByActiveCategory()
 	nextQuestion := questionsByActiveCategory[rand.Intn(len(questionsByActiveCategory))]
 	qc.SetActiveQuestion(nextQuestion)
@@ -101,10 +106,6 @@ func (qc *questionManager) SetActiveCategory(category string) {
 func (qc *questionManager) SetRandomCategory() string {
 	categories := question.GetSupportedQuestionCategories()
 	qc.SetActiveCategory(categories[rand.Intn(len(categories))])
-	questionAvailable := qc.IsQuestionWithGivenCategoryAvailable(qc.GetActiveCategory())
-	if !questionAvailable {
-		qc.questions = append(qc.questions, LoadQuestionsByCategory(qc.GetActiveCategory())...)
-	}
 	log.Infof("Drafted category '%s'", qc.GetActiveCategory())
 	return qc.GetActiveCategory()
 }
