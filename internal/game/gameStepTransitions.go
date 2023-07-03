@@ -81,7 +81,6 @@ func (loop *Game) transitionToSpecificPlayer(gsPlayerTransition gameStep) {
 // Sets stateMessage to the rolled category
 func (loop *Game) transitionToCategoryResponse(gsCategoryResult gameStep) {
 	cat := loop.managers.questionManager.SetRandomCategory()
-	log.Infof("Drafted category '%s'", cat)
 	playerState := loop.managers.playerManager.GetPlayerState()
 	stateMessage := dto.WebsocketMessageSubscribe{
 		MessageType: string(msgType.Game_Die_CategoryResult),
