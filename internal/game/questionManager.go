@@ -21,12 +21,13 @@ const ASSETS_QUESTION_FILE_PATH = "./assets/dev-questions.json"
 // Statefully handle the catalog of questions and the active question
 type questionManager struct {
 	questions      []question.Question
-	activeQuestion question.Question
+	activeQuestion *question.Question
 	activeCategory string
 }
 
 // Constructs a new QuestionManager
 func NewQuestionManager() (qc questionManager) {
+	log.Infof("Constructing new QuestionManager")
 	qc = questionManager{
 		questions: LoadQuestions(),
 	}
@@ -35,56 +36,60 @@ func NewQuestionManager() (qc questionManager) {
 
 // Retrieve the currently active question
 func (qc *questionManager) GetActiveQuestion() question.Question {
-	return qc.activeQuestion
+	return *qc.activeQuestion
 }
 
 // Setter for activeQuestion
-func (qc *questionManager) SetActiveQuestion(question question.Question) {
+func (qc *questionManager) SetActiveQuestion(question *question.Question) {
+	log.Infof("Setting question %s as active question", question.Id)
 	qc.activeQuestion = question
 }
 
-// Move on to the next question by the active category and return it,
-// Ensure that one or more questions with the active category as category is available in the question pool
-// Select a random question with the same category as active category
-// Ensure that a given question is set to the active question only once by removing it from the list of questions after setting it active
+// Drafts a new question of the given category and sets it as active question
 func (qc *questionManager) MoveToNextQuestion() question.Question {
-	questionAvailable := qc.IsQuestionWithGivenCategoryAvailable(qc.GetActiveCategory())
-	if !questionAvailable {
-		qc.questions = append(qc.questions, LoadQuestionsByCategory(qc.GetActiveCategory())...)
-	}
-	questionsByActiveCategory := qc.getQuestionsByActiveCategory()
-	nextQuestion := questionsByActiveCategory[rand.Intn(len(questionsByActiveCategory))]
+	log.Debugf("Moving to the next question of category %s", qc.activeCategory)
+	nextQuestion := qc.getRandomQuestionOfActiveCategory()
+	nextQuestion.Used = true
 	qc.SetActiveQuestion(nextQuestion)
-	qc.removeActiveQuestionFromAllQuestions()
 	return qc.GetActiveQuestion()
 }
 
-func (qc *questionManager) getQuestionsByActiveCategory() []question.Question {
-	var questionsByActiveCategory []question.Question
-	for _, question := range qc.questions {
-		if question.Category == qc.activeCategory {
-			questionsByActiveCategory = append(questionsByActiveCategory, question)
+// Get a random question of the active category, that has not been used yet.
+// If all questions of the category have been used, refreshes the full pool by setting them to used=false
+func (qc *questionManager) getRandomQuestionOfActiveCategory() *question.Question {
+	log.Tracef("Building an array of unused questions for category %s", qc.activeCategory)
+	var draftableQuestions []*question.Question
+	for i := range qc.questions {
+		question := &qc.questions[i]
+		if question.Category == qc.activeCategory && !question.Used {
+			draftableQuestions = append(draftableQuestions, question)
 		}
 	}
-	return questionsByActiveCategory
+
+	poolSize := len(draftableQuestions)
+	if poolSize > 0 {
+		log.Debugf("Drafting a question out of %d remaining questions for category %s", poolSize, qc.activeCategory)
+		randomQuestion := draftableQuestions[rand.Intn(poolSize)]
+		return randomQuestion
+	}
+
+	log.Debugf("All questions of category %s have been used. Refreshing...", qc.activeCategory)
+
+	qc.refreshQuestionsOfActiveCategory()
+	return qc.getRandomQuestionOfActiveCategory()
 }
 
-// Removes the activeQuestion from the slice of questions,
-// If the removal would lead to an empty slice, the same questions are loaded again
-func (qc *questionManager) removeActiveQuestionFromAllQuestions() {
-	activeQuestionIndex := -1
-	for index, question := range qc.questions {
-		if question.Id == qc.activeQuestion.Id {
-			activeQuestionIndex = index
+// Marks all questions of the active categroy as 'unused'
+func (qc *questionManager) refreshQuestionsOfActiveCategory() {
+	log.Infof("Marking questions of category %s as unused", qc.activeCategory)
+	for i := range qc.questions {
+		question := qc.questions[i]
+		if question.Category == qc.activeCategory {
+			log.Tracef("Marking question with ID %s as 'used'=false", question.Id)
+			qc.questions[i].Used = false
 		}
 	}
-	if activeQuestionIndex == -1 {
-		log.Error("Active question was not found in slice of questions")
-		return
-	} else {
-		qc.questions = append(qc.questions[:activeQuestionIndex], qc.questions[activeQuestionIndex+1:]...)
-		return
-	}
+	log.Debugf("All questions of category %s marked as unused", qc.activeCategory)
 }
 
 // Get the corrextness feedback for the active question
@@ -104,22 +109,12 @@ func (qc *questionManager) SetActiveCategory(category string) {
 
 // Set activeCategory to a random question category, returns the category for convenience
 func (qc *questionManager) SetRandomCategory() string {
+	log.Tracef("Drafting a random category")
 	categories := question.GetSupportedQuestionCategories()
-	qc.SetActiveCategory(categories[rand.Intn(len(categories))])
-	log.Infof("Drafted category '%s'", qc.GetActiveCategory())
+	poolSize := len(categories)
+	qc.SetActiveCategory(categories[rand.Intn(poolSize)])
+	log.Infof("Drafted category '%s' out of %d available categories", qc.GetActiveCategory(), poolSize)
 	return qc.GetActiveCategory()
-}
-
-func (qc *questionManager) IsQuestionWithGivenCategoryAvailable(category string) bool {
-	categories := make(map[string]struct{})
-	for _, question := range qc.questions {
-		categories[question.Category] = struct{}{}
-	}
-	_, ok := categories[category]
-	if ok {
-		return true
-	}
-	return false
 }
 
 // Attempt to load the questions from multiple locations
@@ -172,13 +167,14 @@ func validateQuestions(questions []question.Question) {
 
 // Attempt loading questions from location as defined by the ENV var
 func loadQuestionsFromEnvPath() (questions []question.Question, success bool) {
+	log.Trace("loadQuestionsFromEnvPath")
 	envPath, isset := os.LookupEnv(ENV_NAME_PATH)
 	if !isset {
-		log.Debug(fmt.Sprintf("ENV '%s' is not set ", ENV_NAME_PATH))
+		log.Debugf("ENV '%s' is not set ", ENV_NAME_PATH)
 		return questions, false
 	}
 	contextLogger := log.WithField("filename", envPath)
-	contextLogger.Info(fmt.Sprintf("Attempting to read questions as defined by '%s' ", ENV_NAME_PATH))
+	contextLogger.Infof("Attempting to read questions as defined by '%s' ", ENV_NAME_PATH)
 
 	absPath, err := filepath.Abs(envPath)
 	if err != nil {
@@ -208,11 +204,13 @@ func loadDevQuestions() (questions []question.Question, success bool) {
 }
 
 func loadQuestionsFromRelativePath(relPath string) (questions []question.Question, success bool) {
+	log.Trace("loadQuestionsFromRelativePath")
 	absPath, err := filepath.Abs(relPath)
 	if err != nil {
 		log.WithField("filename", relPath).Error("Could resolve file ", err)
 		return questions, false
 	}
+	log.Debugf("Expanded relative path '%s' to absolute path '%s'", relPath, absPath)
 	return loadQuestionsFromAbsolutePath(absPath)
 }
 
@@ -244,5 +242,6 @@ func loadQuestionsFromAbsolutePath(absPath string) (questions []question.Questio
 		return questions, false
 	}
 
+	contextLogger.Debug("Successfully unmarshalled JSON into struct")
 	return questions, true
 }
