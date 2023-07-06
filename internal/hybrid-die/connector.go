@@ -4,11 +4,29 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
-func FindHybridDie() {
-	log.Infof("Connecting a hybrid die")
-	// TODO: Provide TCP socket for die to connect to
-	// TODO: when connected, stop the find
+type HybridDie struct {
+	finder     HybridDieFinder
+	controller HybridDieController
+}
+
+func NewHybridDie() HybridDie {
 	finder := HybridDieFinder{}
-	finder.Start()
-	defer finder.Stop()
+	return HybridDie{
+		finder: finder,
+		controller: HybridDieController{
+			onDieFound: finder.Stop,
+			onDieLost:  finder.Start,
+		},
+	}
+}
+
+func (hd *HybridDie) Find() {
+	log.Infof("Connecting a hybrid die")
+	go hd.controller.Listen()
+	go hd.finder.Start()
+}
+
+func (hd *HybridDie) Stop() {
+	hd.finder.Stop()
+	hd.controller.Stop()
 }
