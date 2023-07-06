@@ -12,6 +12,8 @@ type HybridDieFinder struct {
 	isBroadcasting bool
 }
 
+// Start finding the hybrid die
+// Broadcasts self every few seconds
 func (bc *HybridDieFinder) Start() {
 	log.Info("Starting to find a hybrid die")
 	bc.isBroadcasting = true
@@ -22,11 +24,15 @@ func (bc *HybridDieFinder) Start() {
 	log.Info("Stopped finding a hybrid die")
 }
 
+// Stop the finding process
 func (bc *HybridDieFinder) Stop() {
 	log.Debug("Stopping hybrid die search")
 	bc.isBroadcasting = false
 }
 
+// Send a limited broadcast (255.255.255.255) to the local network
+// Containing "SuperDuperDiceConnectionCall"
+// see https://github.com/aler9/howto-udp-broadcast-golang
 func (bc *HybridDieFinder) sendLimitedBroadcast(attempt int) {
 	network := "udp4"
 	port := ":7777"

@@ -34,8 +34,8 @@ func main() {
 	game.NewGame()
 	http.HandleFunc("/health", health.HealthCheckHttp)
 	http.HandleFunc("/ws", ws.WebsocketEndpoint)
-	finder := hybriddie.HybridDieFinder{}
-	finder.Start()
-	defer finder.Stop()
+	die := hybriddie.NewHybridDie()
+	die.Find()
+	defer die.Stop()
 	log.Fatal(http.ListenAndServe(":"+getServerPort(), nil))
 }
