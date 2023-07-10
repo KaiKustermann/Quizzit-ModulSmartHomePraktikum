@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"net"
 	"strings"
+	"time"
 
 	log "github.com/sirupsen/logrus"
 )
@@ -28,7 +29,7 @@ func (ctrl *HybridDieController) Listen() {
 	defer sock.Close()
 
 	ctrl.isListening = true
-	log.Warnf("Starting %s lister on %s", network, sock.Addr().String())
+	log.Warnf("Starting %s listener on %s", network, sock.Addr().String())
 	for ctrl.isListening {
 		log.Debug("Waiting for incoming connection... ")
 		conn, err := sock.Accept()
@@ -37,15 +38,27 @@ func (ctrl *HybridDieController) Listen() {
 			continue
 		}
 		cL := log.WithField("address", conn.RemoteAddr().String())
-		cL.Info("New connection, attempting Read ")
-		data, err := bufio.NewReader(conn).ReadString('\n')
+		cL.Info("New connection ")
+
+		var size int
+		buf := make([]byte, 256)
+		for ctrl.isListening {
+			cL.Debug("Attempting to read... ")
+			size, err = conn.Read(buf)
+			if err != nil || size > 0 {
+				break
+			}
+			time.Sleep(250 * time.Millisecond)
+		}
+
 		if err != nil {
 			log.Error(err)
 			conn.Close()
 			continue
 		}
-		cL.Debugf("Read successful, checking content for '%s' ", expectedCodeWord)
-		if !strings.Contains(data, expectedCodeWord) {
+		line := string(buf)
+		cL.Debugf("Successfully read %d bytes >>> '%s' <<<, checking content for '%s' ", size, line, expectedCodeWord)
+		if !strings.Contains(line, expectedCodeWord) {
 			log.Warnf("%s did not send expected keyword '%s', closing", conn.RemoteAddr().String(), expectedCodeWord)
 			conn.Close()
 			continue
@@ -68,13 +81,13 @@ func (ctrl *HybridDieController) read(conn net.Conn) {
 		data, err := bufio.NewReader(conn).ReadString('\n')
 		if err != nil {
 			log.Warn(err)
-			continue
+			break
 		}
 		cL.Debugf("Received:\n%s", string(data))
 		// TODO: do something with the data
 	}
-	ctrl.onDieLost()
 	cL.Debugf("Stopped reading")
+	ctrl.onDieLost()
 }
 
 func (ctrl *HybridDieController) stopListening() {
