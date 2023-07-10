@@ -4,15 +4,23 @@ Server Code, the heart of the system.
 
 # Index
 
-* [Scope / Purpose](#scope--purpose)
-* [Development](#development)
-    * [Requirements](#requirements)
-    * [Setup](#setup)
-    * [Run](#run)
-    * [Test](#test)
-    * [Build](#build)
-    * [Code Formatting](#code-format)
-* [Related Content](#related-content)
+- [Backend Server](#backend-server)
+- [Index](#index)
+- [Scope / Purpose](#scope--purpose)
+- [Development](#development)
+  - [Requirements](#requirements)
+  - [Setup](#setup)
+  - [Run](#run)
+  - [Debug in VS-Code](#debug-in-vs-code)
+  - [Test](#test)
+  - [Build](#build)
+  - [Code format](#code-format)
+  - [Testing Websocket](#testing-websocket)
+    - [Submit a generic confirm](#submit-a-generic-confirm)
+    - [Submit player count](#submit-player-count)
+    - [Roll a category](#roll-a-category)
+    - [Submit an Answer](#submit-an-answer)
+- [Related Content](#related-content)
 
 # Scope / Purpose
 
@@ -50,6 +58,8 @@ To start the server:
     go run cmd/quizzit/quizzit.go
 
 The server will start listening on http://localhost:8080.
+
+**If you are using Windows and want to use the [Hybrid Die](../hybrid-die/) make sure you are in the same `private` Network as the die. `private` referes to your system's security settings of this netwrok**
 
 ## Debug in VS-Code
 
