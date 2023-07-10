@@ -64,14 +64,14 @@ func (ctrl *HybridDieController) Listen() {
 		go ctrl.read(conn)
 		ctrl.stopListening()
 	}
-	log.Info("Stopped listening")
+	log.Info("Stopped listening for new TCP connections")
 }
 
 func (ctrl *HybridDieController) read(conn net.Conn) {
 	defer conn.Close()
 	cL := log.WithField("address", conn.RemoteAddr().String())
 	ctrl.isReading = true
-	cL.Info("Starting to read")
+	cL.Info("Starting to read from hybrid die")
 	for ctrl.isReading {
 		cL.Debugf("Waiting for incoming data...")
 		// TODO: Set a timeout on the reading (so we get to know if die disconnects)
