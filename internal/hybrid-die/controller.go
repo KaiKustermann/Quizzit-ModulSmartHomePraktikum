@@ -15,6 +15,13 @@ type HybridDieController struct {
 	callbackOnDieLost  func()
 }
 
+func NewHybridDieController() HybridDieController {
+	return HybridDieController{
+		isListening: false,
+		isReading:   false,
+	}
+}
+
 func (ctrl *HybridDieController) Listen() {
 	log.Info("Opening TCP socket ")
 	network := "tcp4"

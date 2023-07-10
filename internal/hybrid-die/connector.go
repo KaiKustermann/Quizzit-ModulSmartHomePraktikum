@@ -9,15 +9,15 @@ type HybridDie struct {
 	controller *HybridDieController
 }
 
-func NewHybridDie() HybridDie {
+func NewHybridDie() (hd HybridDie) {
 	finder := NewHybridDieFinder()
-	return HybridDie{
-		finder: &finder,
-		controller: &HybridDieController{
-			callbackOnDieFound: func() { finder.Stop() },
-			callbackOnDieLost:  func() { finder.Start() },
-		},
-	}
+	controller := NewHybridDieController()
+	controller.callbackOnDieFound = finder.Stop
+	controller.callbackOnDieLost = hd.Find
+
+	hd.finder = &finder
+	hd.controller = &controller
+	return
 }
 
 func (hd *HybridDie) Find() {
