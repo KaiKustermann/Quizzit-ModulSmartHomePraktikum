@@ -74,6 +74,7 @@ func (ctrl *HybridDieController) read(conn net.Conn) {
 	cL.Info("Starting to read")
 	for ctrl.isReading {
 		cL.Debugf("Waiting for incoming data...")
+		// TODO: Set a timeout on the reading (so we get to know if die disconnects)
 		data, err := bufio.NewReader(conn).ReadString('\n')
 		if err != nil {
 			cL.Error("Closing socket, because: ", err)
