@@ -12,16 +12,22 @@ type HybridDieFinder struct {
 	isBroadcasting bool
 }
 
+func NewHybridDieFinder() HybridDieFinder {
+	return HybridDieFinder{isBroadcasting: false}
+}
+
 // Start finding the hybrid die
 // Broadcasts self every few seconds
 func (bc *HybridDieFinder) Start() {
-	log.Info("Starting to find a hybrid die")
+	log.Info("Starting to search for a hybrid die")
 	bc.isBroadcasting = true
-	for i := 0; bc.isBroadcasting; i++ {
+	i := 0
+	for bc.isBroadcasting {
+		i++
 		bc.sendLimitedBroadcast(i)
 		time.Sleep(3 * time.Second)
 	}
-	log.Info("Stopped finding a hybrid die")
+	log.Info("Stopped searching a hybrid die")
 }
 
 // Stop the finding process
@@ -39,8 +45,9 @@ func (bc *HybridDieFinder) sendLimitedBroadcast(attempt int) {
 	connectionCallWord := "SuperDuperDiceConnectionCall"
 	cL := log.WithFields(log.Fields{
 		"attempt": attempt,
+		"active":  bc.isBroadcasting,
 	})
-	cL.Debugf("Finding hybrid die ")
+	cL.Debugf("Broadcasting '%s' ", connectionCallWord)
 	cL.Tracef("Resolving own %s adress for port %s ", network, port)
 	local, err := net.ResolveUDPAddr(network, port)
 	if err != nil {

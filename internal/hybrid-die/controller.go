@@ -4,16 +4,15 @@ import (
 	"bufio"
 	"net"
 	"strings"
-	"time"
 
 	log "github.com/sirupsen/logrus"
 )
 
 type HybridDieController struct {
-	isListening bool
-	isReading   bool
-	onDieFound  func()
-	onDieLost   func()
+	isListening        bool
+	isReading          bool
+	callbackOnDieFound func()
+	callbackOnDieLost  func()
 }
 
 func (ctrl *HybridDieController) Listen() {
@@ -40,30 +39,21 @@ func (ctrl *HybridDieController) Listen() {
 		cL := log.WithField("address", conn.RemoteAddr().String())
 		cL.Info("New connection ")
 
-		var size int
-		buf := make([]byte, 256)
-		for ctrl.isListening {
-			cL.Debug("Attempting to read... ")
-			size, err = conn.Read(buf)
-			if err != nil || size > 0 {
-				break
-			}
-			time.Sleep(250 * time.Millisecond)
-		}
+		line, err := bufio.NewReader(conn).ReadString('\n')
 
 		if err != nil {
 			log.Error(err)
 			conn.Close()
 			continue
 		}
-		line := string(buf)
-		cL.Debugf("Successfully read %d bytes >>> '%s' <<<, checking content for '%s' ", size, line, expectedCodeWord)
+		cL.Debugf("Successful read >>> '%s' <<<, checking content for '%s' ", line, expectedCodeWord)
 		if !strings.Contains(line, expectedCodeWord) {
 			log.Warnf("%s did not send expected keyword '%s', closing", conn.RemoteAddr().String(), expectedCodeWord)
 			conn.Close()
 			continue
 		}
 		cL.Infof("Found codeword '%s' > It is a hybrid die! ", expectedCodeWord)
+		ctrl.cbDieFound()
 		go ctrl.read(conn)
 		ctrl.stopListening()
 	}
@@ -72,7 +62,6 @@ func (ctrl *HybridDieController) Listen() {
 
 func (ctrl *HybridDieController) read(conn net.Conn) {
 	defer conn.Close()
-	ctrl.onDieFound()
 	cL := log.WithField("address", conn.RemoteAddr().String())
 	ctrl.isReading = true
 	cL.Info("Starting to read")
@@ -80,14 +69,14 @@ func (ctrl *HybridDieController) read(conn net.Conn) {
 		cL.Debugf("Waiting for incoming data...")
 		data, err := bufio.NewReader(conn).ReadString('\n')
 		if err != nil {
-			log.Warn(err)
+			cL.Error("Closing socket, because: ", err)
 			break
 		}
 		cL.Debugf("Received:\n%s", string(data))
 		// TODO: do something with the data
 	}
 	cL.Debugf("Stopped reading")
-	ctrl.onDieLost()
+	ctrl.cbDieLost()
 }
 
 func (ctrl *HybridDieController) stopListening() {
@@ -101,4 +90,14 @@ func (ctrl *HybridDieController) stopReading() {
 func (ctrl *HybridDieController) Stop() {
 	ctrl.stopListening()
 	ctrl.stopReading()
+}
+
+func (ctrl *HybridDieController) cbDieFound() {
+	log.Debug("Calling 'onDieFound' callback.")
+	ctrl.callbackOnDieFound()
+}
+
+func (ctrl *HybridDieController) cbDieLost() {
+	log.Debug("Calling 'onDieLost' callback.")
+	ctrl.callbackOnDieLost()
 }
