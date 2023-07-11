@@ -8,7 +8,6 @@ import (
 
 	game "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/game"
 	"gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/health"
-	hybriddie "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/hybrid-die"
 	"gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/logging"
 	ws "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/websockets"
 
@@ -34,8 +33,5 @@ func main() {
 	game.NewGame()
 	http.HandleFunc("/health", health.HealthCheckHttp)
 	http.HandleFunc("/ws", ws.WebsocketEndpoint)
-	die := hybriddie.NewHybridDie()
-	die.Find()
-	defer die.Stop()
 	log.Fatal(http.ListenAndServe(":"+getServerPort(), nil))
 }

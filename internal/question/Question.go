@@ -4,20 +4,42 @@ import (
 	"math/rand"
 	"time"
 
+	log "github.com/sirupsen/logrus"
 	dto "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/generated-sources/dto"
 )
 
+// List of supported categories
+var categories = []string{
+	"Geographie",
+	"Geschichte",
+	"Heimat",
+	"Unterhaltung",
+	"Sprichwörter",
+	"Überraschung",
+}
+
 // Get the question categories that are supported
 func GetSupportedQuestionCategories() []string {
-	categories := []string{
-		"Geographie",
-		"Geschichte",
-		"Heimat",
-		"Unterhaltung",
-		"Sprichwörter",
-		"Überraschung",
-	}
 	return categories
+}
+
+// Get a random category
+func GetRandomCategory() string {
+	log.Tracef("Drafting a random category")
+	poolSize := len(categories)
+	result := GetCategoryByIndex(rand.Intn(poolSize))
+	log.Debugf("Drafted category '%s' out of %d available categories", result, poolSize)
+	return result
+}
+
+// Get category by index
+func GetCategoryByIndex(index int) string {
+	poolSize := len(categories)
+	if index >= poolSize {
+		log.Warnf("Category Index '%d' out of bounds [0-%d], continuing with index 0", index, poolSize-1)
+		index = 0
+	}
+	return categories[index]
 }
 
 // Type question for internal use in the backend
@@ -44,7 +66,7 @@ func (q Question) GetCorrectnessFeedback(submitAnswer dto.SubmitAnswer) dto.Corr
 	var correctAnswer *dto.PossibleAnswer
 	var selectedAnswer *dto.PossibleAnswer
 	for _, a := range q.Answers {
-		if a.IsCorrect == true {
+		if a.IsCorrect {
 			correctAnswer = a.ConvertToDTO()
 			if a.Id == submitAnswer.AnswerId {
 				selectedAnswerIsCorrect = true

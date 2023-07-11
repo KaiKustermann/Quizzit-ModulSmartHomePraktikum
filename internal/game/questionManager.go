@@ -11,6 +11,7 @@ import (
 	log "github.com/sirupsen/logrus"
 
 	dto "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/generated-sources/dto"
+	hybriddie "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/hybrid-die"
 	question "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/question"
 )
 
@@ -23,14 +24,14 @@ type questionManager struct {
 	questions      []question.Question
 	activeQuestion *question.Question
 	activeCategory string
+	hybridDie      *hybriddie.HybridDieManager
 }
 
 // Constructs a new QuestionManager
-func NewQuestionManager() (qc questionManager) {
+func NewQuestionManager(die *hybriddie.HybridDieManager) (qc questionManager) {
 	log.Infof("Constructing new QuestionManager")
-	qc = questionManager{
-		questions: LoadQuestions(),
-	}
+	qc.questions = LoadQuestions()
+	qc.hybridDie = die
 	return
 }
 
@@ -114,11 +115,8 @@ func (qc *questionManager) SetActiveCategory(category string) {
 
 // Set activeCategory to a random question category, returns the category for convenience
 func (qc *questionManager) SetRandomCategory() string {
-	log.Tracef("Drafting a random category")
-	categories := question.GetSupportedQuestionCategories()
-	poolSize := len(categories)
-	qc.SetActiveCategory(categories[rand.Intn(poolSize)])
-	log.Infof("Drafted category '%s' out of %d available categories", qc.GetActiveCategory(), poolSize)
+	newCategory := question.GetRandomCategory()
+	qc.SetActiveCategory(newCategory)
 	return qc.GetActiveCategory()
 }
 

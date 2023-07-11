@@ -11,6 +11,7 @@ import (
 type HybridDieController struct {
 	isListening        bool
 	isReading          bool
+	lastRead           int
 	callbackOnDieFound func()
 	callbackOnDieLost  func()
 }
@@ -20,6 +21,10 @@ func NewHybridDieController() HybridDieController {
 		isListening: false,
 		isReading:   false,
 	}
+}
+
+func (ctrl *HybridDieController) GetLastRead() int {
+	return ctrl.lastRead
 }
 
 func (ctrl *HybridDieController) Listen() {
@@ -75,13 +80,20 @@ func (ctrl *HybridDieController) read(conn net.Conn) {
 	for ctrl.isReading {
 		cL.Debugf("Waiting for incoming data...")
 		// TODO: Set a timeout on the reading (so we get to know if die disconnects)
-		data, err := bufio.NewReader(conn).ReadString('\n')
+		data, err := bufio.NewReader(conn).ReadBytes('\n')
 		if err != nil {
 			cL.Error("Closing socket, because: ", err)
 			break
 		}
-		cL.Debugf("Received:\n%s", string(data))
-		// TODO: do something with the data
+		msg, err := NewHybridDieMessage(data)
+		if err != nil {
+			cL.Warn(err)
+			continue
+		}
+		cL.Debug("Received:\n", msg)
+		if msg.Result > 0 {
+			ctrl.lastRead = msg.Result
+		}
 	}
 	cL.Debugf("Stopped reading")
 	ctrl.cbDieLost()

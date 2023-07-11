@@ -6,6 +6,7 @@ import (
 	helpers "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/helper-functions"
 	"gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/logging"
 	msgType "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/message-types"
+	"gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/question"
 	ws "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/websockets"
 )
 
@@ -61,7 +62,7 @@ func (loop *Game) handlePlayerCountAndTransitionToNewPlayer(gsTransitionToNewPla
 		return
 	}
 	pC := int(pCasFloat)
-	loop.managers.playerManager = NewPlayerManager(pC)
+	loop.managers.playerManager.SetPlayercount(pC)
 	logging.EnvelopeLog(envelope).Infof("Setting player count to %d", pC)
 	loop.transitionToNewPlayer(gsTransitionToNewPlayer)
 }
@@ -130,15 +131,40 @@ func (loop *Game) transitionToSpecificPlayer(gsPlayerTransition gameStep) {
 	loop.transitionToState(gsPlayerTransition, stateMessage)
 }
 
+// Sets the next GameState to rolling category
+// Sets stateMessage to the roll category prompt
+func (loop *Game) transitionToCategoryRoll(gsCategoryRoll gameStep, gsCategoryResult gameStep) {
+	playerState := loop.managers.playerManager.GetPlayerState()
+	hdm := loop.managers.hybridDieManager
+	if hdm.IsReady() {
+		log.Debug("Hybrid die is ready, preparing... ")
+		ch := make(chan int)
+		go hdm.RequestRoll(ch)
+		// TODO: NEWLY DIFFERENT gamestate to roll category with hybrid die
+		loop.transitionToState(gsCategoryRoll, dto.WebsocketMessageSubscribe{
+			MessageType: string(msgType.Game_Die_RollCategoryPrompt),
+			PlayerState: &playerState,
+		})
+		// Block and wait for roll
+		rollResult := <-ch
+		category := question.GetCategoryByIndex(rollResult)
+		loop.transitionToCategoryResponse(gsCategoryResult, category)
+	} else {
+		loop.transitionToState(gsCategoryRoll, dto.WebsocketMessageSubscribe{
+			MessageType: string(msgType.Game_Die_RollCategoryPrompt),
+			PlayerState: &playerState,
+		})
+	}
+}
+
 // Sets the next GameState to displaying CategoryResponse
 // Sets stateMessage to the rolled category
-func (loop *Game) transitionToCategoryResponse(gsCategoryResult gameStep) {
-	cat := loop.managers.questionManager.SetRandomCategory()
+func (loop *Game) transitionToCategoryResponse(gsCategoryResult gameStep, category string) {
 	playerState := loop.managers.playerManager.GetPlayerState()
 	stateMessage := dto.WebsocketMessageSubscribe{
 		MessageType: string(msgType.Game_Die_CategoryResult),
 		Body: dto.CategoryResult{
-			Category: cat,
+			Category: category,
 		},
 		PlayerState: &playerState,
 	}

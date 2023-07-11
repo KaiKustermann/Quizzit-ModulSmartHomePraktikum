@@ -13,17 +13,25 @@ type playerManager struct {
 	winningScore int
 }
 
-// Constructs a new QuestionManager
-func NewPlayerManager(playerCount int) (pm playerManager) {
-	pm = playerManager{
-		playerCount: playerCount,
-		// Workaround, the game will always call "MoveToNextPlayer" first, so this way that call will move us to the first player (0)
-		activePlayer: -1,
-		playerScores: make([]int, playerCount),
-		playerTurns:  make([]int, playerCount),
-		winningScore: 5,
-	}
+// Constructs a new PlayerManager
+func NewPlayerManager() (pm playerManager) {
+	pm.activePlayer = -1
+	pm.playerCount = 2
+	pm.playerScores = make([]int, pm.playerCount)
+	pm.playerTurns = make([]int, pm.playerCount)
+	pm.winningScore = 5
 	return
+}
+
+// Set/Change Player count
+// Loses scores in the process
+// Active player set to -1 again
+func (pm *playerManager) SetPlayercount(playerCount int) {
+	pm.playerCount = playerCount
+	pm.playerScores = make([]int, playerCount)
+	pm.playerTurns = make([]int, playerCount)
+	// Workaround, the game will always call "MoveToNextPlayer" first, so this way that call will move us to the first player (0)
+	pm.activePlayer = -1
 }
 
 // Get active playerID
