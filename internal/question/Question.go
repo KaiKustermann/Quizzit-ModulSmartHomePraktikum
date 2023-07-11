@@ -23,6 +23,7 @@ type Question struct {
 	Query    string
 	Category string
 	Answers  []Answer
+	Used     bool
 }
 
 // Convert an internal Question a DTO of type Question
