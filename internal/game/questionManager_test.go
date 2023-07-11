@@ -52,19 +52,20 @@ func TestGetSupportedQuestionCategories(t *testing.T) {
 func TestSetRandomCategory(t *testing.T) {
 	cats := make(map[string]struct{})
 	qm := questionManager{}
-	for i := 0; i < 1000; i++ {
+	maxIterations := 1000
+	for i := 0; i < maxIterations; i++ {
 		qm.SetRandomCategory()
 		aC := qm.GetActiveCategory()
 		_, ok := cats[aC]
 		if !ok {
 			cats[aC] = struct{}{}
 		}
-		if len(cats) == 6 {
+		if len(cats) == expectedCategoryCount {
 			break
 		}
 	}
-	if len(cats) != 6 {
-		t.Errorf("Expected %d different categories over the course of 100.000 iterations, instead found %d", expectedCategoryCount, len(cats))
+	if len(cats) != expectedCategoryCount {
+		t.Errorf("Expected %d different categories over the course of %d iterations, instead found %d", expectedCategoryCount, maxIterations, len(cats))
 	}
 }
 
