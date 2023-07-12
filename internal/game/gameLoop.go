@@ -14,6 +14,8 @@ func (loop *Game) constructLoop() *Game {
 	gsCategoryResult := gameStep{Name: "Category - Result"}
 	gsQuestion := gameStep{Name: "Question"}
 	gsCorrectnessFeedback := gameStep{Name: "Correctness Feedback"}
+	gsTransitionToNewPlayer := gameStep{Name: "Turn 1 - Player transition - Pass to new player"}
+	gsNewPlayerColorPrompt := gameStep{Name: "Turn 1 - Player transition - New Player color Prompt"}
 
 	// WELCOME
 	gsWelcome.addAction(string(msgType.Player_Generic_Confirm), func(envelope dto.WebsocketMessagePublish) {
@@ -25,7 +27,20 @@ func (loop *Game) constructLoop() *Game {
 	// SETUP
 	gsSetup.addAction(string(msgType.Player_Setup_SubmitPlayerCount), func(envelope dto.WebsocketMessagePublish) {
 		// TODO: Persist the actually selected count
-		loop.handlePlayerCountAndTransitionToSpecificPlayer(gsTransitionToSpecificPlayer, envelope)
+		loop.handlePlayerCountAndTransitionToNewPlayer(gsTransitionToNewPlayer, envelope)
+	})
+
+	// TRANSITION TO NEW PLAYER
+	gsTransitionToNewPlayer.addAction(string(msgType.Player_Generic_Confirm), func(envelope dto.WebsocketMessagePublish) {
+		loop.transitionToNewPlayerColorPrompt(gsNewPlayerColorPrompt)
+	})
+
+	gsNewPlayerColorPrompt.addAction(string(msgType.Player_Generic_Confirm), func(envelope dto.WebsocketMessagePublish) {
+		playerState := loop.managers.playerManager.GetPlayerState()
+		loop.transitionToState(gsCategoryRoll, dto.WebsocketMessageSubscribe{
+			MessageType: string(msgType.Game_Die_RollCategoryPrompt),
+			PlayerState: &playerState,
+		})
 	})
 
 	// TRANSITION TO SPECIFIC PLAYER
@@ -54,7 +69,7 @@ func (loop *Game) constructLoop() *Game {
 
 	// FEEDBACK
 	gsCorrectnessFeedback.addAction(string(msgType.Player_Generic_Confirm), func(envelope dto.WebsocketMessagePublish) {
-		loop.transitionToSpecificPlayer(gsTransitionToSpecificPlayer)
+		loop.transitionToNextPlayer(gsTransitionToSpecificPlayer, gsTransitionToNewPlayer)
 	})
 
 	// Set an initial StepGameGame
