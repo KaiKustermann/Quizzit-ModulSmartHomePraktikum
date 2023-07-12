@@ -12,4 +12,6 @@ const (
 	Game_Turn_PassToSpecificPlayer    MessageTypeSubscribe = "game/turn/PassToSpecificPlayer"
 	Game_Die_RollCategoryPrompt       MessageTypeSubscribe = "game/die/RollCategoryPrompt"
 	Game_Die_CategoryResult           MessageTypeSubscribe = "game/die/CategoryResult"
+	Game_Turn_PassToNewPlayer         MessageTypeSubscribe = "game/die/PassToNewPlayer"
+	Game_Turn_NewPlayerColorPrompt    MessageTypeSubscribe = "game/die/NewPlayerColorPrompt"
 )
