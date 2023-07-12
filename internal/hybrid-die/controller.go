@@ -11,9 +11,9 @@ import (
 type HybridDieController struct {
 	isListening            bool
 	isReading              bool
-	lastRead               int
 	callbackOnDieConnected func()
 	callbackOnDieLost      func()
+	callbackOnRoll         func(result int)
 }
 
 func NewHybridDieController() HybridDieController {
@@ -21,10 +21,6 @@ func NewHybridDieController() HybridDieController {
 		isListening: false,
 		isReading:   false,
 	}
-}
-
-func (ctrl *HybridDieController) GetLastRead() int {
-	return ctrl.lastRead
 }
 
 func (ctrl *HybridDieController) Listen() {
@@ -92,7 +88,7 @@ func (ctrl *HybridDieController) read(conn net.Conn) {
 			continue
 		}
 		if msg.Result > 0 {
-			ctrl.lastRead = msg.Result
+			ctrl.callbackOnRoll(msg.Result)
 		}
 	}
 	cL.Debugf("Stopped reading")
@@ -120,4 +116,9 @@ func (ctrl *HybridDieController) cbDieConnected() {
 func (ctrl *HybridDieController) cbDieLost() {
 	log.Debug("Calling 'onDieLost' callback.")
 	ctrl.callbackOnDieLost()
+}
+
+func (ctrl *HybridDieController) cbOnRoll(result int) {
+	log.Debug("Calling 'onRoll' callback.")
+	ctrl.callbackOnRoll(result)
 }

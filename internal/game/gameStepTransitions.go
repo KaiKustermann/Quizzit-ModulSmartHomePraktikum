@@ -155,9 +155,12 @@ func (loop *Game) transitionToHybridDieCategoryRoll(gsHybridDieCategoryRoll game
 		MessageType: string(msgType.Game_Die_RollCategoryHybridDiePrompt),
 		PlayerState: &playerState,
 	})
+	go loop.waitForHybriddieResult(ch)
+}
+
+func (loop *Game) waitForHybriddieResult(c chan int) {
 	log.Debug("Waiting for HybridDie result")
-	// TODO: opt. have a timeout to suggest digital roll?
-	rollResult := <-ch
+	rollResult := <-c
 	if rollResult < 1 {
 		log.Errorf("HybridDie roll returned '%d', invalid, skipping... ", rollResult)
 		return
