@@ -35,6 +35,7 @@ func (loop *Game) constructLoop() *Game {
 		loop.transitionToNewPlayerColorPrompt(gsNewPlayerColorPrompt)
 	})
 
+	// NEW PLAYER COLOR PROMPT
 	gsNewPlayerColorPrompt.addAction(string(msgType.Player_Generic_Confirm), func(envelope dto.WebsocketMessagePublish) {
 		playerState := loop.managers.playerManager.GetPlayerState()
 		loop.transitionToState(gsCategoryRoll, dto.WebsocketMessageSubscribe{

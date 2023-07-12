@@ -60,6 +60,7 @@ func (pm *playerManager) IncreasePlayerTurnOfActivePlayer() (state dto.PlayerSta
 	return pm.GetPlayerState()
 }
 
+// Returns the turn of the next player, so the current active player plus one
 func (pm *playerManager) GetTurnOfNextPlayer() int {
 	if pm.activePlayer+1 >= pm.playerCount {
 		return pm.playerTurn[0]

@@ -63,6 +63,8 @@ func (loop *Game) handlePlayerCountAndTransitionToNewPlayer(gsTransitionToNewPla
 	loop.transitionToNewPlayer(gsTransitionToNewPlayer)
 }
 
+// handles the transition to a new player,
+// e.g. for a player that did not have any turn yet
 func (loop *Game) transitionToNewPlayer(gsTransitionToNewPlayer gameStep) {
 	loop.managers.playerManager.MoveToNextPlayer()
 	playerState := loop.managers.playerManager.IncreasePlayerTurnOfActivePlayer()
@@ -74,16 +76,21 @@ func (loop *Game) transitionToNewPlayer(gsTransitionToNewPlayer gameStep) {
 	loop.transitionToState(gsTransitionToNewPlayer, stateMessage)
 }
 
-func (loop *Game) transitionToNewPlayerColorPrompt(gsTransitionToNewPlayerColorPrompt gameStep) {
+// handles the transition to the gamestate gsNewPlayerColorPrompt
+// sets state message to NewPlayerColorPrompt
+func (loop *Game) transitionToNewPlayerColorPrompt(gsNewPlayerColorPrompt gameStep) {
 	playerState := loop.managers.playerManager.GetPlayerState()
 	stateMessage := dto.WebsocketMessageSubscribe{
 		MessageType: string(msgType.Game_Turn_NewPlayerColorPrompt),
 		Body:        dto.NewPlayerColorPrompt{TargetPlayerId: loop.managers.playerManager.GetActivePlayerId()},
 		PlayerState: &playerState,
 	}
-	loop.transitionToState(gsTransitionToNewPlayerColorPrompt, stateMessage)
+	loop.transitionToState(gsNewPlayerColorPrompt, stateMessage)
 }
 
+// handles a generic transition to the next player
+// if it is the first round of the next player it transitions to gsTransitionToNewPlayer,
+// otherwise it transitions to gsTransitionToSpecificPlayer
 func (loop *Game) transitionToNextPlayer(gsTransitionToSpecificPlayer gameStep, gsTransitionToNewPlayer gameStep) {
 	nextPlayerTurn := loop.managers.playerManager.GetTurnOfNextPlayer()
 	if nextPlayerTurn == 0 {
