@@ -15,4 +15,5 @@ const (
 	Game_Turn_PassToNewPlayer             MessageTypeSubscribe = "game/die/PassToNewPlayer"
 	Game_Turn_NewPlayerColorPrompt        MessageTypeSubscribe = "game/die/NewPlayerColorPrompt"
 	Game_Reminder_RemindPlayerColorPrompt MessageTypeSubscribe = "game/die/RemindPlayerColorPrompt"
+	Game_Turn_PlayerWonPrompt             MessageTypeSubscribe = "game/die/PlayerWonPrompt"
 )
