@@ -9,11 +9,11 @@ import (
 )
 
 type HybridDieController struct {
-	isListening        bool
-	isReading          bool
-	lastRead           int
-	callbackOnDieFound func()
-	callbackOnDieLost  func()
+	isListening            bool
+	isReading              bool
+	lastRead               int
+	callbackOnDieConnected func()
+	callbackOnDieLost      func()
 }
 
 func NewHybridDieController() HybridDieController {
@@ -65,7 +65,7 @@ func (ctrl *HybridDieController) Listen() {
 			continue
 		}
 		cL.Infof("Found codeword '%s' > It is a hybrid die! ", expectedCodeWord)
-		ctrl.cbDieFound()
+		ctrl.cbDieConnected()
 		go ctrl.read(conn)
 		ctrl.stopListening()
 	}
@@ -78,7 +78,7 @@ func (ctrl *HybridDieController) read(conn net.Conn) {
 	ctrl.isReading = true
 	cL.Info("Starting to read from hybrid die")
 	for ctrl.isReading {
-		cL.Debugf("Waiting for incoming data...")
+		cL.Trace("Waiting for incoming data...")
 		// TODO: Set a timeout on the reading (so we get to know if die disconnects)
 		data, err := bufio.NewReader(conn).ReadBytes('\n')
 		if err != nil {
@@ -90,7 +90,7 @@ func (ctrl *HybridDieController) read(conn net.Conn) {
 			cL.Warn(err)
 			continue
 		}
-		cL.Debug("Received:\n", msg)
+		cL.Trace("Received:\n", msg)
 		if msg.Result > 0 {
 			ctrl.lastRead = msg.Result
 		}
@@ -112,9 +112,9 @@ func (ctrl *HybridDieController) Stop() {
 	ctrl.stopReading()
 }
 
-func (ctrl *HybridDieController) cbDieFound() {
-	log.Debug("Calling 'onDieFound' callback.")
-	ctrl.callbackOnDieFound()
+func (ctrl *HybridDieController) cbDieConnected() {
+	log.Debug("Calling 'onDieConnected' callback.")
+	ctrl.callbackOnDieConnected()
 }
 
 func (ctrl *HybridDieController) cbDieLost() {

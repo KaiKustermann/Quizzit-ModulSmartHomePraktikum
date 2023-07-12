@@ -11,11 +11,10 @@ type gameObjectManagers struct {
 
 // Initialize any Managers
 // Start finding a hybrid die
-func (loop *Game) setupManagers() *Game {
-	hdm := hybriddie.NewHybridDieManager()
-	loop.managers.hybridDieManager = &hdm
-	loop.managers.playerManager = NewPlayerManager()
-	loop.managers.questionManager = NewQuestionManager(&hdm)
-	hdm.Find()
-	return loop
+func (game *Game) setupManagers() *Game {
+	game.managers.hybridDieManager = hybriddie.NewHybridDieManager()
+	game.managers.playerManager = NewPlayerManager()
+	game.managers.questionManager = NewQuestionManager()
+	game.managers.hybridDieManager.Find()
+	return game
 }

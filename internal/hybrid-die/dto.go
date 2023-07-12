@@ -5,6 +5,8 @@ import (
 	"errors"
 )
 
+const MessageType_hybriddie_roll_result = "hybriddie/roll/result"
+
 // For easier debugging without USB, reflects the 'connector' state.
 type HybridDieState struct {
 	// State INT

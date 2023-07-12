@@ -11,7 +11,6 @@ import (
 	log "github.com/sirupsen/logrus"
 
 	dto "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/generated-sources/dto"
-	hybriddie "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/hybrid-die"
 	question "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/question"
 )
 
@@ -24,14 +23,12 @@ type questionManager struct {
 	questions      []question.Question
 	activeQuestion *question.Question
 	activeCategory string
-	hybridDie      *hybriddie.HybridDieManager
 }
 
 // Constructs a new QuestionManager
-func NewQuestionManager(die *hybriddie.HybridDieManager) (qc questionManager) {
+func NewQuestionManager() (qc questionManager) {
 	log.Infof("Constructing new QuestionManager")
 	qc.questions = LoadQuestions()
-	qc.hybridDie = die
 	return
 }
 

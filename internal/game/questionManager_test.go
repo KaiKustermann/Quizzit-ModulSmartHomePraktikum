@@ -7,8 +7,6 @@ import (
 	"gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/question"
 )
 
-const expectedCategoryCount = 6
-
 func makeQuestion(id string, category string) (q question.Question) {
 	q.Answers = []question.Answer{
 		{Id: "A", Answer: "text A"},

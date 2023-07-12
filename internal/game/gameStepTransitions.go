@@ -1,9 +1,11 @@
 package game
 
 import (
+	"github.com/gorilla/websocket"
 	log "github.com/sirupsen/logrus"
 	dto "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/generated-sources/dto"
 	helpers "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/helper-functions"
+	hybriddie "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/hybrid-die"
 	"gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/logging"
 	msgType "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/message-types"
 	"gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/question"
@@ -131,30 +133,39 @@ func (loop *Game) transitionToSpecificPlayer(gsPlayerTransition gameStep) {
 	loop.transitionToState(gsPlayerTransition, stateMessage)
 }
 
-// Sets the next GameState to rolling category
-// Sets stateMessage to the roll category prompt
-func (loop *Game) transitionToCategoryRoll(gsCategoryRoll gameStep, gsCategoryResult gameStep) {
+// Sets the next GameState to rolling category DIGITALLY
+// Sets stateMessage to the DIGITAL roll category prompt
+func (loop *Game) transitionToDigitalCategoryRoll(gsDigitalCategoryRoll gameStep) {
 	playerState := loop.managers.playerManager.GetPlayerState()
+	loop.transitionToState(gsDigitalCategoryRoll, dto.WebsocketMessageSubscribe{
+		MessageType: string(msgType.Game_Die_RollCategoryDigitallyPrompt),
+		PlayerState: &playerState,
+	})
+}
+
+// Sets the next GameState to rolling category with the HYBRIDDIE
+// Sets stateMessage to the roll the HYBRIDDIE prompt
+func (loop *Game) transitionToHybridDieCategoryRoll(gsHybridDieCategoryRoll gameStep) {
 	hdm := loop.managers.hybridDieManager
-	if hdm.IsReady() {
-		log.Debug("Hybrid die is ready, preparing... ")
-		ch := make(chan int)
-		go hdm.RequestRoll(ch)
-		// TODO: NEWLY DIFFERENT gamestate to roll category with hybrid die
-		loop.transitionToState(gsCategoryRoll, dto.WebsocketMessageSubscribe{
-			MessageType: string(msgType.Game_Die_RollCategoryPrompt),
-			PlayerState: &playerState,
-		})
-		// Block and wait for roll
-		rollResult := <-ch
-		category := question.GetCategoryByIndex(rollResult)
-		loop.transitionToCategoryResponse(gsCategoryResult, category)
-	} else {
-		loop.transitionToState(gsCategoryRoll, dto.WebsocketMessageSubscribe{
-			MessageType: string(msgType.Game_Die_RollCategoryPrompt),
-			PlayerState: &playerState,
-		})
-	}
+	ch := make(chan int)
+	log.Debug("Requesting HybridDie roll")
+	go hdm.RequestRoll(ch)
+	playerState := loop.managers.playerManager.GetPlayerState()
+	loop.transitionToState(gsHybridDieCategoryRoll, dto.WebsocketMessageSubscribe{
+		MessageType: string(msgType.Game_Die_RollCategoryHybridDiePrompt),
+		PlayerState: &playerState,
+	})
+	log.Debug("Waiting for HybridDie result")
+	// TODO: opt. have a timeout to suggest digital roll?
+	rollResult := <-ch
+	log.Debugf("HybridDie reports a roll of %d, transforming to category", rollResult)
+	category := question.GetCategoryByIndex(rollResult)
+	loop.handleMessage(
+		&websocket.Conn{},
+		dto.WebsocketMessagePublish{
+			MessageType: hybriddie.MessageType_hybriddie_roll_result,
+			Body:        category,
+		}, false)
 }
 
 // Sets the next GameState to displaying CategoryResponse

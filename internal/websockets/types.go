@@ -7,5 +7,5 @@ import (
 
 type Route struct {
 	messageType string
-	handle      func(conn *websocket.Conn, envelope dto.WebsocketMessagePublish) bool
+	handle      func(conn *websocket.Conn, envelope dto.WebsocketMessagePublish, wantsFeedback bool) bool
 }

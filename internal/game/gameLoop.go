@@ -1,11 +1,13 @@
 package game
 
 import (
-	dto "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/generated-sources/dto"
-	helpers "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/helper-functions"
-	msgType "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/message-types"
+	"fmt"
 
 	log "github.com/sirupsen/logrus"
+	dto "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/generated-sources/dto"
+	helpers "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/helper-functions"
+	hybriddie "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/hybrid-die"
+	msgType "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/message-types"
 )
 
 // Construct the Game by defining the loop
@@ -13,7 +15,8 @@ func (loop *Game) constructLoop() *Game {
 	gsWelcome := gameStep{Name: "Welcome"}
 	gsSetup := gameStep{Name: "Setup - Select Player Count"}
 	gsTransitionToSpecificPlayer := gameStep{Name: "Transition to specific player"}
-	gsCategoryRoll := gameStep{Name: "Category - Roll"}
+	gsDigitalCategoryRoll := gameStep{Name: "Category - Roll (digital)"}
+	gsHybridDieCategoryRoll := gameStep{Name: "Category - Roll (hybrid-die)"}
 	gsCategoryResult := gameStep{Name: "Category - Result"}
 	gsQuestion := gameStep{Name: "Question"}
 	gsCorrectnessFeedback := gameStep{Name: "Correctness Feedback"}
@@ -43,8 +46,8 @@ func (loop *Game) constructLoop() *Game {
 	// NEW PLAYER COLOR PROMPT
 	gsNewPlayerColor.addAction(string(msgType.Player_Generic_Confirm), func(envelope dto.WebsocketMessagePublish) {
 		playerState := loop.managers.playerManager.GetPlayerState()
-		loop.transitionToState(gsCategoryRoll, dto.WebsocketMessageSubscribe{
-			MessageType: string(msgType.Game_Die_RollCategoryPrompt),
+		loop.transitionToState(gsDigitalCategoryRoll, dto.WebsocketMessageSubscribe{
+			MessageType: string(msgType.Game_Die_RollCategoryDigitallyPrompt),
 			PlayerState: &playerState,
 		})
 	})
@@ -56,11 +59,23 @@ func (loop *Game) constructLoop() *Game {
 
 	// TRANSITION TO SPECIFIC PLAYER
 	gsTransitionToSpecificPlayer.addAction(string(msgType.Player_Generic_Confirm), func(envelope dto.WebsocketMessagePublish) {
-		loop.transitionToCategoryRoll(gsCategoryRoll, gsCategoryResult)
+		if loop.managers.hybridDieManager.IsReady() {
+			log.Debug("Hybrid die is ready, using HYBRIDDIE ")
+			loop.transitionToHybridDieCategoryRoll(gsHybridDieCategoryRoll)
+		} else {
+			log.Debug("Hybrid die is not ready, going DIGITAL ")
+			loop.transitionToDigitalCategoryRoll(gsDigitalCategoryRoll)
+		}
 	})
 
-	// CATEGORY ROLL PROMPT
-	gsCategoryRoll.addAction(string(msgType.Player_Die_DigitalCategoryRollRequest), func(envelope dto.WebsocketMessagePublish) {
+	// HYBRIDDIE CATEGORY ROLL PROMPT
+	gsHybridDieCategoryRoll.addAction(hybriddie.MessageType_hybriddie_roll_result, func(envelope dto.WebsocketMessagePublish) {
+		cat := fmt.Sprintf("%v", envelope.Body)
+		loop.transitionToCategoryResponse(gsCategoryResult, cat)
+	})
+
+	// DIGITAL CATEGORY ROLL PROMPT
+	gsDigitalCategoryRoll.addAction(string(msgType.Player_Die_DigitalCategoryRollRequest), func(envelope dto.WebsocketMessagePublish) {
 		cat := loop.managers.questionManager.SetRandomCategory()
 		loop.transitionToCategoryResponse(gsCategoryResult, cat)
 	})

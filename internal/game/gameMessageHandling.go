@@ -11,7 +11,8 @@ import (
 
 // Generic handler for incoming messages
 // Check the current GameState and call the appropriate handler function
-func (loop *Game) handleMessage(conn *websocket.Conn, envelope dto.WebsocketMessagePublish) bool {
+// 'wantsFeedback' toggles if the 'conn' param is used to send error feedback
+func (loop *Game) handleMessage(conn *websocket.Conn, envelope dto.WebsocketMessagePublish, wantsFeedback bool) bool {
 	msgType := envelope.MessageType
 	contextLogger := log.WithFields(log.Fields{
 		"GameStep":    loop.currentStep.Name,
@@ -26,9 +27,11 @@ func (loop *Game) handleMessage(conn *websocket.Conn, envelope dto.WebsocketMess
 			return true
 		}
 	}
-	feedback := buildErrorFeedback(loop.currentStep, envelope)
-	contextLogger.Info(feedback.ErrorMessage + " ")
-	helpers.WriteWebsocketMessage(conn, helpers.ErrorFeedbackToWebsocketMessageSubscribe(feedback))
+	if wantsFeedback {
+		feedback := buildErrorFeedback(loop.currentStep, envelope)
+		contextLogger.Info(feedback.ErrorMessage + " ")
+		helpers.WriteWebsocketMessage(conn, helpers.ErrorFeedbackToWebsocketMessageSubscribe(feedback))
+	}
 	return false
 }
 

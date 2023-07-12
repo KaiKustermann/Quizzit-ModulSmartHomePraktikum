@@ -11,16 +11,28 @@ type HybridDieManager struct {
 }
 
 // Create a new hybrid die object
-func NewHybridDieManager() (hd HybridDieManager) {
+func NewHybridDieManager() *HybridDieManager {
+	hd := &HybridDieManager{}
 	finder := NewHybridDieFinder()
 	controller := NewHybridDieController()
-	controller.callbackOnDieFound = finder.Stop
-	controller.callbackOnDieLost = hd.Find
+	controller.callbackOnDieConnected = hd.onDieConnected
+	controller.callbackOnDieLost = hd.onDieLost
 
 	hd.ready = false
 	hd.finder = &finder
 	hd.controller = &controller
-	return
+	return hd
+}
+
+// Callback for the hybrid die being connected
+func (hd *HybridDieManager) onDieConnected() {
+	hd.ready = true
+	hd.finder.Stop()
+}
+
+func (hd *HybridDieManager) onDieLost() {
+	hd.ready = false
+	hd.Find()
 }
 
 // Is the Hybrid Die ready to be used
@@ -46,7 +58,7 @@ func (hd *HybridDieManager) Find() {
 }
 
 // Stop finding a hybrid die
-// Note: Established TCP Connections stay open!
+// Stops reading from hybrid die
 func (hd *HybridDieManager) Stop() {
 	hd.finder.Stop()
 	hd.controller.Stop()
