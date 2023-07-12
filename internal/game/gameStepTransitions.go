@@ -158,8 +158,12 @@ func (loop *Game) transitionToHybridDieCategoryRoll(gsHybridDieCategoryRoll game
 	log.Debug("Waiting for HybridDie result")
 	// TODO: opt. have a timeout to suggest digital roll?
 	rollResult := <-ch
-	log.Debugf("HybridDie reports a roll of %d, transforming to category", rollResult)
-	category := question.GetCategoryByIndex(rollResult)
+	if rollResult < 1 {
+		log.Errorf("HybridDie roll returned '%d', invalid, skipping... ", rollResult)
+		return
+	}
+	log.Debugf("HybridDie reports a roll of %d, transforming to category of index %d", rollResult, rollResult-1)
+	category := question.GetCategoryByIndex(rollResult - 1)
 	loop.handleMessage(
 		&websocket.Conn{},
 		dto.WebsocketMessagePublish{
@@ -171,6 +175,7 @@ func (loop *Game) transitionToHybridDieCategoryRoll(gsHybridDieCategoryRoll game
 // Sets the next GameState to displaying CategoryResponse
 // Sets stateMessage to the rolled category
 func (loop *Game) transitionToCategoryResponse(gsCategoryResult gameStep, category string) {
+	loop.managers.questionManager.SetActiveCategory(category)
 	playerState := loop.managers.playerManager.GetPlayerState()
 	stateMessage := dto.WebsocketMessageSubscribe{
 		MessageType: string(msgType.Game_Die_CategoryResult),

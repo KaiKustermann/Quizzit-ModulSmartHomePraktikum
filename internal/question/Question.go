@@ -10,12 +10,12 @@ import (
 
 // List of supported categories
 var categories = []string{
-	"Geographie",
-	"Geschichte",
-	"Heimat",
-	"Unterhaltung",
-	"Sprichwörter",
-	"Überraschung",
+	"Geographie",   // 1 on a D6
+	"Geschichte",   // 2 on a D6
+	"Heimat",       // 3 on a D6
+	"Unterhaltung", // 4 on a D6
+	"Sprichwörter", // 5 on a D6
+	"Überraschung", // 6 on a D6
 }
 
 // Get the question categories that are supported
