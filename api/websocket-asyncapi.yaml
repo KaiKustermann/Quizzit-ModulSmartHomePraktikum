@@ -101,6 +101,8 @@ components:
             - $ref: "#/components/schemas/PassToSpecificPlayerPrompt"
             - $ref: "#/components/schemas/RollCategoryPrompt"
             - $ref: "#/components/schemas/CategoryResult"
+            - $ref: "#/components/schemas/PassToNewPlayer"
+            - $ref: "#/components/schemas/NewPlayerColorPrompt"
         playerState:
           $ref: "#/components/schemas/PlayerState"
       additionalProperties: false
@@ -117,6 +119,8 @@ components:
       #   - "player/generic/Confirm"
       #   - "player/setup/SubmitPlayerCount"
       #   - "player/die/DigitalCategoryRollRequest"
+      #   - "game/turn/PassToNewPlayer"
+      #   - "game/turn/NewPlayerColorPrompt"
       # note: the 'enum' code generation produces incompatible code for golang and ts, so we use strings
     WebsocketMessagePublish:
       title: Websocket Message Publish
@@ -300,5 +304,20 @@ components:
         additionalProperties: false
         required:
           - category
+    PassToNewPlayer:
+      title: "Pass to new player"
+      description: "Prompts the player to pass the controller to another new player, happens in the first round of the game"
+      type: object
+      additionalProperties: false
+    NewPlayerColorPrompt:
+      title: "New Player Color Prompt"
+      description: "Prompts the Frontend to display the color of a specific player"
+      type: object
+      properties: 
+        targetPlayerId:
+          type: integer
+      additionalProperties: false
+      required:
+        - targetPlayerId
     # *************************************************************************
     # **** END GAME SCHEMAS ***************************************************
