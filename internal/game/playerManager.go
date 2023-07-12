@@ -67,3 +67,8 @@ func (pm *playerManager) GetTurnOfNextPlayer() int {
 	}
 	return pm.playerTurn[pm.activePlayer+1]
 }
+
+// Returns the turn of the active player
+func (pm *playerManager) GetTurnOfActivePlayer() int {
+	return pm.playerTurn[pm.activePlayer]
+}
