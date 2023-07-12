@@ -9,6 +9,7 @@ type playerManager struct {
 	playerCount  int
 	activePlayer int
 	playerScores []int
+	playerTurn   []int
 }
 
 // Constructs a new QuestionManager
@@ -18,6 +19,7 @@ func NewPlayerManager(playerCount int) (pm playerManager) {
 		// Workaround, the game will always call "MoveToNextPlayer" first, so this way that call will move us to the first player (0)
 		activePlayer: -1,
 		playerScores: make([]int, playerCount),
+		playerTurn:   make([]int, playerCount),
 	}
 	return
 }
@@ -50,4 +52,17 @@ func (pm *playerManager) MoveToNextPlayer() (state dto.PlayerState) {
 func (pm *playerManager) IncreaseScoreOfActivePlayer() (state dto.PlayerState) {
 	pm.playerScores[pm.activePlayer] += 1
 	return pm.GetPlayerState()
+}
+
+// Increase turn count of active player and return playerstate
+func (pm *playerManager) IncreasePlayerTurnOfActivePlayer() (state dto.PlayerState) {
+	pm.playerTurn[pm.activePlayer] += 1
+	return pm.GetPlayerState()
+}
+
+func (pm *playerManager) GetTurnOfNextPlayer() int {
+	if pm.activePlayer+1 >= pm.playerCount {
+		return pm.playerTurn[0]
+	}
+	return pm.playerTurn[pm.activePlayer+1]
 }
