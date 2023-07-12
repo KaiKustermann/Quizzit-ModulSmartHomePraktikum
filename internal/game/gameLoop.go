@@ -15,8 +15,9 @@ func (loop *Game) constructLoop() *Game {
 	gsQuestion := gameStep{Name: "Question"}
 	gsCorrectnessFeedback := gameStep{Name: "Correctness Feedback"}
 	gsTransitionToNewPlayer := gameStep{Name: "Turn 1 - Player transition - Pass to new player"}
-	gsNewPlayerColorPrompt := gameStep{Name: "Turn 1 - Player transition - New Player color Prompt"}
-	gsRemindPlayerColorPrompt := gameStep{Name: "Turn 1 - Reminder - Display Color"}
+	gsNewPlayerColor := gameStep{Name: "Turn 1 - Player transition - New Player color Prompt"}
+	gsRemindPlayerColor := gameStep{Name: "Turn 1 - Reminder - Display Color"}
+	gsPlayerWon := gameStep{Name: "Finished"}
 
 	// WELCOME
 	gsWelcome.addAction(string(msgType.Player_Generic_Confirm), func(envelope dto.WebsocketMessagePublish) {
@@ -33,11 +34,11 @@ func (loop *Game) constructLoop() *Game {
 
 	// TRANSITION TO NEW PLAYER
 	gsTransitionToNewPlayer.addAction(string(msgType.Player_Generic_Confirm), func(envelope dto.WebsocketMessagePublish) {
-		loop.transitionToNewPlayerColorPrompt(gsNewPlayerColorPrompt)
+		loop.transitionToNewPlayerColorPrompt(gsNewPlayerColor)
 	})
 
 	// NEW PLAYER COLOR PROMPT
-	gsNewPlayerColorPrompt.addAction(string(msgType.Player_Generic_Confirm), func(envelope dto.WebsocketMessagePublish) {
+	gsNewPlayerColor.addAction(string(msgType.Player_Generic_Confirm), func(envelope dto.WebsocketMessagePublish) {
 		playerState := loop.managers.playerManager.GetPlayerState()
 		loop.transitionToState(gsCategoryRoll, dto.WebsocketMessageSubscribe{
 			MessageType: string(msgType.Game_Die_RollCategoryPrompt),
@@ -46,7 +47,7 @@ func (loop *Game) constructLoop() *Game {
 	})
 
 	// REMIND PLAYER COLOR PROMPT
-	gsRemindPlayerColorPrompt.addAction(string(msgType.Player_Generic_Confirm), func(envelope dto.WebsocketMessagePublish) {
+	gsRemindPlayerColor.addAction(string(msgType.Player_Generic_Confirm), func(envelope dto.WebsocketMessagePublish) {
 		loop.transitionToNextPlayer(gsTransitionToSpecificPlayer, gsTransitionToNewPlayer)
 	})
 
@@ -76,12 +77,23 @@ func (loop *Game) constructLoop() *Game {
 
 	// FEEDBACK
 	gsCorrectnessFeedback.addAction(string(msgType.Player_Generic_Confirm), func(envelope dto.WebsocketMessagePublish) {
-		activeplayerTurn := loop.managers.playerManager.GetTurnOfActivePlayer()
-		if activeplayerTurn == 1 {
-			loop.transitionToReminder(gsRemindPlayerColorPrompt)
+		if loop.managers.playerManager.HasActivePlayerReachedWinningScore() {
+			loop.transitionToPlayerWon(gsPlayerWon)
 		} else {
-			loop.transitionToNextPlayer(gsTransitionToSpecificPlayer, gsTransitionToNewPlayer)
+			activeplayerTurn := loop.managers.playerManager.GetTurnOfActivePlayer()
+			if activeplayerTurn == 1 {
+				loop.transitionToReminder(gsRemindPlayerColor)
+			} else {
+				loop.transitionToNextPlayer(gsTransitionToSpecificPlayer, gsTransitionToNewPlayer)
+			}
 		}
+	})
+
+	// PLAYER WON
+	gsPlayerWon.addAction(string(msgType.Player_Generic_Confirm), func(envelope dto.WebsocketMessagePublish) {
+		loop.transitionToState(gsWelcome, dto.WebsocketMessageSubscribe{
+			MessageType: string(msgType.Game_Setup_Welcome),
+		})
 	})
 
 	// Set an initial StepGameGame
