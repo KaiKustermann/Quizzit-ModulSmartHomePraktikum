@@ -142,3 +142,12 @@ func (loop *Game) transitionToCategoryResponse(gsCategoryResult gameStep) {
 	}
 	loop.transitionToState(gsCategoryResult, stateMessage)
 }
+
+func (loop *Game) transitionToPlayerWon(gsPlayerWon gameStep) {
+	playerState := loop.managers.playerManager.GetPlayerState()
+	loop.transitionToState(gsPlayerWon, dto.WebsocketMessageSubscribe{
+		MessageType: string(msgType.Game_Turn_PlayerWonPrompt),
+		Body:        dto.PlayerWonPrompt{PlayerId: loop.managers.playerManager.GetActivePlayerId()},
+		PlayerState: &playerState,
+	})
+}
