@@ -100,6 +100,8 @@ func (loop *Game) transitionToNextPlayer(gsTransitionToSpecificPlayer gameStep, 
 	}
 }
 
+// handles the transition ro the gamestep gsRemindPlayerColorPrompt;
+// sets state message to RemindPlayerColorPrompt
 func (loop *Game) transitionToReminder(gsRemindPlayerColorPrompt gameStep) {
 	playerState := loop.managers.playerManager.GetPlayerState()
 	stateMessage := dto.WebsocketMessageSubscribe{

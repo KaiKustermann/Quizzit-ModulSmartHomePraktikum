@@ -45,6 +45,7 @@ func (loop *Game) constructLoop() *Game {
 		})
 	})
 
+	// REMIND PLAYER COLOR PROMPT
 	gsRemindPlayerColorPrompt.addAction(string(msgType.Player_Generic_Confirm), func(envelope dto.WebsocketMessagePublish) {
 		loop.transitionToNextPlayer(gsTransitionToSpecificPlayer, gsTransitionToNewPlayer)
 	})
