@@ -104,6 +104,7 @@ components:
             - $ref: "#/components/schemas/PassToNewPlayer"
             - $ref: "#/components/schemas/NewPlayerColorPrompt"
             - $ref: "#/components/schemas/RemindPlayerColorPrompt"
+            - $ref: "#/components/schemas/PlayerWonPrompt"
         playerState:
           $ref: "#/components/schemas/PlayerState"
       additionalProperties: false
@@ -123,6 +124,7 @@ components:
       #   - "game/turn/PassToNewPlayer"
       #   - "game/turn/NewPlayerColorPrompt"
       #   - "game/turn/RemindPlayerColorPrompt"
+      #   - "game/turn/PlayerWonPrompt"
       # note: the 'enum' code generation produces incompatible code for golang and ts, so we use strings
     WebsocketMessagePublish:
       title: Websocket Message Publish
@@ -327,6 +329,16 @@ components:
       type: object
       properties: 
         targetPlayerId:
+          type: integer
+      additionalProperties: false
+      required:
+        - targetPlayerId
+    PlayerWonPrompt:
+      title: "Player Won Prompt"
+      description: "Event that is send when a player has won, indicates the victor by the id of the player"
+      type: object
+      properties: 
+        playerId:
           type: integer
       additionalProperties: false
       required:
