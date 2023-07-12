@@ -16,6 +16,7 @@ func (loop *Game) constructLoop() *Game {
 	gsCorrectnessFeedback := gameStep{Name: "Correctness Feedback"}
 	gsTransitionToNewPlayer := gameStep{Name: "Turn 1 - Player transition - Pass to new player"}
 	gsNewPlayerColorPrompt := gameStep{Name: "Turn 1 - Player transition - New Player color Prompt"}
+	gsRemindPlayerColorPrompt := gameStep{Name: "Turn 1 - Reminder - Display Color"}
 
 	// WELCOME
 	gsWelcome.addAction(string(msgType.Player_Generic_Confirm), func(envelope dto.WebsocketMessagePublish) {
@@ -44,6 +45,10 @@ func (loop *Game) constructLoop() *Game {
 		})
 	})
 
+	gsRemindPlayerColorPrompt.addAction(string(msgType.Player_Generic_Confirm), func(envelope dto.WebsocketMessagePublish) {
+		loop.transitionToNextPlayer(gsTransitionToSpecificPlayer, gsTransitionToNewPlayer)
+	})
+
 	// TRANSITION TO SPECIFIC PLAYER
 	gsTransitionToSpecificPlayer.addAction(string(msgType.Player_Generic_Confirm), func(envelope dto.WebsocketMessagePublish) {
 		playerState := loop.managers.playerManager.GetPlayerState()
@@ -70,7 +75,12 @@ func (loop *Game) constructLoop() *Game {
 
 	// FEEDBACK
 	gsCorrectnessFeedback.addAction(string(msgType.Player_Generic_Confirm), func(envelope dto.WebsocketMessagePublish) {
-		loop.transitionToNextPlayer(gsTransitionToSpecificPlayer, gsTransitionToNewPlayer)
+		activeplayerTurn := loop.managers.playerManager.GetTurnOfActivePlayer()
+		if activeplayerTurn == 1 {
+			loop.transitionToReminder(gsRemindPlayerColorPrompt)
+		} else {
+			loop.transitionToNextPlayer(gsTransitionToSpecificPlayer, gsTransitionToNewPlayer)
+		}
 	})
 
 	// Set an initial StepGameGame
