@@ -85,12 +85,12 @@ func (ctrl *HybridDieController) read(conn net.Conn) {
 			cL.Error("Closing socket, because: ", err)
 			break
 		}
+		cL.Debug("Received:\n", string(data))
 		msg, err := NewHybridDieMessage(data)
 		if err != nil {
 			cL.Warn(err)
 			continue
 		}
-		cL.Trace("Received:\n", msg)
 		if msg.Result > 0 {
 			ctrl.lastRead = msg.Result
 		}
