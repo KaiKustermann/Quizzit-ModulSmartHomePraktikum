@@ -146,33 +146,25 @@ func (loop *Game) transitionToDigitalCategoryRoll(gsDigitalCategoryRoll gameStep
 // Sets the next GameState to rolling category with the HYBRIDDIE
 // Sets stateMessage to the roll the HYBRIDDIE prompt
 func (loop *Game) transitionToHybridDieCategoryRoll(gsHybridDieCategoryRoll gameStep) {
-	hdm := loop.managers.hybridDieManager
-	ch := make(chan int)
-	log.Debug("Requesting HybridDie roll")
-	go hdm.RequestRoll(ch)
 	playerState := loop.managers.playerManager.GetPlayerState()
 	loop.transitionToState(gsHybridDieCategoryRoll, dto.WebsocketMessageSubscribe{
 		MessageType: string(msgType.Game_Die_RollCategoryHybridDiePrompt),
 		PlayerState: &playerState,
 	})
-	go loop.waitForHybriddieResult(ch)
-}
-
-func (loop *Game) waitForHybriddieResult(c chan int) {
-	log.Debug("Waiting for HybridDie result")
-	rollResult := <-c
-	if rollResult < 1 {
-		log.Errorf("HybridDie roll returned '%d', invalid, skipping... ", rollResult)
-		return
-	}
-	log.Debugf("HybridDie reports a roll of %d, transforming to category of index %d", rollResult, rollResult-1)
-	category := question.GetCategoryByIndex(rollResult - 1)
-	loop.handleMessage(
-		&websocket.Conn{},
-		dto.WebsocketMessagePublish{
-			MessageType: hybriddie.MessageType_hybriddie_roll_result,
-			Body:        category,
-		}, false)
+	loop.managers.hybridDieManager.RequestRoll(func(result int) {
+		if result < 1 {
+			log.Errorf("HybridDie roll returned '%d', invalid, skipping... ", result)
+			return
+		}
+		log.Debugf("HybridDie reports a roll of %d, transforming to category of index %d", result, result-1)
+		category := question.GetCategoryByIndex(result - 1)
+		loop.handleMessage(
+			&websocket.Conn{},
+			dto.WebsocketMessagePublish{
+				MessageType: hybriddie.MessageType_hybriddie_roll_result,
+				Body:        category,
+			}, false)
+	})
 }
 
 // Sets the next GameState to displaying CategoryResponse

@@ -42,12 +42,10 @@ func (hd *HybridDieManager) IsReady() bool {
 }
 
 // Request a die roll
-// Result is returned through the channel
-func (hd *HybridDieManager) RequestRoll(c chan int) {
-	hd.controller.callbackOnRoll = func(result int) {
-		c <- result
-		close(c)
-	}
+// Result is returned through callback
+func (hd *HybridDieManager) RequestRoll(cb func(result int)) {
+	log.Debug("Requesting HybridDie roll")
+	hd.controller.callbackOnRoll = cb
 }
 
 // Start finding a hybrid die
