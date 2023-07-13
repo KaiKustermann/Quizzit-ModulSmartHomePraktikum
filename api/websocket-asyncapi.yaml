@@ -71,11 +71,15 @@ components:
       # POSSIBLE CONTENTS:
       #   - "system/Health"
       #   - "game/generic/ErrorFeedback"
-      #   - "game/question/Question"
-      #   - "game/question/CorrectnessFeedback"
+      #   - "game/generic/PlayerWonPrompt"
       #   - "game/setup/Welcome"
       #   - "game/setup/SelectPlayerCount"
+      #   - "game/question/Question"
+      #   - "game/question/CorrectnessFeedback"
       #   - "game/turn/PassToSpecificPlayer"
+      #   - "game/turn/PassToNewPlayerPrompt"
+      #   - "game/turn/NewPlayerColorPrompt"
+      #   - "game/turn/RemindPlayerColorPrompt"
       #   - "game/die/RollCategoryPrompt"
       #   - "game/die/CategoryResult"
       # note: the 'enum' code generation produces incompatible code for golang and ts, so we use strings
@@ -101,6 +105,10 @@ components:
             - $ref: "#/components/schemas/PassToSpecificPlayerPrompt"
             - $ref: "#/components/schemas/RollCategoryPrompt"
             - $ref: "#/components/schemas/CategoryResult"
+            - $ref: "#/components/schemas/PassToNewPlayerPrompt"
+            - $ref: "#/components/schemas/NewPlayerColorPrompt"
+            - $ref: "#/components/schemas/RemindPlayerColorPrompt"
+            - $ref: "#/components/schemas/PlayerWonPrompt"
         playerState:
           $ref: "#/components/schemas/PlayerState"
       additionalProperties: false
@@ -300,5 +308,40 @@ components:
         additionalProperties: false
         required:
           - category
+    PassToNewPlayerPrompt:
+      title: "Pass to new player"
+      description: "Prompts the player to pass the controller to another new player, happens in the first round of the game"
+      type: object
+      additionalProperties: false
+    NewPlayerColorPrompt:
+      title: "New Player Color Prompt"
+      description: "Prompts the frontend to display the color of a specific player"
+      type: object
+      properties: 
+        targetPlayerId:
+          type: integer
+      additionalProperties: false
+      required:
+        - targetPlayerId
+    RemindPlayerColorPrompt:
+      title: "Remind Player Color Prompt"
+      description: "Prompts the frontend to remind the player of his color"
+      type: object
+      properties: 
+        targetPlayerId:
+          type: integer
+      additionalProperties: false
+      required:
+        - targetPlayerId
+    PlayerWonPrompt:
+      title: "Player Won Prompt"
+      description: "Event that is send when a player has won, indicates the victor by the id of the player"
+      type: object
+      properties: 
+        playerId:
+          type: integer
+      additionalProperties: false
+      required:
+        - targetPlayerId
     # *************************************************************************
     # **** END GAME SCHEMAS ***************************************************

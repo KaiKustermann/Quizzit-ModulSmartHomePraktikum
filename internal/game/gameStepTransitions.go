@@ -51,7 +51,7 @@ func (loop *Game) transitionToCorrectnessFeedback(gsCorrectnessFeedback gameStep
 
 // Save the playerCount as setting and move to PassToSpecificPlayer
 // Sets stateMessage to the pass-to-player message
-func (loop *Game) handlePlayerCountAndTransitionToSpecificPlayer(gsPlayerTransition gameStep, envelope dto.WebsocketMessagePublish) {
+func (loop *Game) handlePlayerCountAndTransitionToNewPlayer(gsTransitionToNewPlayer gameStep, envelope dto.WebsocketMessagePublish) {
 	pCasFloat, ok := envelope.Body.(float64)
 	if !ok {
 		logging.EnvelopeLog(envelope).Warn("Received bad message body for this messageType")
@@ -60,13 +60,63 @@ func (loop *Game) handlePlayerCountAndTransitionToSpecificPlayer(gsPlayerTransit
 	pC := int(pCasFloat)
 	loop.managers.playerManager = NewPlayerManager(pC)
 	logging.EnvelopeLog(envelope).Infof("Setting player count to %d", pC)
-	loop.transitionToSpecificPlayer(gsPlayerTransition)
+	loop.transitionToNewPlayer(gsTransitionToNewPlayer)
+}
+
+// handles the transition to a new player,
+// e.g. for a player that did not have any turn yet
+func (loop *Game) transitionToNewPlayer(gsTransitionToNewPlayer gameStep) {
+	loop.managers.playerManager.MoveToNextPlayer()
+	playerState := loop.managers.playerManager.IncreasePlayerTurnOfActivePlayer()
+	stateMessage := dto.WebsocketMessageSubscribe{
+		MessageType: string(msgType.Game_Turn_PassToNewPlayer),
+		Body:        dto.PassToNewPlayer{},
+		PlayerState: &playerState,
+	}
+	loop.transitionToState(gsTransitionToNewPlayer, stateMessage)
+}
+
+// handles the transition to the gamestate gsNewPlayerColorPrompt
+// sets state message to NewPlayerColorPrompt
+func (loop *Game) transitionToNewPlayerColorPrompt(gsNewPlayerColorPrompt gameStep) {
+	playerState := loop.managers.playerManager.GetPlayerState()
+	stateMessage := dto.WebsocketMessageSubscribe{
+		MessageType: string(msgType.Game_Turn_NewPlayerColorPrompt),
+		Body:        dto.NewPlayerColorPrompt{TargetPlayerId: loop.managers.playerManager.GetActivePlayerId()},
+		PlayerState: &playerState,
+	}
+	loop.transitionToState(gsNewPlayerColorPrompt, stateMessage)
+}
+
+// handles a generic transition to the next player
+// if it is the first round of the next player it transitions to gsTransitionToNewPlayer,
+// otherwise it transitions to gsTransitionToSpecificPlayer
+func (loop *Game) transitionToNextPlayer(gsTransitionToSpecificPlayer gameStep, gsTransitionToNewPlayer gameStep) {
+	nextPlayerTurn := loop.managers.playerManager.GetTurnOfNextPlayer()
+	if nextPlayerTurn == 0 {
+		loop.transitionToNewPlayer(gsTransitionToNewPlayer)
+	} else {
+		loop.transitionToSpecificPlayer(gsTransitionToSpecificPlayer)
+	}
+}
+
+// handles the transition ro the gamestep gsRemindPlayerColorPrompt;
+// sets state message to RemindPlayerColorPrompt
+func (loop *Game) transitionToReminder(gsRemindPlayerColorPrompt gameStep) {
+	playerState := loop.managers.playerManager.GetPlayerState()
+	stateMessage := dto.WebsocketMessageSubscribe{
+		MessageType: string(msgType.Game_Turn_RemindPlayerColorPrompt),
+		Body:        dto.RemindPlayerColorPrompt{TargetPlayerId: loop.managers.playerManager.GetActivePlayerId()},
+		PlayerState: &playerState,
+	}
+	loop.transitionToState(gsRemindPlayerColorPrompt, stateMessage)
 }
 
 // Sets the next GameState to PassToSpecificPlayer
 // Sets stateMessage to the pass-to-player message
 func (loop *Game) transitionToSpecificPlayer(gsPlayerTransition gameStep) {
-	playerState := loop.managers.playerManager.MoveToNextPlayer()
+	loop.managers.playerManager.MoveToNextPlayer()
+	playerState := loop.managers.playerManager.IncreasePlayerTurnOfActivePlayer()
 	stateMessage := dto.WebsocketMessageSubscribe{
 		MessageType: string(msgType.Game_Turn_PassToSpecificPlayer),
 		Body: dto.PassToSpecificPlayerPrompt{
@@ -90,4 +140,13 @@ func (loop *Game) transitionToCategoryResponse(gsCategoryResult gameStep) {
 		PlayerState: &playerState,
 	}
 	loop.transitionToState(gsCategoryResult, stateMessage)
+}
+
+func (loop *Game) transitionToPlayerWon(gsPlayerWon gameStep) {
+	playerState := loop.managers.playerManager.GetPlayerState()
+	loop.transitionToState(gsPlayerWon, dto.WebsocketMessageSubscribe{
+		MessageType: string(msgType.Game_Generic_PlayerWonPrompt),
+		Body:        dto.PlayerWonPrompt{PlayerId: loop.managers.playerManager.GetActivePlayerId()},
+		PlayerState: &playerState,
+	})
 }
