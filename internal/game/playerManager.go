@@ -9,6 +9,8 @@ type playerManager struct {
 	playerCount  int
 	activePlayer int
 	playerScores []int
+	playerTurns  []int
+	winningScore int
 }
 
 // Constructs a new QuestionManager
@@ -18,6 +20,8 @@ func NewPlayerManager(playerCount int) (pm playerManager) {
 		// Workaround, the game will always call "MoveToNextPlayer" first, so this way that call will move us to the first player (0)
 		activePlayer: -1,
 		playerScores: make([]int, playerCount),
+		playerTurns:  make([]int, playerCount),
+		winningScore: 5,
 	}
 	return
 }
@@ -50,4 +54,37 @@ func (pm *playerManager) MoveToNextPlayer() (state dto.PlayerState) {
 func (pm *playerManager) IncreaseScoreOfActivePlayer() (state dto.PlayerState) {
 	pm.playerScores[pm.activePlayer] += 1
 	return pm.GetPlayerState()
+}
+
+// Increase turn count of active player and return playerstate
+func (pm *playerManager) IncreasePlayerTurnOfActivePlayer() (state dto.PlayerState) {
+	pm.playerTurns[pm.activePlayer] += 1
+	return pm.GetPlayerState()
+}
+
+// Returns the turn of the next player, so the current active player plus one
+func (pm *playerManager) GetTurnOfNextPlayer() int {
+	if pm.activePlayer+1 >= pm.playerCount {
+		return pm.playerTurns[0]
+	}
+	return pm.playerTurns[pm.activePlayer+1]
+}
+
+// Returns the turn of the active player
+func (pm *playerManager) GetTurnOfActivePlayer() int {
+	return pm.playerTurns[pm.activePlayer]
+}
+
+// Returns the score of the active player
+func (pm *playerManager) GetScoreOfActivePlayer() int {
+	return pm.playerScores[pm.activePlayer]
+}
+
+// Returns boolen to signal if the active player has won the game or not
+// Returns true if the winning scire is reached by the active player and false if it is not reached
+func (pm *playerManager) HasActivePlayerReachedWinningScore() bool {
+	if pm.GetScoreOfActivePlayer() == pm.winningScore {
+		return true
+	}
+	return false
 }
