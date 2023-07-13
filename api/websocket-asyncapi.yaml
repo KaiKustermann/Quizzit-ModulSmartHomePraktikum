@@ -80,7 +80,9 @@ components:
       #   - "game/turn/PassToNewPlayerPrompt"
       #   - "game/turn/NewPlayerColorPrompt"
       #   - "game/turn/RemindPlayerColorPrompt"
-      #   - "game/die/RollCategoryPrompt"
+      #   - "game/die/RollCategoryDigitallyPrompt"
+      #   - "game/die/TakeHybridDiePrompt"
+      #   - "game/die/RollCategoryHybridDiePrompt"
       #   - "game/die/CategoryResult"
       # note: the 'enum' code generation produces incompatible code for golang and ts, so we use strings
     WebsocketMessageSubscribe:
@@ -103,7 +105,9 @@ components:
             - $ref: "#/components/schemas/WelcomePrompt"
             - $ref: "#/components/schemas/SelectPlayerCountPrompt"
             - $ref: "#/components/schemas/PassToSpecificPlayerPrompt"
-            - $ref: "#/components/schemas/RollCategoryPrompt"
+            - $ref: "#/components/schemas/RollCategoryDigitallyPrompt"
+            - $ref: "#/components/schemas/TakeHybridDiePrompt"
+            - $ref: "#/components/schemas/RollCategoryHybridDiePrompt"
             - $ref: "#/components/schemas/CategoryResult"
             - $ref: "#/components/schemas/PassToNewPlayerPrompt"
             - $ref: "#/components/schemas/NewPlayerColorPrompt"
@@ -294,14 +298,24 @@ components:
       additionalProperties: false
       required:
         - targetPlayerId
-    RollCategoryPrompt:
-      title: "Roll Category Prompt"
+    RollCategoryDigitallyPrompt:
+      title: "Roll Category Digitally Prompt"
       description: "Prompts the player to roll a category"
       type: object
       additionalProperties: false
     DigitalCategoryRollRequest:
       title: "Digital Category Roll Request"
       description: "Player requests from backend a digital category roll (as opposed to using an analog die)"
+      type: object
+      additionalProperties: false
+    TakeHybridDiePrompt:
+      title: "Take Hybrid Die Prompt"
+      description: "Prompts the player to take the physical die into their hands"
+      type: object
+      additionalProperties: false
+    RollCategoryHybridDiePrompt:
+      title: "Roll Category Hybrid Die Prompt"
+      description: "Prompts the player to roll a category using the physical die"
       type: object
       additionalProperties: false
     CategoryResult:

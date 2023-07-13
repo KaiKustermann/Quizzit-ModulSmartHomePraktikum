@@ -14,7 +14,8 @@ const (
 	Game_Turn_PassToNewPlayer            MessageTypeSubscribe = "game/turn/PassToNewPlayer"
 	Game_Turn_NewPlayerColorPrompt       MessageTypeSubscribe = "game/turn/NewPlayerColorPrompt"
 	Game_Turn_RemindPlayerColorPrompt    MessageTypeSubscribe = "game/turn/RemindPlayerColorPrompt"
-	Game_Die_RollCategoryDigitallyPrompt MessageTypeSubscribe = "game/die/RollCategoryPrompt"
+	Game_Die_RollCategoryDigitallyPrompt MessageTypeSubscribe = "game/die/RollCategoryDigitallyPrompt"
+	Game_Die_TakeHybridDiePrompt         MessageTypeSubscribe = "game/die/TakeHybridDiePrompt"
 	Game_Die_RollCategoryHybridDiePrompt MessageTypeSubscribe = "game/die/RollCategoryHybridDiePrompt"
 	Game_Die_CategoryResult              MessageTypeSubscribe = "game/die/CategoryResult"
 )
