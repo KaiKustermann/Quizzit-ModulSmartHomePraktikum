@@ -45,11 +45,13 @@ func (loop *Game) constructLoop() *Game {
 
 	// NEW PLAYER COLOR PROMPT
 	gsNewPlayerColor.addAction(string(msgType.Player_Generic_Confirm), func(envelope dto.WebsocketMessagePublish) {
-		playerState := loop.managers.playerManager.GetPlayerState()
-		loop.transitionToState(gsDigitalCategoryRoll, dto.WebsocketMessageSubscribe{
-			MessageType: string(msgType.Game_Die_RollCategoryDigitallyPrompt),
-			PlayerState: &playerState,
-		})
+		if loop.managers.hybridDieManager.IsReady() {
+			log.Debug("Hybrid die is ready, using HYBRIDDIE ")
+			loop.transitionToHybridDieCategoryRoll(gsHybridDieCategoryRoll)
+		} else {
+			log.Debug("Hybrid die is not ready, going DIGITAL ")
+			loop.transitionToDigitalCategoryRoll(gsDigitalCategoryRoll)
+		}
 	})
 
 	// REMIND PLAYER COLOR PROMPT
