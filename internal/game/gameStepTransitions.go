@@ -1,14 +1,11 @@
 package game
 
 import (
-	"github.com/gorilla/websocket"
 	log "github.com/sirupsen/logrus"
 	dto "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/generated-sources/dto"
 	helpers "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/helper-functions"
-	hybriddie "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/hybrid-die"
 	"gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/logging"
 	msgType "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/message-types"
-	"gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/question"
 	ws "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/websockets"
 )
 
@@ -133,38 +130,23 @@ func (loop *Game) transitionToSpecificPlayer(gsPlayerTransition gameStep) {
 	loop.transitionToState(gsPlayerTransition, stateMessage)
 }
 
-// Sets the next GameState to rolling category DIGITALLY
-// Sets stateMessage to the DIGITAL roll category prompt
-func (loop *Game) transitionToDigitalCategoryRoll(gsDigitalCategoryRoll gameStep) {
+// Calls transitiontoCategoryRoll digitally/hybriddie depending on the die's readystate.
+// Sets stateMessage to the chosen prompt
+func (loop *Game) transitionToCategoryRoll(gsDigitalCategoryRoll gameStep, gsHybridDieCategoryRoll gameStep) {
 	playerState := loop.managers.playerManager.GetPlayerState()
-	loop.transitionToState(gsDigitalCategoryRoll, dto.WebsocketMessageSubscribe{
-		MessageType: string(msgType.Game_Die_RollCategoryDigitallyPrompt),
-		PlayerState: &playerState,
-	})
-}
-
-// Sets the next GameState to rolling category with the HYBRIDDIE
-// Sets stateMessage to the roll the HYBRIDDIE prompt
-func (loop *Game) transitionToHybridDieCategoryRoll(gsHybridDieCategoryRoll gameStep) {
-	playerState := loop.managers.playerManager.GetPlayerState()
-	loop.transitionToState(gsHybridDieCategoryRoll, dto.WebsocketMessageSubscribe{
-		MessageType: string(msgType.Game_Die_RollCategoryHybridDiePrompt),
-		PlayerState: &playerState,
-	})
-	loop.managers.hybridDieManager.RequestRoll(func(result int) {
-		if result < 1 {
-			log.Errorf("HybridDie roll returned '%d', invalid, skipping... ", result)
-			return
-		}
-		log.Debugf("HybridDie reports a roll of %d, transforming to category of index %d", result, result-1)
-		category := question.GetCategoryByIndex(result - 1)
-		loop.handleMessage(
-			&websocket.Conn{},
-			dto.WebsocketMessagePublish{
-				MessageType: hybriddie.MessageType_hybriddie_roll_result,
-				Body:        category,
-			}, false)
-	})
+	if loop.managers.hybridDieManager.IsReady() {
+		log.Debug("Hybrid die is ready, using HYBRIDDIE ")
+		loop.transitionToState(gsHybridDieCategoryRoll, dto.WebsocketMessageSubscribe{
+			MessageType: string(msgType.Game_Die_RollCategoryHybridDiePrompt),
+			PlayerState: &playerState,
+		})
+	} else {
+		log.Debug("Hybrid die is not ready, going DIGITAL ")
+		loop.transitionToState(gsDigitalCategoryRoll, dto.WebsocketMessageSubscribe{
+			MessageType: string(msgType.Game_Die_RollCategoryDigitallyPrompt),
+			PlayerState: &playerState,
+		})
+	}
 }
 
 // Sets the next GameState to displaying CategoryResponse

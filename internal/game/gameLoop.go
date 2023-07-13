@@ -3,7 +3,6 @@ package game
 import (
 	"fmt"
 
-	log "github.com/sirupsen/logrus"
 	dto "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/generated-sources/dto"
 	helpers "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/helper-functions"
 	hybriddie "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/hybrid-die"
@@ -45,29 +44,12 @@ func (loop *Game) constructLoop() *Game {
 
 	// NEW PLAYER COLOR PROMPT
 	gsNewPlayerColor.addAction(string(msgType.Player_Generic_Confirm), func(envelope dto.WebsocketMessagePublish) {
-		if loop.managers.hybridDieManager.IsReady() {
-			log.Debug("Hybrid die is ready, using HYBRIDDIE ")
-			loop.transitionToHybridDieCategoryRoll(gsHybridDieCategoryRoll)
-		} else {
-			log.Debug("Hybrid die is not ready, going DIGITAL ")
-			loop.transitionToDigitalCategoryRoll(gsDigitalCategoryRoll)
-		}
-	})
-
-	// REMIND PLAYER COLOR PROMPT
-	gsRemindPlayerColor.addAction(string(msgType.Player_Generic_Confirm), func(envelope dto.WebsocketMessagePublish) {
-		loop.transitionToNextPlayer(gsTransitionToSpecificPlayer, gsTransitionToNewPlayer)
+		loop.transitionToCategoryRoll(gsDigitalCategoryRoll, gsHybridDieCategoryRoll)
 	})
 
 	// TRANSITION TO SPECIFIC PLAYER
 	gsTransitionToSpecificPlayer.addAction(string(msgType.Player_Generic_Confirm), func(envelope dto.WebsocketMessagePublish) {
-		if loop.managers.hybridDieManager.IsReady() {
-			log.Debug("Hybrid die is ready, using HYBRIDDIE ")
-			loop.transitionToHybridDieCategoryRoll(gsHybridDieCategoryRoll)
-		} else {
-			log.Debug("Hybrid die is not ready, going DIGITAL ")
-			loop.transitionToDigitalCategoryRoll(gsDigitalCategoryRoll)
-		}
+		loop.transitionToCategoryRoll(gsDigitalCategoryRoll, gsHybridDieCategoryRoll)
 	})
 
 	// HYBRIDDIE CATEGORY ROLL PROMPT
@@ -114,6 +96,11 @@ func (loop *Game) constructLoop() *Game {
 				loop.transitionToNextPlayer(gsTransitionToSpecificPlayer, gsTransitionToNewPlayer)
 			}
 		}
+	})
+
+	// REMIND PLAYER COLOR PROMPT
+	gsRemindPlayerColor.addAction(string(msgType.Player_Generic_Confirm), func(envelope dto.WebsocketMessagePublish) {
+		loop.transitionToNextPlayer(gsTransitionToSpecificPlayer, gsTransitionToNewPlayer)
 	})
 
 	// PLAYER WON

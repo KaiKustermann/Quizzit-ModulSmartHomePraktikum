@@ -41,10 +41,9 @@ func (hd *HybridDieManager) IsReady() bool {
 	return hd.ready
 }
 
-// Request a die roll
-// Result is returned through callback
-func (hd *HybridDieManager) RequestRoll(cb func(result int)) {
-	log.Debug("Requesting HybridDie roll")
+// Set Callback for die roll results
+func (hd *HybridDieManager) SetCallback(cb func(result int)) {
+	log.Debug("Set callback for die roll results")
 	hd.controller.callbackOnRoll = cb
 }
 

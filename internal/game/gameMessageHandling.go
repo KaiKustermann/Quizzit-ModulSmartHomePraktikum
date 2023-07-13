@@ -27,9 +27,9 @@ func (loop *Game) handleMessage(conn *websocket.Conn, envelope dto.WebsocketMess
 			return true
 		}
 	}
+	feedback := buildErrorFeedback(loop.currentStep, envelope)
+	contextLogger.Warn(feedback.ErrorMessage + " ")
 	if wantsFeedback {
-		feedback := buildErrorFeedback(loop.currentStep, envelope)
-		contextLogger.Info(feedback.ErrorMessage + " ")
 		helpers.WriteWebsocketMessage(conn, helpers.ErrorFeedbackToWebsocketMessageSubscribe(feedback))
 	}
 	return false
