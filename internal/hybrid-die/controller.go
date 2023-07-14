@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"net"
 	"strings"
+	"time"
 
 	log "github.com/sirupsen/logrus"
 )
@@ -62,6 +63,7 @@ func (ctrl *HybridDieController) Listen() {
 		}
 		cL.Infof("Found codeword '%s' > It is a hybrid die! ", expectedCodeWord)
 		ctrl.cbDieConnected()
+		go ctrl.ping(conn)
 		go ctrl.read(conn)
 		ctrl.stopListening()
 	}
@@ -88,11 +90,27 @@ func (ctrl *HybridDieController) read(conn net.Conn) {
 			continue
 		}
 		if msg.Result > 0 {
-			ctrl.callbackOnRoll(msg.Result)
+			ctrl.cbOnRoll(msg.Result)
 		}
 	}
 	cL.Debugf("Stopped reading")
 	ctrl.cbDieLost()
+}
+
+// Continuously send a ping to the hybrid die
+func (ctrl *HybridDieController) ping(conn net.Conn) {
+	cL := log.WithField("address", conn.RemoteAddr().String())
+	cL.Info("Starting ping to hybrid die")
+	for ctrl.isReading {
+		time.Sleep(10 * time.Second)
+		cL.Trace("SuperDuperDicePing")
+		_, err := conn.Write([]byte("SuperDuperDicePing\n"))
+		if err != nil {
+			cL.Warn(err)
+			break
+		}
+	}
+	cL.Debugf("Stopped pinging")
 }
 
 func (ctrl *HybridDieController) stopListening() {
