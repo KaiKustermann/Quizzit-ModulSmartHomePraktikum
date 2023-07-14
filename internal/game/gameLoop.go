@@ -4,7 +4,6 @@ import (
 	dto "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/generated-sources/dto"
 	helpers "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/helper-functions"
 	msgType "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/message-types"
-	ws "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/websockets"
 
 	log "github.com/sirupsen/logrus"
 )
@@ -78,16 +77,15 @@ func (loop *Game) constructLoop() *Game {
 	gsQuestion.addAction(string(msgType.Player_Question_SubmitAnswer), func(envelope dto.WebsocketMessagePublish) {
 		loop.transitionToCorrectnessFeedback(gsCorrectnessFeedback, envelope)
 	})
-	gsQuestion.addAction(string(msgType.Player_Question_JokerRequest), func(envelope dto.WebsocketMessagePublish) {
-		if !loop.managers.questionManager.activeQuestion.IsJokerAlreadyUsed() {
-			loop.managers.questionManager.activeQuestion.UseJoker()
-			playerState := loop.managers.playerManager.GetPlayerState()
-			updatedQuestionDTO := loop.managers.questionManager.activeQuestion.ConvertToDTO()
-			stateMessage := helpers.QuestionToWebsocketMessageSubscribe(*updatedQuestionDTO, playerState)
-			ws.BroadCast(stateMessage)
-		} else {
+	gsQuestion.addAction(string(msgType.Player_Question_UseJokerRequest), func(envelope dto.WebsocketMessagePublish) {
+		if loop.managers.questionManager.activeQuestion.IsJokerAlreadyUsed() {
 			log.Warn("Joker already used, so the jokerRequest is discarded")
+			return
 		}
+		loop.managers.questionManager.activeQuestion.UseJoker()
+		playerState := loop.managers.playerManager.GetPlayerState()
+		updatedQuestionDTO := loop.managers.questionManager.activeQuestion.ConvertToDTO()
+		loop.transitionToState(gsQuestion, helpers.QuestionToWebsocketMessageSubscribe(*updatedQuestionDTO, playerState))
 	})
 
 	// FEEDBACK

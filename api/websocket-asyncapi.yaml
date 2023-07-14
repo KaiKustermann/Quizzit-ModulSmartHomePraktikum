@@ -122,10 +122,10 @@ components:
       type: string
       # POSSIBLE CONTENTS:
       #   - "player/question/SubmitAnswer"
+      #   - "player/question/UseJokerRequest"
       #   - "player/generic/Confirm"
       #   - "player/setup/SubmitPlayerCount"
       #   - "player/die/DigitalCategoryRollRequest"
-      #   - "player/question/JokerRequest"
       # note: the 'enum' code generation produces incompatible code for golang and ts, so we use strings
     WebsocketMessagePublish:
       title: Websocket Message Publish
@@ -140,10 +140,10 @@ components:
           description: Message content
           oneOf: 
             - $ref: "#/components/schemas/SubmitAnswer"
+            - $ref: "#/components/schemas/UseJokerRequest"
             - $ref: "#/components/schemas/PlayerConfirm"
             - $ref: "#/components/schemas/SubmitPlayerCount"
             - $ref: "#/components/schemas/DigitalCategoryRollRequest"
-            - $ref: "#/components/schemas/JokerRequest"
       additionalProperties: false
       required:
         - correlationId
@@ -349,8 +349,8 @@ components:
       additionalProperties: false
       required:
         - targetPlayerId
-    JokerRequest:
-      title: "Joker Request from the player"
+    UseJokerRequest:
+      title: "Use Joker Request"
       description: "Event that is send from the controller when a player uses a joker"
       type: object
       additionalProperties: false
