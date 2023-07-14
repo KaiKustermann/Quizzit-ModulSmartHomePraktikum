@@ -40,6 +40,8 @@ func (loop *Game) transitionToCorrectnessFeedback(gsCorrectnessFeedback gameStep
 		logging.EnvelopeLog(envelope).Warn("Received bad message body for this messageType")
 		return
 	}
+	// Resetting the temporary state of the active question
+	loop.managers.questionManager.ResetActiveQuestion()
 	feedback := loop.managers.questionManager.GetCorrectnessFeedback(answer)
 	if feedback.SelectedAnswerIsCorrect {
 		loop.managers.playerManager.IncreaseScoreOfActivePlayer()
