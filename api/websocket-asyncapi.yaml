@@ -125,6 +125,7 @@ components:
       #   - "player/generic/Confirm"
       #   - "player/setup/SubmitPlayerCount"
       #   - "player/die/DigitalCategoryRollRequest"
+      #   - "player/question/JokerRequest"
       # note: the 'enum' code generation produces incompatible code for golang and ts, so we use strings
     WebsocketMessagePublish:
       title: Websocket Message Publish
@@ -142,6 +143,7 @@ components:
             - $ref: "#/components/schemas/PlayerConfirm"
             - $ref: "#/components/schemas/SubmitPlayerCount"
             - $ref: "#/components/schemas/DigitalCategoryRollRequest"
+            - $ref: "#/components/schemas/JokerRequest"
       additionalProperties: false
       required:
         - correlationId
@@ -162,6 +164,10 @@ components:
           title: Answer Text
           description: The actual answer text to be displayed to the player during the game.
           type: string
+        isDisabled:
+          title: Is answer disabled
+          description: Boolen to indicate if the answer is disabled (by joker usage)
+          type: boolean
       additionalProperties: false
       required:
         - id
@@ -343,5 +349,10 @@ components:
       additionalProperties: false
       required:
         - targetPlayerId
+    JokerRequest:
+      title: "Joker Request from the player"
+      description: "Event that is send from the controller when a player uses a joker"
+      type: object
+      additionalProperties: false
     # *************************************************************************
     # **** END GAME SCHEMAS ***************************************************
