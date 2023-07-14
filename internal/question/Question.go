@@ -1,6 +1,9 @@
 package question
 
 import (
+	"math/rand"
+	"time"
+
 	dto "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/generated-sources/dto"
 )
 
@@ -52,4 +55,41 @@ func (q Question) GetCorrectnessFeedback(submitAnswer dto.SubmitAnswer) dto.Corr
 		}
 	}
 	return dto.CorrectnessFeedback{SelectedAnswerIsCorrect: selectedAnswerIsCorrect, CorrectAnswer: correctAnswer, SelectedAnswer: selectedAnswer, Question: q.ConvertToDTO()}
+}
+
+func (q Question) IsJokerAlreadyUsed() bool {
+	for _, a := range q.Answers {
+		if a.IsDisabled == true {
+			return true
+		}
+	}
+	return false
+}
+
+// Sets two random uncorrect answers to disabled
+func (q Question) UseJoker() {
+	// Initialize the random number generator with a unique seed
+	rand.Seed(time.Now().UnixNano())
+
+	// Create a slice with random numbers from 0 to length of the array minus 1
+	numbers := rand.Perm(len(q.Answers))
+
+	// Set two random uncorrect answers to disabled
+	answersDisabled := 0
+	for _, n := range numbers {
+		if answersDisabled == 2 {
+			break
+		}
+		if !q.Answers[n].IsCorrect {
+			q.Answers[n].IsDisabled = true
+			answersDisabled += 1
+		}
+	}
+}
+
+// Sets the field IsDisabled of all answers to false
+func (q Question) ResetDisabledStateOfAllAnswers() {
+	for idx := range q.Answers {
+		q.Answers[idx].IsDisabled = false
+	}
 }
