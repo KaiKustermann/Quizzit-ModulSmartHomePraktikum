@@ -7,6 +7,7 @@ const (
 	Player_Question_SubmitAnswer          MessageTypePublish = "player/question/SubmitAnswer"
 	Player_Setup_SubmitPlayerCount        MessageTypePublish = "player/setup/SubmitPlayerCount"
 	Player_Die_DigitalCategoryRollRequest MessageTypePublish = "player/die/DigitalCategoryRollRequest"
+	Player_Question_JokerRequest          MessageTypePublish = "player/question/JokerRequest"
 )
 
 func GetAllMessageTypePublish() []MessageTypePublish {
@@ -15,5 +16,6 @@ func GetAllMessageTypePublish() []MessageTypePublish {
 		Player_Question_SubmitAnswer,
 		Player_Setup_SubmitPlayerCount,
 		Player_Die_DigitalCategoryRollRequest,
+		Player_Question_JokerRequest,
 	}
 }
