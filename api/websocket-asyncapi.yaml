@@ -122,7 +122,7 @@ components:
       type: string
       # POSSIBLE CONTENTS:
       #   - "player/question/SubmitAnswer"
-      #   - "player/question/UseJokerRequest"
+      #   - "player/question/UseJoker"
       #   - "player/generic/Confirm"
       #   - "player/setup/SubmitPlayerCount"
       #   - "player/die/DigitalCategoryRollRequest"
@@ -140,7 +140,7 @@ components:
           description: Message content
           oneOf: 
             - $ref: "#/components/schemas/SubmitAnswer"
-            - $ref: "#/components/schemas/UseJokerRequest"
+            - $ref: "#/components/schemas/UseJoker"
             - $ref: "#/components/schemas/PlayerConfirm"
             - $ref: "#/components/schemas/SubmitPlayerCount"
             - $ref: "#/components/schemas/DigitalCategoryRollRequest"
@@ -349,8 +349,8 @@ components:
       additionalProperties: false
       required:
         - targetPlayerId
-    UseJokerRequest:
-      title: "Use Joker Request"
+    UseJoker:
+      title: "Use Joker"
       description: "Event that is send from the controller when a player uses a joker"
       type: object
       additionalProperties: false

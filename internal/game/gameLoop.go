@@ -77,9 +77,9 @@ func (loop *Game) constructLoop() *Game {
 	gsQuestion.addAction(string(msgType.Player_Question_SubmitAnswer), func(envelope dto.WebsocketMessagePublish) {
 		loop.transitionToCorrectnessFeedback(gsCorrectnessFeedback, envelope)
 	})
-	gsQuestion.addAction(string(msgType.Player_Question_UseJokerRequest), func(envelope dto.WebsocketMessagePublish) {
+	gsQuestion.addAction(string(msgType.Player_Question_UseJoker), func(envelope dto.WebsocketMessagePublish) {
 		if loop.managers.questionManager.activeQuestion.IsJokerAlreadyUsed() {
-			log.Warn("Joker already used, so the jokerRequest is discarded")
+			log.Warn("Joker already used, so the Request is discarded")
 			return
 		}
 		loop.managers.questionManager.activeQuestion.UseJoker()
