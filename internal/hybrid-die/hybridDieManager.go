@@ -48,7 +48,7 @@ func (hd *HybridDieManager) onDieCalibrated() {
 
 // Callback for the hybrid die sending roll results
 func (hd *HybridDieManager) onDieRoll(result int) {
-	log.Debug("Hybrid die rolled %d", result)
+	log.Debugf("Hybrid die rolled %d", result)
 	hd.CallbackOnRoll(result)
 }
 
