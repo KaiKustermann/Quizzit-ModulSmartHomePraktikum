@@ -1,6 +1,8 @@
 package game
 
 import (
+	"time"
+
 	log "github.com/sirupsen/logrus"
 	dto "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/generated-sources/dto"
 	helpers "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/helper-functions"
@@ -171,10 +173,10 @@ func (loop *Game) transitionToPlayerWon(gsPlayerWon gameStep) {
 }
 
 func (loop *Game) transitionToSearchingHybridDie(gsSearchHybridDie gameStep) {
-	// TODO: timeout for finding the die - on timeout -> call loop with msgType.Game_Die_HybridDieNotFound
 	loop.transitionToState(gsSearchHybridDie, dto.WebsocketMessageSubscribe{
 		MessageType: string(msgType.Game_Die_SearchingHybridDie),
 	})
+	go loop.applyTimeoutForHybridDieSearch(60 * time.Second)
 }
 
 func (loop *Game) transitionToHybridDieConnected(gsHybridDieConnected gameStep) {
@@ -200,4 +202,14 @@ func (loop *Game) transitionToHybridDieReady(gsHybridDieReady gameStep) {
 	loop.transitionToState(gsHybridDieReady, dto.WebsocketMessageSubscribe{
 		MessageType: string(msgType.Game_Die_HybridDieReady),
 	})
+}
+
+func (loop *Game) applyTimeoutForHybridDieSearch(timeout time.Duration) {
+	log.Debugf("Granting %v to find a hybrid die", timeout)
+	time.Sleep(timeout)
+	if loop.managers.hybridDieManager.IsConnected() {
+		return
+	}
+	log.Warnf("Could not find a hybriddie within %v, canceling", timeout)
+	loop.forwardFromHybridDie(string(msgType.Game_Die_HybridDieNotFound), nil)
 }
