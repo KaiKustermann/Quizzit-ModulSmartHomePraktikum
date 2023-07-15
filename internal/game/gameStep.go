@@ -1,6 +1,7 @@
 package game
 
 import (
+	log "github.com/sirupsen/logrus"
 	dto "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/generated-sources/dto"
 )
 
@@ -19,5 +20,6 @@ type gameAction struct {
 
 // Utility function to add a gameAction to a gameStep
 func (gs *gameStep) addAction(action string, handler func(dto.WebsocketMessagePublish)) {
+	log.Debugf("State '%s' can handle '%s'", gs.Name, action)
 	gs.possibleActions = append(gs.possibleActions, gameAction{Action: action, Handler: handler})
 }
