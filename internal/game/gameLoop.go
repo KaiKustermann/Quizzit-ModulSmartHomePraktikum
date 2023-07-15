@@ -2,7 +2,10 @@ package game
 
 import (
 	dto "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/generated-sources/dto"
+	helpers "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/helper-functions"
 	msgType "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/message-types"
+
+	log "github.com/sirupsen/logrus"
 )
 
 // Construct the Game by defining the loop
@@ -73,6 +76,16 @@ func (loop *Game) constructLoop() *Game {
 	// QUESTION
 	gsQuestion.addAction(string(msgType.Player_Question_SubmitAnswer), func(envelope dto.WebsocketMessagePublish) {
 		loop.transitionToCorrectnessFeedback(gsCorrectnessFeedback, envelope)
+	})
+	gsQuestion.addAction(string(msgType.Player_Question_UseJoker), func(envelope dto.WebsocketMessagePublish) {
+		if loop.managers.questionManager.activeQuestion.IsJokerAlreadyUsed() {
+			log.Warn("Joker already used, so the Request is discarded")
+			return
+		}
+		loop.managers.questionManager.activeQuestion.UseJoker()
+		playerState := loop.managers.playerManager.GetPlayerState()
+		updatedQuestionDTO := loop.managers.questionManager.activeQuestion.ConvertToDTO()
+		loop.transitionToState(gsQuestion, helpers.QuestionToWebsocketMessageSubscribe(*updatedQuestionDTO, playerState))
 	})
 
 	// FEEDBACK

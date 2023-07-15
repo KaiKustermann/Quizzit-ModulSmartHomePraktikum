@@ -25,6 +25,7 @@ func (gl *Game) transitionToState(next gameStep, stateMessage dto.WebsocketMessa
 // Sets stateMessage to the question Prompt
 func (loop *Game) transitionToNewQuestion(gsQuestion gameStep) {
 	nextQuestion := loop.managers.questionManager.MoveToNextQuestion()
+	loop.managers.questionManager.ResetActiveQuestion()
 	nextQuestionDTO := nextQuestion.ConvertToDTO()
 	playerState := loop.managers.playerManager.GetPlayerState()
 	stateMessage := helpers.QuestionToWebsocketMessageSubscribe(*nextQuestionDTO, playerState)
@@ -40,6 +41,8 @@ func (loop *Game) transitionToCorrectnessFeedback(gsCorrectnessFeedback gameStep
 		logging.EnvelopeLog(envelope).Warn("Received bad message body for this messageType")
 		return
 	}
+	// Resetting the temporary state of the active question
+	loop.managers.questionManager.ResetActiveQuestion()
 	feedback := loop.managers.questionManager.GetCorrectnessFeedback(answer)
 	if feedback.SelectedAnswerIsCorrect {
 		loop.managers.playerManager.IncreaseScoreOfActivePlayer()

@@ -45,6 +45,11 @@ func (qc *questionManager) SetActiveQuestion(question *question.Question) {
 	qc.activeQuestion = question
 }
 
+// Resets the temporary state of the active question to it's default values
+func (qc *questionManager) ResetActiveQuestion() {
+	qc.activeQuestion.ResetDisabledStateOfAllAnswers()
+}
+
 // Drafts a new question of the given category and sets it as active question
 func (qc *questionManager) MoveToNextQuestion() question.Question {
 	log.Debugf("Moving to the next question of category %s", qc.activeCategory)

@@ -122,6 +122,7 @@ components:
       type: string
       # POSSIBLE CONTENTS:
       #   - "player/question/SubmitAnswer"
+      #   - "player/question/UseJoker"
       #   - "player/generic/Confirm"
       #   - "player/setup/SubmitPlayerCount"
       #   - "player/die/DigitalCategoryRollRequest"
@@ -139,6 +140,7 @@ components:
           description: Message content
           oneOf: 
             - $ref: "#/components/schemas/SubmitAnswer"
+            - $ref: "#/components/schemas/UseJoker"
             - $ref: "#/components/schemas/PlayerConfirm"
             - $ref: "#/components/schemas/SubmitPlayerCount"
             - $ref: "#/components/schemas/DigitalCategoryRollRequest"
@@ -162,6 +164,10 @@ components:
           title: Answer Text
           description: The actual answer text to be displayed to the player during the game.
           type: string
+        isDisabled:
+          title: Is answer disabled
+          description: Boolen to indicate if the answer is disabled (by joker usage)
+          type: boolean
       additionalProperties: false
       required:
         - id
@@ -343,5 +349,10 @@ components:
       additionalProperties: false
       required:
         - targetPlayerId
+    UseJoker:
+      title: "Use Joker"
+      description: "Event that is send from the controller when a player uses a joker"
+      type: object
+      additionalProperties: false
     # *************************************************************************
     # **** END GAME SCHEMAS ***************************************************
