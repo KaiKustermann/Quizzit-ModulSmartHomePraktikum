@@ -16,6 +16,7 @@ func NewHybridDieManager() *HybridDieManager {
 	finder := NewHybridDieFinder()
 	controller := NewHybridDieController()
 	controller.callbackOnDieConnected = hd.onDieConnected
+	controller.callbackOnDieCalibrated = hd.onDieCalibrated
 	controller.callbackOnDieLost = hd.onDieLost
 
 	hd.ready = false
@@ -26,11 +27,17 @@ func NewHybridDieManager() *HybridDieManager {
 
 // Callback for the hybrid die being connected
 func (hd *HybridDieManager) onDieConnected() {
-	hd.ready = true
 	hd.finder.Stop()
 }
 
+// Callback for the hybrid die being calibrated
+func (hd *HybridDieManager) onDieCalibrated() {
+	log.Info("Hybrid die is now ready")
+	hd.ready = true
+}
+
 func (hd *HybridDieManager) onDieLost() {
+	log.Info("Hybrid die is no longer ready")
 	hd.ready = false
 	hd.Find()
 }

@@ -10,11 +10,12 @@ import (
 )
 
 type HybridDieController struct {
-	isListening            bool
-	isReading              bool
-	callbackOnDieConnected func()
-	callbackOnDieLost      func()
-	callbackOnRoll         func(result int)
+	isListening             bool
+	isReading               bool
+	callbackOnDieConnected  func()
+	callbackOnDieCalibrated func()
+	callbackOnDieLost       func()
+	callbackOnRoll          func(result int)
 }
 
 func NewHybridDieController() HybridDieController {
@@ -89,12 +90,27 @@ func (ctrl *HybridDieController) read(conn net.Conn) {
 			cL.Warn(err)
 			continue
 		}
-		if msg.Result > 0 {
-			ctrl.cbOnRoll(msg.Result)
-		}
+		ctrl.handleMessage(msg, conn)
 	}
 	cL.Debugf("Stopped reading")
 	ctrl.cbDieLost()
+}
+
+func (ctrl *HybridDieController) handleMessage(msg HybridDieMessage, conn net.Conn) {
+	switch msg.MessageType {
+	case string(hybrid_die_roll_result):
+		if msg.Result > 0 {
+			ctrl.cbOnRoll(msg.Result)
+		}
+	case string(hybrid_die_request_calibration):
+		log.Info("Received 'begin calibration' request")
+		// TODO: incorporate in game loop instead of instant response
+		log.Warn("WIP: Immediately starting calibration without user interaction!")
+		conn.Write([]byte(hybrid_die_begin_calibration))
+	case string(hybrid_die_finished_calibration):
+		log.Info("Calibration finished")
+		ctrl.cbDieCalibrated()
+	}
 }
 
 // Continuously send a ping to the hybrid die
@@ -103,8 +119,8 @@ func (ctrl *HybridDieController) ping(conn net.Conn) {
 	cL.Info("Starting ping to hybrid die")
 	for ctrl.isReading {
 		time.Sleep(10 * time.Second)
-		cL.Trace("SuperDuperDicePing")
-		_, err := conn.Write([]byte("SuperDuperDicePing\n"))
+		cL.Trace(hybrid_die_ping)
+		_, err := conn.Write([]byte(hybrid_die_ping))
 		if err != nil {
 			cL.Warn(err)
 			break
@@ -129,6 +145,11 @@ func (ctrl *HybridDieController) Stop() {
 func (ctrl *HybridDieController) cbDieConnected() {
 	log.Debug("Calling 'onDieConnected' callback.")
 	ctrl.callbackOnDieConnected()
+}
+
+func (ctrl *HybridDieController) cbDieCalibrated() {
+	log.Debug("Calling 'onDieCalibrated' callback.")
+	ctrl.callbackOnDieCalibrated()
 }
 
 func (ctrl *HybridDieController) cbDieLost() {
