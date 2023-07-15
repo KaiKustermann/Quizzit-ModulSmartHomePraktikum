@@ -9,7 +9,7 @@ tags:
 info:
   title: Quizzit
   description: A quiz game for elderly people
-  version: 0.11.0
+  version: 0.12.0
   license:
     name: not licensed
   contact:
@@ -80,6 +80,11 @@ components:
       #   - "game/turn/PassToNewPlayerPrompt"
       #   - "game/turn/NewPlayerColorPrompt"
       #   - "game/turn/RemindPlayerColorPrompt"
+      #   - "game/die/SearchingHybridDie"
+      #   - "game/die/HybridDieConnected"
+      #   - "game/die/HybridDieNotFound"
+      #   - "game/die/HybridDieCalibrating"
+      #   - "game/die/HybridDieReady"
       #   - "game/die/RollCategoryDigitallyPrompt"
       #   - "game/die/TakeHybridDiePrompt"
       #   - "game/die/RollCategoryHybridDiePrompt"
@@ -105,9 +110,14 @@ components:
             - $ref: "#/components/schemas/WelcomePrompt"
             - $ref: "#/components/schemas/SelectPlayerCountPrompt"
             - $ref: "#/components/schemas/PassToSpecificPlayerPrompt"
-            - $ref: "#/components/schemas/RollCategoryDigitallyPrompt"
+            - $ref: "#/components/schemas/SearchingHybridDie"
+            - $ref: "#/components/schemas/HybridDieConnectedPrompt"
+            - $ref: "#/components/schemas/HybridDieNotFoundPrompt"
+            - $ref: "#/components/schemas/HybridDieCalibrating"
+            - $ref: "#/components/schemas/HybridDieReadyPrompt"
             - $ref: "#/components/schemas/TakeHybridDiePrompt"
             - $ref: "#/components/schemas/RollCategoryHybridDiePrompt"
+            - $ref: "#/components/schemas/RollCategoryDigitallyPrompt"
             - $ref: "#/components/schemas/CategoryResult"
             - $ref: "#/components/schemas/PassToNewPlayerPrompt"
             - $ref: "#/components/schemas/NewPlayerColorPrompt"
@@ -311,6 +321,31 @@ components:
     TakeHybridDiePrompt:
       title: "Take Hybrid Die Prompt"
       description: "Prompts the player to take the physical die into their hands"
+      type: object
+      additionalProperties: false
+    SearchingHybridDie:
+      title: "Searching Hybrid Die"
+      description: "Informs the players the backend is searching for the hybrid die."
+      type: object
+      additionalProperties: false
+    HybridDieConnectedPrompt:
+      title: "Hybrid Die Connected Prompt"
+      description: "Informs the players a hybrid die was found, asks them to put it on a certain side and the confirm to calibrate"
+      type: object
+      additionalProperties: false
+    HybridDieNotFoundPrompt:
+      title: "Hybrid Die Not Found Prompt"
+      description: "Informs the players no hybrid die could be found"
+      type: object
+      additionalProperties: false
+    HybridDieCalibrating:
+      title: "Hybrid Die Calibrating"
+      description: "Informs the players the hybrid die is calibrating"
+      type: object
+      additionalProperties: false
+    HybridDieReadyPrompt:
+      title: "Hybrid Die Ready Prompt"
+      description: "Informs the players the hybrid die is ready to be used."
       type: object
       additionalProperties: false
     RollCategoryHybridDiePrompt:
