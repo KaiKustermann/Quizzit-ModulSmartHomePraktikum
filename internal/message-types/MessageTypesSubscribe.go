@@ -20,7 +20,6 @@ const (
 	Game_Die_HybridDieCalibrating        MessageTypeSubscribe = "game/die/HybridDieCalibrating"
 	Game_Die_HybridDieReady              MessageTypeSubscribe = "game/die/HybridDieReady"
 	Game_Die_RollCategoryDigitallyPrompt MessageTypeSubscribe = "game/die/RollCategoryDigitallyPrompt"
-	Game_Die_TakeHybridDiePrompt         MessageTypeSubscribe = "game/die/TakeHybridDiePrompt"
 	Game_Die_RollCategoryHybridDiePrompt MessageTypeSubscribe = "game/die/RollCategoryHybridDiePrompt"
 	Game_Die_CategoryResult              MessageTypeSubscribe = "game/die/CategoryResult"
 )
