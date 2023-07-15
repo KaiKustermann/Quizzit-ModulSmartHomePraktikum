@@ -7,6 +7,7 @@ import (
 type HybridDieManager struct {
 	connected               bool
 	ready                   bool
+	CallbackOnDieConnected  func()
 	CallbackOnDieCalibrated func()
 	CallbackOnRoll          func(result int)
 	finder                  *HybridDieFinder
@@ -32,8 +33,10 @@ func NewHybridDieManager() *HybridDieManager {
 
 // Callback for the hybrid die being connected
 func (hd *HybridDieManager) onDieConnected() {
+	log.Info("Hybrid die is now connected")
 	hd.connected = true
 	hd.finder.Stop()
+	hd.CallbackOnDieConnected()
 }
 
 // Callback for the hybrid die being calibrated

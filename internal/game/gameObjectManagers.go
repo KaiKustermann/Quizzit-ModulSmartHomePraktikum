@@ -5,6 +5,7 @@ import (
 	log "github.com/sirupsen/logrus"
 	dto "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/generated-sources/dto"
 	hybriddie "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/hybrid-die"
+	messagetypes "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/message-types"
 	"gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/question"
 )
 
@@ -34,21 +35,25 @@ func (game *Game) setupHybridDieManager() *Game {
 		}
 		log.Debugf("HybridDie reports a roll of %d, transforming to category of index %d", result, result-1)
 		category := question.GetCategoryByIndex(result - 1)
-		game.handleMessage(
-			&websocket.Conn{},
-			dto.WebsocketMessagePublish{
-				MessageType: string(hybriddie.Hybrid_die_roll_result),
-				Body:        category,
-			}, false)
+		game.forwardFromHybridDie(string(hybriddie.Hybrid_die_roll_result), category)
+	}
+	log.Trace("Set up routing of hybrid die's 'connected' to the gameloop")
+	game.managers.hybridDieManager.CallbackOnDieConnected = func() {
+		game.forwardFromHybridDie(string(messagetypes.Game_Die_HybridDieConnected), nil)
 	}
 	log.Trace("Set up routing of hybrid die's 'calibration finished' to the gameloop")
 	game.managers.hybridDieManager.CallbackOnDieCalibrated = func() {
-		game.handleMessage(
-			&websocket.Conn{},
-			dto.WebsocketMessagePublish{
-				MessageType: string(hybriddie.Hybrid_die_finished_calibration),
-			}, false)
+		game.forwardFromHybridDie(string(hybriddie.Hybrid_die_finished_calibration), nil)
 	}
 	game.managers.hybridDieManager.Find()
 	return game
+}
+
+func (game *Game) forwardFromHybridDie(messageType string, body interface{}) {
+	game.handleMessage(
+		&websocket.Conn{},
+		dto.WebsocketMessagePublish{
+			MessageType: messageType,
+			Body:        body,
+		}, false)
 }

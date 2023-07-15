@@ -47,7 +47,9 @@ func (bc *HybridDieFinder) sendLimitedBroadcast(attempt int) {
 		"attempt": attempt,
 		"active":  bc.isBroadcasting,
 	})
-	cL.Debugf("Broadcasting '%s' ", connectionCallWord)
+	if attempt%10 == 0 {
+		cL.Debugf("Broadcasting '%s' ", connectionCallWord)
+	}
 	cL.Tracef("Resolving own %s adress for port %s ", network, port)
 	local, err := net.ResolveUDPAddr(network, port)
 	if err != nil {
