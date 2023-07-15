@@ -71,7 +71,6 @@ func (loop *Game) transitionToNewPlayer(gsTransitionToNewPlayer gameStep) {
 	playerState := loop.managers.playerManager.IncreasePlayerTurnOfActivePlayer()
 	stateMessage := dto.WebsocketMessageSubscribe{
 		MessageType: string(msgType.Game_Turn_PassToNewPlayer),
-		Body:        dto.PassToNewPlayer{},
 		PlayerState: &playerState,
 	}
 	loop.transitionToState(gsTransitionToNewPlayer, stateMessage)
