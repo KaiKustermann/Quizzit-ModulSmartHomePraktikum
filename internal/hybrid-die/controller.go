@@ -11,6 +11,7 @@ import (
 
 type HybridDieController struct {
 	isListening             bool
+	isReadyToCalibrate      bool
 	isReading               bool
 	callbackOnDieConnected  func()
 	callbackOnDieCalibrated func()
@@ -20,8 +21,9 @@ type HybridDieController struct {
 
 func NewHybridDieController() HybridDieController {
 	return HybridDieController{
-		isListening: false,
-		isReading:   false,
+		isListening:        false,
+		isReadyToCalibrate: false,
+		isReading:          false,
 	}
 }
 
@@ -98,16 +100,17 @@ func (ctrl *HybridDieController) read(conn net.Conn) {
 
 func (ctrl *HybridDieController) handleMessage(msg HybridDieMessage, conn net.Conn) {
 	switch msg.MessageType {
-	case string(hybrid_die_roll_result):
+	case string(Hybrid_die_roll_result):
 		if msg.Result > 0 {
 			ctrl.cbOnRoll(msg.Result)
 		}
-	case string(hybrid_die_request_calibration):
-		log.Info("Received 'begin calibration' request")
-		// TODO: incorporate in game loop instead of instant response
-		log.Warn("WIP: Immediately starting calibration without user interaction!")
-		conn.Write([]byte(hybrid_die_begin_calibration))
-	case string(hybrid_die_finished_calibration):
+	case string(Hybrid_die_request_calibration):
+		log.Debug("Received 'begin calibration' request")
+		if ctrl.isReadyToCalibrate {
+			log.Info("Confirming 'begin calibration'")
+			conn.Write([]byte(Hybrid_die_begin_calibration))
+		}
+	case string(Hybrid_die_finished_calibration):
 		log.Info("Calibration finished")
 		ctrl.cbDieCalibrated()
 	}
@@ -119,8 +122,8 @@ func (ctrl *HybridDieController) ping(conn net.Conn) {
 	cL.Info("Starting ping to hybrid die")
 	for ctrl.isReading {
 		time.Sleep(10 * time.Second)
-		cL.Trace(hybrid_die_ping)
-		_, err := conn.Write([]byte(hybrid_die_ping))
+		cL.Trace(Hybrid_die_ping)
+		_, err := conn.Write([]byte(Hybrid_die_ping))
 		if err != nil {
 			cL.Warn(err)
 			break

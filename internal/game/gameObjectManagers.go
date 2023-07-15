@@ -26,7 +26,8 @@ func (game *Game) setupManagers() *Game {
 
 func (game *Game) setupHybridDieManager() *Game {
 	game.managers.hybridDieManager = hybriddie.NewHybridDieManager()
-	game.managers.hybridDieManager.SetCallback(func(result int) {
+	log.Trace("Set up routing of hybrid die's 'roll result' to the gameloop")
+	game.managers.hybridDieManager.CallbackOnRoll = func(result int) {
 		if result < 1 {
 			log.Errorf("HybridDie roll returned '%d', invalid, skipping... ", result)
 			return
@@ -36,10 +37,18 @@ func (game *Game) setupHybridDieManager() *Game {
 		game.handleMessage(
 			&websocket.Conn{},
 			dto.WebsocketMessagePublish{
-				MessageType: hybriddie.MessageType_hybriddie_roll_result,
+				MessageType: string(hybriddie.Hybrid_die_roll_result),
 				Body:        category,
 			}, false)
-	})
+	}
+	log.Trace("Set up routing of hybrid die's 'calibration finished' to the gameloop")
+	game.managers.hybridDieManager.CallbackOnDieCalibrated = func() {
+		game.handleMessage(
+			&websocket.Conn{},
+			dto.WebsocketMessagePublish{
+				MessageType: string(hybriddie.Hybrid_die_finished_calibration),
+			}, false)
+	}
 	game.managers.hybridDieManager.Find()
 	return game
 }

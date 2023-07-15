@@ -14,6 +14,11 @@ import (
 func (loop *Game) constructLoop() *Game {
 	gsWelcome := gameStep{Name: "Welcome"}
 	gsSetup := gameStep{Name: "Setup - Select Player Count"}
+	gsSearchHybridDie := gameStep{Name: "Hybrid Die - Searching"}
+	gsHybridDieConnected := gameStep{Name: "Hybrid Die - Found"}
+	gsHybridDieNotFound := gameStep{Name: "Hybrid Die - Not found"}
+	gsHybridDieCalibrating := gameStep{Name: "Hybrid Die - Calibrating"}
+	gsHybridDieReady := gameStep{Name: "Hybrid Die - Ready"}
 	gsTransitionToSpecificPlayer := gameStep{Name: "Transition to specific player"}
 	gsDigitalCategoryRoll := gameStep{Name: "Category - Roll (digital)"}
 	gsHybridDieCategoryRoll := gameStep{Name: "Category - Roll (hybrid-die)"}
@@ -34,8 +39,45 @@ func (loop *Game) constructLoop() *Game {
 
 	// SETUP
 	gsSetup.addAction(string(msgType.Player_Setup_SubmitPlayerCount), func(envelope dto.WebsocketMessagePublish) {
-		// TODO: Persist the actually selected count
-		loop.handlePlayerCountAndTransitionToNewPlayer(gsTransitionToNewPlayer, envelope)
+		loop.handlePlayerCount(envelope)
+		if loop.managers.hybridDieManager.IsReady() {
+			loop.transitionToNewPlayer(gsTransitionToNewPlayer)
+			return
+		}
+		if loop.managers.hybridDieManager.IsConnected() {
+			loop.transitionToHybridDieConnected(gsHybridDieConnected)
+			return
+		}
+		loop.transitionToSearchingHybridDie(gsSearchHybridDie)
+	})
+
+	// SEARCHING FOR HYBRID DIE
+	gsSearchHybridDie.addAction(string(msgType.Game_Die_HybridDieConnected), func(wmp dto.WebsocketMessagePublish) {
+		loop.transitionToHybridDieConnected(gsHybridDieConnected)
+	})
+	gsSearchHybridDie.addAction(string(msgType.Game_Die_HybridDieNotFound), func(wmp dto.WebsocketMessagePublish) {
+		loop.transitionToHybridDieNotFound(gsHybridDieNotFound)
+	})
+
+	// HYBRID DIE CONNECTED
+	gsHybridDieConnected.addAction(string(msgType.Player_Generic_Confirm), func(wmp dto.WebsocketMessagePublish) {
+		loop.transitionToBeginHybridDieCalibration(gsHybridDieCalibrating)
+	})
+
+	// HYBRID DIE NOT FOUND
+	gsHybridDieNotFound.addAction(string(msgType.Player_Generic_Confirm), func(wmp dto.WebsocketMessagePublish) {
+		loop.transitionToNewPlayer(gsTransitionToNewPlayer)
+	})
+
+	// HYBRID DIE CALIBRATING
+	gsHybridDieCalibrating.addAction(string(hybriddie.Hybrid_die_finished_calibration), func(wmp dto.WebsocketMessagePublish) {
+		loop.managers.hybridDieManager.SetReadyToCalibrate(false)
+		loop.transitionToHybridDieReady(gsHybridDieReady)
+	})
+
+	// HYBRID DIE IS READY
+	gsHybridDieReady.addAction(string(msgType.Player_Generic_Confirm), func(wmp dto.WebsocketMessagePublish) {
+		loop.transitionToNewPlayer(gsTransitionToNewPlayer)
 	})
 
 	// TRANSITION TO NEW PLAYER
@@ -54,7 +96,7 @@ func (loop *Game) constructLoop() *Game {
 	})
 
 	// HYBRIDDIE CATEGORY ROLL PROMPT
-	gsHybridDieCategoryRoll.addAction(hybriddie.MessageType_hybriddie_roll_result, func(envelope dto.WebsocketMessagePublish) {
+	gsHybridDieCategoryRoll.addAction(string(hybriddie.Hybrid_die_roll_result), func(envelope dto.WebsocketMessagePublish) {
 		cat := fmt.Sprintf("%v", envelope.Body)
 		loop.transitionToCategoryResponse(gsCategoryResult, cat)
 	})

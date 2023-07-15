@@ -1,6 +1,7 @@
 package game
 
 import (
+	log "github.com/sirupsen/logrus"
 	dto "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/generated-sources/dto"
 )
 
@@ -27,6 +28,7 @@ func NewPlayerManager() (pm playerManager) {
 // Loses scores in the process
 // Active player set to -1 again
 func (pm *playerManager) SetPlayercount(playerCount int) {
+	log.Infof("Setting player count to %d", playerCount)
 	pm.playerCount = playerCount
 	pm.playerScores = make([]int, playerCount)
 	pm.playerTurns = make([]int, playerCount)

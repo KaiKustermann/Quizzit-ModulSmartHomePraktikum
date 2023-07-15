@@ -54,7 +54,7 @@ func (loop *Game) transitionToCorrectnessFeedback(gsCorrectnessFeedback gameStep
 
 // Save the playerCount as setting and move to PassToSpecificPlayer
 // Sets stateMessage to the pass-to-player message
-func (loop *Game) handlePlayerCountAndTransitionToNewPlayer(gsTransitionToNewPlayer gameStep, envelope dto.WebsocketMessagePublish) {
+func (loop *Game) handlePlayerCount(envelope dto.WebsocketMessagePublish) {
 	pCasFloat, ok := envelope.Body.(float64)
 	if !ok {
 		logging.EnvelopeLog(envelope).Warn("Received bad message body for this messageType")
@@ -62,8 +62,6 @@ func (loop *Game) handlePlayerCountAndTransitionToNewPlayer(gsTransitionToNewPla
 	}
 	pC := int(pCasFloat)
 	loop.managers.playerManager.SetPlayercount(pC)
-	logging.EnvelopeLog(envelope).Infof("Setting player count to %d", pC)
-	loop.transitionToNewPlayer(gsTransitionToNewPlayer)
 }
 
 // handles the transition to a new player,
@@ -170,5 +168,37 @@ func (loop *Game) transitionToPlayerWon(gsPlayerWon gameStep) {
 		MessageType: string(msgType.Game_Generic_PlayerWonPrompt),
 		Body:        dto.PlayerWonPrompt{PlayerId: loop.managers.playerManager.GetActivePlayerId()},
 		PlayerState: &playerState,
+	})
+}
+
+func (loop *Game) transitionToSearchingHybridDie(gsSearchHybridDie gameStep) {
+	// TODO: timeout for finding the die - on timeout -> call loop with msgType.Game_Die_HybridDieNotFound
+	loop.transitionToState(gsSearchHybridDie, dto.WebsocketMessageSubscribe{
+		MessageType: string(msgType.Game_Die_SearchingHybridDie),
+	})
+}
+
+func (loop *Game) transitionToHybridDieConnected(gsHybridDieConnected gameStep) {
+	loop.transitionToState(gsHybridDieConnected, dto.WebsocketMessageSubscribe{
+		MessageType: string(msgType.Game_Die_HybridDieConnected),
+	})
+}
+
+func (loop *Game) transitionToHybridDieNotFound(gsHybridDieNotFound gameStep) {
+	loop.transitionToState(gsHybridDieNotFound, dto.WebsocketMessageSubscribe{
+		MessageType: string(msgType.Game_Die_HybridDieNotFound),
+	})
+}
+
+func (loop *Game) transitionToBeginHybridDieCalibration(gsHybridDieCalibrating gameStep) {
+	loop.managers.hybridDieManager.SetReadyToCalibrate(true)
+	loop.transitionToState(gsHybridDieCalibrating, dto.WebsocketMessageSubscribe{
+		MessageType: string(msgType.Game_Die_HybridDieCalibrating),
+	})
+}
+
+func (loop *Game) transitionToHybridDieReady(gsHybridDieReady gameStep) {
+	loop.transitionToState(gsHybridDieReady, dto.WebsocketMessageSubscribe{
+		MessageType: string(msgType.Game_Die_HybridDieReady),
 	})
 }

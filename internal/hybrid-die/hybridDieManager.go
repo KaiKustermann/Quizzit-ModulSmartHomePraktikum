@@ -5,9 +5,12 @@ import (
 )
 
 type HybridDieManager struct {
-	ready      bool
-	finder     *HybridDieFinder
-	controller *HybridDieController
+	connected               bool
+	ready                   bool
+	CallbackOnDieCalibrated func()
+	CallbackOnRoll          func(result int)
+	finder                  *HybridDieFinder
+	controller              *HybridDieController
 }
 
 // Create a new hybrid die object
@@ -17,8 +20,10 @@ func NewHybridDieManager() *HybridDieManager {
 	controller := NewHybridDieController()
 	controller.callbackOnDieConnected = hd.onDieConnected
 	controller.callbackOnDieCalibrated = hd.onDieCalibrated
+	controller.callbackOnRoll = hd.onDieRoll
 	controller.callbackOnDieLost = hd.onDieLost
 
+	hd.connected = false
 	hd.ready = false
 	hd.finder = &finder
 	hd.controller = &controller
@@ -27,6 +32,7 @@ func NewHybridDieManager() *HybridDieManager {
 
 // Callback for the hybrid die being connected
 func (hd *HybridDieManager) onDieConnected() {
+	hd.connected = true
 	hd.finder.Stop()
 }
 
@@ -34,12 +40,26 @@ func (hd *HybridDieManager) onDieConnected() {
 func (hd *HybridDieManager) onDieCalibrated() {
 	log.Info("Hybrid die is now ready")
 	hd.ready = true
+	hd.CallbackOnDieCalibrated()
+}
+
+// Callback for the hybrid die sending roll results
+func (hd *HybridDieManager) onDieRoll(result int) {
+	log.Debug("Hybrid die rolled %d", result)
+	hd.CallbackOnRoll(result)
 }
 
 func (hd *HybridDieManager) onDieLost() {
 	log.Info("Hybrid die is no longer ready")
+	hd.connected = false
 	hd.ready = false
 	hd.Find()
+}
+
+// Is the Hybrid Die connected
+// Returns true if we have a TCP conn, else false
+func (hd *HybridDieManager) IsConnected() bool {
+	return hd.connected
 }
 
 // Is the Hybrid Die ready to be used
@@ -49,9 +69,9 @@ func (hd *HybridDieManager) IsReady() bool {
 }
 
 // Set Callback for die roll results
-func (hd *HybridDieManager) SetCallback(cb func(result int)) {
-	log.Debug("Set callback for die roll results")
-	hd.controller.callbackOnRoll = cb
+func (hd *HybridDieManager) SetReadyToCalibrate(ready bool) {
+	log.Debugf("Set ready to calibrate: '%t'", ready)
+	hd.controller.isReadyToCalibrate = ready
 }
 
 // Start finding a hybrid die
