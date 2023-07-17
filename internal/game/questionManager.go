@@ -28,9 +28,7 @@ type questionManager struct {
 // Constructs a new QuestionManager
 func NewQuestionManager() (qc questionManager) {
 	log.Infof("Constructing new QuestionManager")
-	qc = questionManager{
-		questions: LoadQuestions(),
-	}
+	qc.questions = LoadQuestions()
 	return
 }
 
@@ -114,11 +112,8 @@ func (qc *questionManager) SetActiveCategory(category string) {
 
 // Set activeCategory to a random question category, returns the category for convenience
 func (qc *questionManager) SetRandomCategory() string {
-	log.Tracef("Drafting a random category")
-	categories := question.GetSupportedQuestionCategories()
-	poolSize := len(categories)
-	qc.SetActiveCategory(categories[rand.Intn(poolSize)])
-	log.Infof("Drafted category '%s' out of %d available categories", qc.GetActiveCategory(), poolSize)
+	newCategory := question.GetRandomCategory()
+	qc.SetActiveCategory(newCategory)
 	return qc.GetActiveCategory()
 }
 

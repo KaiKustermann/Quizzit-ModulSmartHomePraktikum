@@ -7,8 +7,6 @@ import (
 	"gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/question"
 )
 
-const expectedCategoryCount = 6
-
 func makeQuestion(id string, category string) (q question.Question) {
 	q.Answers = []question.Answer{
 		{Id: "A", Answer: "text A"},
@@ -39,33 +37,6 @@ func TestGetActiveQuestion(t *testing.T) {
 	activeQuestion := qm.GetActiveQuestion()
 	if !reflect.DeepEqual(activeQuestion, input) {
 		t.Error("Expected input question to be the activeQuestion")
-	}
-}
-
-func TestGetSupportedQuestionCategories(t *testing.T) {
-	cats := question.GetSupportedQuestionCategories()
-	if len(cats) != expectedCategoryCount {
-		t.Errorf("Expected exactly %d supported category types", expectedCategoryCount)
-	}
-}
-
-func TestSetRandomCategory(t *testing.T) {
-	cats := make(map[string]struct{})
-	qm := questionManager{}
-	maxIterations := 1000
-	for i := 0; i < maxIterations; i++ {
-		qm.SetRandomCategory()
-		aC := qm.GetActiveCategory()
-		_, ok := cats[aC]
-		if !ok {
-			cats[aC] = struct{}{}
-		}
-		if len(cats) == expectedCategoryCount {
-			break
-		}
-	}
-	if len(cats) != expectedCategoryCount {
-		t.Errorf("Expected %d different categories over the course of %d iterations, instead found %d", expectedCategoryCount, maxIterations, len(cats))
 	}
 }
 

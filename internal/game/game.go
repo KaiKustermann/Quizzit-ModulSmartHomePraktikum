@@ -14,7 +14,12 @@ type Game struct {
 }
 
 // Construct and inject a new Game instance
-func NewGame() (loop Game) {
-	loop.setupManagers().constructLoop().registerHandlers()
+func NewGame() (game Game) {
+	game.setupManagers().constructLoop().registerHandlers()
 	return
+}
+
+// Stop/End the game, call any resource stops necessary
+func (game *Game) Stop() {
+	game.managers.hybridDieManager.Stop()
 }

@@ -30,7 +30,8 @@ func getServerPort() string {
 
 func main() {
 	logging.SetUpLogging()
-	game.NewGame()
+	gameInstance := game.NewGame()
+	defer gameInstance.Stop()
 	http.HandleFunc("/health", health.HealthCheckHttp)
 	http.HandleFunc("/ws", ws.WebsocketEndpoint)
 	log.Fatal(http.ListenAndServe(":"+getServerPort(), nil))

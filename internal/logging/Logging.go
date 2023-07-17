@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"path"
 	"runtime"
+	"strings"
 	"time"
 
 	nested "github.com/antonfisher/nested-logrus-formatter"
@@ -21,7 +22,8 @@ func SetUpLogging() {
 		TimestampFormat: time.RFC3339,
 		CustomCallerFormatter: func(f *runtime.Frame) string {
 			filename := path.Base(f.File)
-			return fmt.Sprintf(" %s:%d::%s()", filename, f.Line, f.Function)
+			fun := strings.Replace(f.Function, "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server", "", 1)
+			return fmt.Sprintf(" %s:%d::%s()", filename, f.Line, fun)
 		},
 	}
 	log.SetFormatter(&formatter)

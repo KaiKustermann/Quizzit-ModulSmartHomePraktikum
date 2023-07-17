@@ -9,7 +9,7 @@ tags:
 info:
   title: Quizzit
   description: A quiz game for elderly people
-  version: 0.7.0
+  version: 0.12.0
   license:
     name: not licensed
   contact:
@@ -80,7 +80,14 @@ components:
       #   - "game/turn/PassToNewPlayerPrompt"
       #   - "game/turn/NewPlayerColorPrompt"
       #   - "game/turn/RemindPlayerColorPrompt"
-      #   - "game/die/RollCategoryPrompt"
+      #   - "game/die/SearchingHybridDie"
+      #   - "game/die/HybridDieConnected"
+      #   - "game/die/HybridDieNotFound"
+      #   - "game/die/HybridDieCalibrating"
+      #   - "game/die/HybridDieReady"
+      #   - "game/die/RollCategoryDigitallyPrompt"
+      #   - "game/die/TakeHybridDiePrompt"
+      #   - "game/die/RollCategoryHybridDiePrompt"
       #   - "game/die/CategoryResult"
       # note: the 'enum' code generation produces incompatible code for golang and ts, so we use strings
     WebsocketMessageSubscribe:
@@ -98,14 +105,9 @@ components:
             - $ref: "#/components/schemas/Health"
             - $ref: "#/components/schemas/Question"
             - $ref: "#/components/schemas/CorrectnessFeedback"
-            - $ref: "#/components/schemas/PlayerConfirm"
             - $ref: "#/components/schemas/ErrorFeedback"
-            - $ref: "#/components/schemas/WelcomePrompt"
-            - $ref: "#/components/schemas/SelectPlayerCountPrompt"
             - $ref: "#/components/schemas/PassToSpecificPlayerPrompt"
-            - $ref: "#/components/schemas/RollCategoryPrompt"
             - $ref: "#/components/schemas/CategoryResult"
-            - $ref: "#/components/schemas/PassToNewPlayerPrompt"
             - $ref: "#/components/schemas/NewPlayerColorPrompt"
             - $ref: "#/components/schemas/RemindPlayerColorPrompt"
             - $ref: "#/components/schemas/PlayerWonPrompt"
@@ -115,7 +117,6 @@ components:
       required:
         - correlationId
         - messageType
-        - body
     MessageTypePublish:
       title: Message Type Publish
       description: Sent by client(s) -> Identifies the type of the message
@@ -140,15 +141,11 @@ components:
           description: Message content
           oneOf: 
             - $ref: "#/components/schemas/SubmitAnswer"
-            - $ref: "#/components/schemas/UseJoker"
-            - $ref: "#/components/schemas/PlayerConfirm"
             - $ref: "#/components/schemas/SubmitPlayerCount"
-            - $ref: "#/components/schemas/DigitalCategoryRollRequest"
       additionalProperties: false
       required:
         - correlationId
         - messageType
-        - body
     # *************************************************************************
     # **** END UTILITY SCHEMAS ************************************************
     # **** START GAME SCHEMAS *************************************************
@@ -235,11 +232,6 @@ components:
         - correctAnswer
         - selectedAnswer
         - question
-    PlayerConfirm:
-      title: Player confirm
-      description: Generic message to continue the game flow (e.G. when waiting for a player confirmation)
-      type: object
-      additionalProperties: false
     ErrorFeedback:
       title: Error Feedback
       description: Feedback when receiving a Message that cannot be handled
@@ -269,16 +261,6 @@ components:
       required:
         - activePlayerId
         - scores
-    WelcomePrompt:
-      title: Welcome Prompt
-      description: Prompt to -> Display the Welcome Message
-      type: object
-      additionalProperties: false
-    SelectPlayerCountPrompt:
-      title: Select Player Count Prompt
-      description: "Prompts the player to select the player count"
-      type: object
-      additionalProperties: false
     SubmitPlayerCount:
       title: Submit player count
       description: Inform backend of the chosen player count
@@ -294,16 +276,6 @@ components:
       additionalProperties: false
       required:
         - targetPlayerId
-    RollCategoryPrompt:
-      title: "Roll Category Prompt"
-      description: "Prompts the player to roll a category"
-      type: object
-      additionalProperties: false
-    DigitalCategoryRollRequest:
-      title: "Digital Category Roll Request"
-      description: "Player requests from backend a digital category roll (as opposed to using an analog die)"
-      type: object
-      additionalProperties: false
     CategoryResult:
         title: "Category Result"
         description: "Transfer to game step -> Display the rolled category"
@@ -314,11 +286,6 @@ components:
         additionalProperties: false
         required:
           - category
-    PassToNewPlayerPrompt:
-      title: "Pass to new player"
-      description: "Prompts the player to pass the controller to another new player, happens in the first round of the game"
-      type: object
-      additionalProperties: false
     NewPlayerColorPrompt:
       title: "New Player Color Prompt"
       description: "Prompts the frontend to display the color of a specific player"
@@ -349,10 +316,5 @@ components:
       additionalProperties: false
       required:
         - targetPlayerId
-    UseJoker:
-      title: "Use Joker"
-      description: "Event that is send from the controller when a player uses a joker"
-      type: object
-      additionalProperties: false
     # *************************************************************************
     # **** END GAME SCHEMAS ***************************************************

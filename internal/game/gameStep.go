@@ -2,12 +2,17 @@ package game
 
 import (
 	dto "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/generated-sources/dto"
+	messagetypes "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/message-types"
 )
 
 // A node inside the Game
 // Knows about possible transitions to other states
 type gameStep struct {
-	Name            string
+	// Human friendly name
+	Name string
+	// MessageType sent to frontend
+	MessageType messagetypes.MessageTypeSubscribe
+	// Possible input actions via gameloop.handle
 	possibleActions []gameAction
 }
 

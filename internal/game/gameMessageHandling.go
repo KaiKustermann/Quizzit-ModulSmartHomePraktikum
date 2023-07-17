@@ -5,13 +5,15 @@ import (
 	log "github.com/sirupsen/logrus"
 	dto "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/generated-sources/dto"
 	helpers "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/helper-functions"
+	hybriddie "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/hybrid-die"
 	msgType "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/message-types"
 	ws "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/websockets"
 )
 
 // Generic handler for incoming messages
 // Check the current GameState and call the appropriate handler function
-func (loop *Game) handleMessage(conn *websocket.Conn, envelope dto.WebsocketMessagePublish) bool {
+// 'wantsFeedback' toggles if the 'conn' param is used to send error feedback
+func (loop *Game) handleMessage(conn *websocket.Conn, envelope dto.WebsocketMessagePublish, wantsFeedback bool) bool {
 	msgType := envelope.MessageType
 	contextLogger := log.WithFields(log.Fields{
 		"GameStep":    loop.currentStep.Name,
@@ -27,8 +29,10 @@ func (loop *Game) handleMessage(conn *websocket.Conn, envelope dto.WebsocketMess
 		}
 	}
 	feedback := buildErrorFeedback(loop.currentStep, envelope)
-	contextLogger.Info(feedback.ErrorMessage + " ")
-	helpers.WriteWebsocketMessage(conn, helpers.ErrorFeedbackToWebsocketMessageSubscribe(feedback))
+	contextLogger.Warn(feedback.ErrorMessage + " ")
+	if wantsFeedback {
+		helpers.WriteWebsocketMessage(conn, helpers.ErrorFeedbackToWebsocketMessageSubscribe(feedback))
+	}
 	return false
 }
 
@@ -43,11 +47,17 @@ func (loop *Game) handleOnConnect(conn *websocket.Conn) {
 
 // Register Hooks for the Websocket connection
 func (loop *Game) registerHandlers() *Game {
+	log.Trace("Registering WS-Hooks for commands from tablet")
 	messageTypes := msgType.GetAllMessageTypePublish()
 	for i := 0; i < len(messageTypes); i++ {
 		ws.RegisterMessageHandler(string(messageTypes[i]), loop.handleMessage)
 	}
-	// Register our onConnect function
+
+	log.Trace("Registering WS-Hooks so a WS can pretend to be a hybrid die for calibration")
+	ws.RegisterMessageHandler(string(msgType.Game_Die_HybridDieConnected), loop.handleMessage)
+	ws.RegisterMessageHandler(string(hybriddie.Hybrid_die_finished_calibration), loop.handleMessage)
+
+	log.Trace("Registering on-connect")
 	ws.RegisterOnConnectHandler(loop.handleOnConnect)
 	return loop
 }
