@@ -10,9 +10,10 @@ type Answer struct {
 	Answer     string
 	IsCorrect  bool
 	IsDisabled bool
+	IsSelected bool
 }
 
 // Convert an internal Answer a DTO of type PossibleAnswer, some information might get lost (e.g. field IsCorrect)
 func (a Answer) ConvertToDTO() *dto.PossibleAnswer {
-	return &dto.PossibleAnswer{Id: a.Id, Answer: a.Answer, IsDisabled: a.IsDisabled}
+	return &dto.PossibleAnswer{Id: a.Id, Answer: a.Answer, IsDisabled: a.IsDisabled, IsSelected: a.IsSelected}
 }
