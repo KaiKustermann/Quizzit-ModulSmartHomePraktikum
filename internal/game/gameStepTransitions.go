@@ -211,5 +211,5 @@ func (loop *Game) applyTimeoutForHybridDieSearch(timeout time.Duration) {
 		return
 	}
 	log.Warnf("Could not find a hybriddie within %v, canceling", timeout)
-	loop.forwardFromHybridDie(string(msgType.Game_Die_HybridDieNotFound), nil)
+	loop.forwardToGameLoop(string(msgType.Game_Die_HybridDieNotFound), nil)
 }

@@ -21,12 +21,15 @@ type gameObjectManagers struct {
 func (game *Game) setupManagers() *Game {
 	game.managers.playerManager = NewPlayerManager()
 	game.managers.questionManager = NewQuestionManager()
-	game.setupHybridDieManager()
+	game.managers.hybridDieManager = hybriddie.NewHybridDieManager()
+	game.setupForwarding()
+	game.managers.hybridDieManager.Find()
 	return game
 }
 
-func (game *Game) setupHybridDieManager() *Game {
-	game.managers.hybridDieManager = hybriddie.NewHybridDieManager()
+// Set up any forwarding to the gameloop
+// This way we can put in 'messages' that do not come from the Websocket
+func (game *Game) setupForwarding() *Game {
 	log.Trace("Set up routing of hybrid die's 'roll result' to the gameloop")
 	game.managers.hybridDieManager.CallbackOnRoll = func(result int) {
 		if result < 1 {
@@ -35,21 +38,25 @@ func (game *Game) setupHybridDieManager() *Game {
 		}
 		log.Debugf("HybridDie reports a roll of %d, transforming to category of index %d", result, result-1)
 		category := question.GetCategoryByIndex(result - 1)
-		game.forwardFromHybridDie(string(hybriddie.Hybrid_die_roll_result), category)
+		game.forwardToGameLoop(string(hybriddie.Hybrid_die_roll_result), category)
 	}
+
 	log.Trace("Set up routing of hybrid die's 'connected' to the gameloop")
 	game.managers.hybridDieManager.CallbackOnDieConnected = func() {
-		game.forwardFromHybridDie(string(messagetypes.Game_Die_HybridDieConnected), nil)
+		game.forwardToGameLoop(string(messagetypes.Game_Die_HybridDieConnected), nil)
 	}
+
 	log.Trace("Set up routing of hybrid die's 'calibration finished' to the gameloop")
 	game.managers.hybridDieManager.CallbackOnDieCalibrated = func() {
-		game.forwardFromHybridDie(string(hybriddie.Hybrid_die_finished_calibration), nil)
+		game.forwardToGameLoop(string(hybriddie.Hybrid_die_finished_calibration), nil)
 	}
-	game.managers.hybridDieManager.Find()
 	return game
 }
 
-func (game *Game) forwardFromHybridDie(messageType string, body interface{}) {
+// Forward a message to the gameloop 'handlemessage'
+// any messageType / body
+// 'conn' object will be nil and no feedback can be given
+func (game *Game) forwardToGameLoop(messageType string, body interface{}) {
 	game.handleMessage(
 		&websocket.Conn{},
 		dto.WebsocketMessagePublish{
