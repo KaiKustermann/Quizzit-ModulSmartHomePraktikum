@@ -115,3 +115,42 @@ func (q Question) ResetDisabledStateOfAllAnswers() {
 		q.Answers[idx].IsDisabled = false
 	}
 }
+
+// Sets the field IsSelected of the answer with the given Id to true, and the field IsSelected of all other answers to false
+func (q Question) SetSelectedAnswerByAnswerId(selectedAnswerId string) {
+	for idx := range q.Answers {
+		if q.Answers[idx].Id == selectedAnswerId {
+			q.Answers[idx].IsSelected = true
+		} else {
+			q.Answers[idx].IsSelected = false
+		}
+	}
+}
+
+// Sets the field IsSelected of all answers to false
+func (q Question) ResetSelectedStateOfAllAnswers() {
+	for idx := range q.Answers {
+		q.Answers[idx].IsSelected = false
+	}
+}
+
+// Sets the field IsSelected of all disabled answers to false
+func (q Question) ResetSelectedStateOfDisabledAnswers() {
+	for idx := range q.Answers {
+		if q.Answers[idx].IsDisabled {
+			q.Answers[idx].IsSelected = false
+		}
+	}
+}
+
+// Returns true if the answer with the given Id is disabled
+func (q Question) IsAnswerWithGivenIdDisabled(answerId string) bool {
+	for idx := range q.Answers {
+		if q.Answers[idx].Id == answerId {
+			if q.Answers[idx].IsDisabled == true {
+				return true
+			}
+		}
+	}
+	return false
+}
