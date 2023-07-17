@@ -23,6 +23,7 @@ type HybridDieMessage struct {
 	State HybridDieState `json:"state"`
 }
 
+// Parse the payload []bytes into a HybridDieMessage struct.
 func NewHybridDieMessage(payload []byte) (msg HybridDieMessage, err error) {
 	err = json.Unmarshal(payload, &msg)
 	if err != nil {

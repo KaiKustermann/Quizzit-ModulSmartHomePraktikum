@@ -4,6 +4,7 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
+// High-Level Access to HybridDie
 type HybridDieManager struct {
 	connected               bool
 	ready                   bool
@@ -14,7 +15,7 @@ type HybridDieManager struct {
 	controller              *HybridDieController
 }
 
-// Create a new hybrid die object
+// Create a new HybridDieManager object
 func NewHybridDieManager() *HybridDieManager {
 	hd := &HybridDieManager{}
 	finder := NewHybridDieFinder()
@@ -52,6 +53,7 @@ func (hd *HybridDieManager) onDieRoll(result int) {
 	hd.CallbackOnRoll(result)
 }
 
+// Callback for the hybrid die disconnecting/getting lost
 func (hd *HybridDieManager) onDieLost() {
 	log.Info("Hybrid die is no longer ready")
 	hd.connected = false

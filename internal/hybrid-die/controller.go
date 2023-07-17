@@ -9,6 +9,7 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
+// Hybrid Die Controller to handle TCP communication
 type HybridDieController struct {
 	isListening             bool
 	isReadyToCalibrate      bool
@@ -19,6 +20,7 @@ type HybridDieController struct {
 	callbackOnRoll          func(result int)
 }
 
+// Create new HybridDieController
 func NewHybridDieController() HybridDieController {
 	return HybridDieController{
 		isListening:        false,
@@ -27,6 +29,7 @@ func NewHybridDieController() HybridDieController {
 	}
 }
 
+// Listen for incoming TCP connections on port 7777
 func (ctrl *HybridDieController) Listen() {
 	log.Info("Opening TCP socket ")
 	network := "tcp4"
@@ -73,6 +76,7 @@ func (ctrl *HybridDieController) Listen() {
 	log.Info("Stopped listening for new TCP connections")
 }
 
+// Read from the given connection and handle incoming messages
 func (ctrl *HybridDieController) read(conn net.Conn) {
 	defer conn.Close()
 	cL := log.WithField("address", conn.RemoteAddr().String())
@@ -98,6 +102,7 @@ func (ctrl *HybridDieController) read(conn net.Conn) {
 	ctrl.cbDieLost()
 }
 
+// handles an incoming HybridDieMessage from the given connection
 func (ctrl *HybridDieController) handleMessage(msg HybridDieMessage, conn net.Conn) {
 	switch msg.MessageType {
 	case string(Hybrid_die_roll_result):
@@ -117,6 +122,8 @@ func (ctrl *HybridDieController) handleMessage(msg HybridDieMessage, conn net.Co
 }
 
 // Continuously send a ping to the hybrid die
+// Does not require a response pong (yet)
+// In practice either device closed the socket rather fast when errors occured
 func (ctrl *HybridDieController) ping(conn net.Conn) {
 	cL := log.WithField("address", conn.RemoteAddr().String())
 	cL.Info("Starting ping to hybrid die")
@@ -132,34 +139,43 @@ func (ctrl *HybridDieController) ping(conn net.Conn) {
 	cL.Debugf("Stopped pinging")
 }
 
+// stop listening (exits the LISTEN for icoming TCP loop)
 func (ctrl *HybridDieController) stopListening() {
 	ctrl.isListening = false
 }
 
+// stop listening (exits the READ from connection loop)
+// **That will eventually close the socket!**
 func (ctrl *HybridDieController) stopReading() {
 	ctrl.isReading = false
 }
 
+// Stop any TCP activity.
+// **Closes sockets!**
 func (ctrl *HybridDieController) Stop() {
 	ctrl.stopListening()
 	ctrl.stopReading()
 }
 
+// Intermediate function to call callbacks
 func (ctrl *HybridDieController) cbDieConnected() {
 	log.Debug("Calling 'onDieConnected' callback.")
 	ctrl.callbackOnDieConnected()
 }
 
+// Intermediate function to call callbacks
 func (ctrl *HybridDieController) cbDieCalibrated() {
 	log.Debug("Calling 'onDieCalibrated' callback.")
 	ctrl.callbackOnDieCalibrated()
 }
 
+// Intermediate function to call callbacks
 func (ctrl *HybridDieController) cbDieLost() {
 	log.Debug("Calling 'onDieLost' callback.")
 	ctrl.callbackOnDieLost()
 }
 
+// Intermediate function to call callbacks
 func (ctrl *HybridDieController) cbOnRoll(result int) {
 	log.Debug("Calling 'onRoll' callback.")
 	ctrl.callbackOnRoll(result)

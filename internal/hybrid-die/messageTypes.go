@@ -1,5 +1,6 @@
 package hybriddie
 
+// MessageTypes in the exchange between server and a HybridDie
 type HybridDieMessageType string
 
 const (

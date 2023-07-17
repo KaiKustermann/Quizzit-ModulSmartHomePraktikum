@@ -8,10 +8,12 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
+// Hybrid Die Finder to handle UDP communication (broadcast)
 type HybridDieFinder struct {
 	isBroadcasting bool
 }
 
+// Construct new HybridDieFinder instance
 func NewHybridDieFinder() HybridDieFinder {
 	return HybridDieFinder{isBroadcasting: false}
 }
