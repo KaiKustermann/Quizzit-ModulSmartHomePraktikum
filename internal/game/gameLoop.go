@@ -7,6 +7,7 @@ import (
 	dto "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/generated-sources/dto"
 	helpers "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/helper-functions"
 	hybriddie "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/hybrid-die"
+	"gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/logging"
 	msgType "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/message-types"
 )
 
@@ -138,13 +139,30 @@ func (loop *Game) constructLoop() *Game {
 	})
 	loopPrint.append(gsQuestion, msgType.Player_Question_UseJoker, gsQuestion)
 	gsQuestion.addAction(string(msgType.Player_Question_UseJoker), func(envelope dto.WebsocketMessagePublish) {
-		if loop.managers.questionManager.activeQuestion.IsJokerAlreadyUsed() {
+		if loop.managers.questionManager.GetActiveQuestion().IsJokerAlreadyUsed() {
 			log.Warn("Joker already used, so the Request is discarded")
 			return
 		}
-		loop.managers.questionManager.activeQuestion.UseJoker()
+		loop.managers.questionManager.GetActiveQuestion().UseJoker()
+		loop.managers.questionManager.GetActiveQuestion().ResetSelectedStateOfDisabledAnswers()
 		playerState := loop.managers.playerManager.GetPlayerState()
-		updatedQuestionDTO := loop.managers.questionManager.activeQuestion.ConvertToDTO()
+		updatedQuestionDTO := loop.managers.questionManager.GetActiveQuestion().ConvertToDTO()
+		loop.transitionToState(gsQuestion, helpers.QuestionToWebsocketMessageSubscribe(*updatedQuestionDTO, playerState))
+	})
+	gsQuestion.addAction(string(msgType.Player_Question_SelectAnswer), func(envelope dto.WebsocketMessagePublish) {
+		selectedAnswer := dto.SelectAnswer{}
+		err := helpers.InterfaceToStruct(envelope.Body, &selectedAnswer)
+		if err != nil {
+			logging.EnvelopeLog(envelope).Warn("Received bad message body for this messageType")
+			return
+		}
+		if loop.managers.questionManager.GetActiveQuestion().IsAnswerWithGivenIdDisabled(selectedAnswer.AnswerId) {
+			log.Warnf("Answer with id %s is not set to selected, because it is already set to disabled", selectedAnswer.AnswerId)
+			return
+		}
+		loop.managers.questionManager.GetActiveQuestion().SetSelectedAnswerByAnswerId(selectedAnswer.AnswerId)
+		playerState := loop.managers.playerManager.GetPlayerState()
+		updatedQuestionDTO := loop.managers.questionManager.GetActiveQuestion().ConvertToDTO()
 		loop.transitionToState(gsQuestion, helpers.QuestionToWebsocketMessageSubscribe(*updatedQuestionDTO, playerState))
 	})
 
