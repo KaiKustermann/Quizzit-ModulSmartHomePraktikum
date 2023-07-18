@@ -140,7 +140,7 @@ func (loop *Game) constructLoop() *Game {
 	loopPrint.append(gsQuestion, msgType.Player_Question_UseJoker, gsQuestion)
 	gsQuestion.addAction(string(msgType.Player_Question_UseJoker), func(envelope dto.WebsocketMessagePublish) {
 		if loop.managers.questionManager.GetActiveQuestion().IsJokerAlreadyUsed() {
-			log.Warn("Joker already used, so the Request is discarded")
+			logging.EnvelopeLog(envelope).Warn("Joker was already used, so the Request is discarded")
 			return
 		}
 		loop.managers.questionManager.GetActiveQuestion().UseJoker()
@@ -149,6 +149,7 @@ func (loop *Game) constructLoop() *Game {
 		updatedQuestionDTO := loop.managers.questionManager.GetActiveQuestion().ConvertToDTO()
 		loop.transitionToState(gsQuestion, helpers.QuestionToWebsocketMessageSubscribe(*updatedQuestionDTO, playerState))
 	})
+	loopPrint.append(gsQuestion, msgType.Player_Question_SelectAnswer, gsQuestion)
 	gsQuestion.addAction(string(msgType.Player_Question_SelectAnswer), func(envelope dto.WebsocketMessagePublish) {
 		selectedAnswer := dto.SelectAnswer{}
 		err := helpers.InterfaceToStruct(envelope.Body, &selectedAnswer)
@@ -157,7 +158,7 @@ func (loop *Game) constructLoop() *Game {
 			return
 		}
 		if loop.managers.questionManager.GetActiveQuestion().IsAnswerWithGivenIdDisabled(selectedAnswer.AnswerId) {
-			log.Warnf("Answer with id %s is not set to selected, because it is already set to disabled", selectedAnswer.AnswerId)
+			logging.EnvelopeLog(envelope).Warnf("Answer with id %s is not set to selected, because it is already set to disabled", selectedAnswer.AnswerId)
 			return
 		}
 		loop.managers.questionManager.GetActiveQuestion().SetSelectedAnswerByAnswerId(selectedAnswer.AnswerId)
