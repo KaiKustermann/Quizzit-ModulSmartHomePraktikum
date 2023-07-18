@@ -123,6 +123,7 @@ components:
       type: string
       # POSSIBLE CONTENTS:
       #   - "player/question/SubmitAnswer"
+      #   - "player/question/SelectAnswer"
       #   - "player/question/UseJoker"
       #   - "player/generic/Confirm"
       #   - "player/setup/SubmitPlayerCount"
@@ -142,6 +143,7 @@ components:
           oneOf: 
             - $ref: "#/components/schemas/SubmitAnswer"
             - $ref: "#/components/schemas/SubmitPlayerCount"
+            - $ref: "#/components/schemas/SelectAnswer"
       additionalProperties: false
       required:
         - correlationId
@@ -164,6 +166,10 @@ components:
         isDisabled:
           title: Is answer disabled
           description: Boolen to indicate if the answer is disabled (by joker usage)
+          type: boolean
+        isSelected:
+          title: Is answer selected
+          description: Boolean to indicate if the answer is currently selected by the player
           type: boolean
       additionalProperties: false
       required:
@@ -209,6 +215,17 @@ components:
       additionalProperties: false
       required:
         - questionId
+        - answerId
+    SelectAnswer:
+      title: Select Answer
+      description: The selected, but not submitted, answer of a player to the active question
+      type: object
+      properties:
+        answerId:
+          $ref: "#/components/schemas/Id"
+          description: The ID of the selected answer
+      additionalProperties: false
+      required:
         - answerId
     CorrectnessFeedback:
       title: Correctness Feedback

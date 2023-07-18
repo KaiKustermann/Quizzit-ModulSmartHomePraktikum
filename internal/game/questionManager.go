@@ -45,7 +45,8 @@ func (qc *questionManager) SetActiveQuestion(question *question.Question) {
 
 // Resets the temporary state of the active question to it's default values
 func (qc *questionManager) ResetActiveQuestion() {
-	qc.activeQuestion.ResetDisabledStateOfAllAnswers()
+	qc.GetActiveQuestion().ResetDisabledStateOfAllAnswers()
+	qc.GetActiveQuestion().ResetSelectedStateOfAllAnswers()
 }
 
 // Drafts a new question of the given category and sets it as active question
