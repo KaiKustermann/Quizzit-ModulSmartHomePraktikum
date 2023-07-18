@@ -144,7 +144,6 @@ func (loop *Game) constructLoop() *Game {
 			return
 		}
 		loop.managers.questionManager.GetActiveQuestion().UseJoker()
-		loop.managers.questionManager.GetActiveQuestion().ResetSelectedStateOfDisabledAnswers()
 		playerState := loop.managers.playerManager.GetPlayerState()
 		updatedQuestionDTO := loop.managers.questionManager.GetActiveQuestion().ConvertToDTO()
 		loop.transitionToState(gsQuestion, helpers.QuestionToWebsocketMessageSubscribe(*updatedQuestionDTO, playerState))

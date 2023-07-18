@@ -104,6 +104,7 @@ func (q Question) UseJoker() {
 		}
 		if !q.Answers[n].IsCorrect {
 			q.Answers[n].IsDisabled = true
+			q.Answers[n].IsSelected = false
 			answersDisabled += 1
 		}
 	}
