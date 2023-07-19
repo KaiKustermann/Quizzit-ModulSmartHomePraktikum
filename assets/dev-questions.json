@@ -66,12 +66,12 @@
             {
                 "Id": "B",
                 "Answer": "Tschechien",
-                "IsCorrect": true
+                "IsCorrect": false
             },
             {
                 "Id": "C",
                 "Answer": "Slowenien",
-                "IsCorrect": false
+                "IsCorrect": true
             },
             {
                 "Id": "D",
