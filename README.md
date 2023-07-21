@@ -28,11 +28,10 @@ Backend has the following tasks:
 
 * Handles Game State
 * Handles (Player) Profiles
-* future: Connects to the https://gitlab.mi.hdm-stuttgart.de/quizzit/hybrid-die ?
+* future: Connects to the https://gitlab.mi.hdm-stuttgart.de/quizzit/hybrid-die 
 * future: Connects to the Hue Lights
 
 The backend is in flow-control when the game is running.
-For configuration phase the client is in control using REST.
 
 # Development
 
@@ -59,7 +58,7 @@ To start the server:
 
 The server will start listening on http://localhost:8080.
 
-**If you are using Windows and want to use the [Hybrid Die](../hybrid-die/) make sure you are in the same `private` Network as the die. `private` referes to your system's security settings of this netwrok**
+**If you are using Windows and want to use the [Hybrid Die](../hybrid-die/) make sure you are in the same `private` Network as the die. `private` referes to your system's security settings of this Network**
 
 ## Debug in VS-Code
 
