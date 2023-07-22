@@ -12,6 +12,8 @@ const (
 	Hybrid_die_finished_calibration HybridDieMessageType = "hybriddie/end/calibration"
 	// Hybrid Die reports a roll result
 	Hybrid_die_roll_result HybridDieMessageType = "hybriddie/roll/result"
-	// Server sends a ping to the die
+	// Server sends a 'SuperDuperDicePing' to the die
 	Hybrid_die_ping HybridDieMessageType = "SuperDuperDicePing"
+	// Hybrid response to a 'SuperDuperDicePing'
+	Hybrid_die_pong HybridDieMessageType = "hybriddie/pong"
 )

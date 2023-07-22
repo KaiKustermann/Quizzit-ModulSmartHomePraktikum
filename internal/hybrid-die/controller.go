@@ -2,6 +2,7 @@ package hybriddie
 
 import (
 	"bufio"
+	"math"
 	"net"
 	"strings"
 	"time"
@@ -14,6 +15,7 @@ type HybridDieController struct {
 	isListening             bool
 	isReadyToCalibrate      bool
 	isReading               bool
+	lastMessageAt           int64
 	callbackOnDieConnected  func()
 	callbackOnDieCalibrated func()
 	callbackOnDieLost       func()
@@ -26,6 +28,7 @@ func NewHybridDieController() HybridDieController {
 		isListening:        false,
 		isReadyToCalibrate: false,
 		isReading:          false,
+		lastMessageAt:      math.MaxInt64,
 	}
 }
 
@@ -84,7 +87,6 @@ func (ctrl *HybridDieController) read(conn net.Conn) {
 	cL.Info("Starting to read from hybrid die")
 	for ctrl.isReading {
 		cL.Trace("Waiting for incoming data...")
-		// TODO: Set a timeout on the reading (so we get to know if die disconnects)
 		data, err := bufio.NewReader(conn).ReadBytes('\n')
 		if err != nil {
 			cL.Error("Closing socket, because: ", err)
@@ -104,6 +106,7 @@ func (ctrl *HybridDieController) read(conn net.Conn) {
 
 // handles an incoming HybridDieMessage from the given connection
 func (ctrl *HybridDieController) handleMessage(msg HybridDieMessage, conn net.Conn) {
+	ctrl.lastMessageAt = time.Now().UnixMicro()
 	switch msg.MessageType {
 	case string(Hybrid_die_roll_result):
 		if msg.Result > 0 {
@@ -118,25 +121,39 @@ func (ctrl *HybridDieController) handleMessage(msg HybridDieMessage, conn net.Co
 	case string(Hybrid_die_finished_calibration):
 		log.Info("Calibration finished")
 		ctrl.cbDieCalibrated()
+	default:
+		log.Tracef("Received messageType '%s'", msg.MessageType)
 	}
 }
 
-// Continuously send a ping to the hybrid die
-// Does not require a response pong (yet)
-// In practice either device closed the socket rather fast when errors occured
+// Continuously send a ping to the hybrid die.
+// Check if we received a message from hybrid-die within a reasonable time and if not - close conn
 func (ctrl *HybridDieController) ping(conn net.Conn) {
 	cL := log.WithField("address", conn.RemoteAddr().String())
 	cL.Info("Starting ping to hybrid die")
 	for ctrl.isReading {
-		time.Sleep(10 * time.Second)
+		if ctrl.connHasBadHealth() {
+			cL.Errorf("Last message was received at %d - now it is %d, probably lost connection", ctrl.lastMessageAt, time.Now().UnixMicro())
+			conn.Close()
+			break
+		}
+		time.Sleep(3 * time.Second)
 		cL.Trace(Hybrid_die_ping)
 		_, err := conn.Write([]byte(Hybrid_die_ping))
 		if err != nil {
-			cL.Warn(err)
+			cL.Error(err)
+			conn.Close()
 			break
 		}
 	}
 	cL.Debugf("Stopped pinging")
+}
+
+// Check if connection has bad health due to the last message was received too long ago
+func (ctrl *HybridDieController) connHasBadHealth() bool {
+	maxMicrosecondsBetweenMessages := int64(20000000)
+	now := time.Now().UnixMicro()
+	return ctrl.lastMessageAt+maxMicrosecondsBetweenMessages > now
 }
 
 // stop listening (exits the LISTEN for icoming TCP loop)
