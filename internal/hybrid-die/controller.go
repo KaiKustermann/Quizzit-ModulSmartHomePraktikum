@@ -101,6 +101,7 @@ func (ctrl *HybridDieController) read(conn net.Conn) {
 		ctrl.handleMessage(msg, conn)
 	}
 	cL.Debugf("Stopped reading")
+	conn.Close()
 	ctrl.cbDieLost()
 }
 
