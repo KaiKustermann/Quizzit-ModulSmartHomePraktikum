@@ -154,7 +154,7 @@ func (ctrl *HybridDieController) ping(conn net.Conn) {
 func (ctrl *HybridDieController) connHasBadHealth() bool {
 	maxMicrosecondsBetweenMessages := int64(20000000)
 	now := time.Now().UnixMicro()
-	return ctrl.lastMessageAt+maxMicrosecondsBetweenMessages > now
+	return ctrl.lastMessageAt+maxMicrosecondsBetweenMessages < now
 }
 
 // stop listening (exits the LISTEN for icoming TCP loop)
