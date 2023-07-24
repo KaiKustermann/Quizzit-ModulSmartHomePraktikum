@@ -72,6 +72,7 @@ func (ctrl *HybridDieController) Listen() {
 		}
 		cL.Infof("Found codeword '%s' > It is a hybrid die! ", expectedCodeWord)
 		ctrl.cbDieConnected()
+		ctrl.lastMessageAt = time.Now().UnixMicro()
 		go ctrl.ping(conn)
 		go ctrl.read(conn)
 		ctrl.stopListening()
