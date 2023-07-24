@@ -107,7 +107,8 @@ Golang has a built-in command-line tool called go fmt that automatically formats
 
 ## Testing Websocket
 
-Can use this lovely page here: https://websocketking.com/ and connect to `ws://localhost:8080/ws`.
+Can use this lovely page here: https://websocketking.com/ and connect to `ws://localhost:8080/ws`.  
+Some examples for valid JSONs are listed below, for all possible event, view the [api specification](https://gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/-/blob/main/api/websocket-asyncapi.yaml).
 
 ### Submit a generic confirm
 
@@ -169,7 +170,7 @@ In production the backend runs as binary on a RaspberryPi 4B along with the clie
 
 # Related Content
 
-* [API Specification](./api)
+* [API Specification](https://gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/-/tree/main/api)
 * [Backend Wiki](https://gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/-/wikis/home)
 * [Game Loop](https://gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/-/wikis/home)
 * [RaspberryPi Installation Guide](https://gitlab.mi.hdm-stuttgart.de/quizzit/raspberry-pi/-/blob/main/Installation-Guide-RaspberryPi.md)
