@@ -60,7 +60,8 @@ To start the server:
 
 The server will start listening on http://localhost:8080.
 
-**If you are using Windows and want to use the [Hybrid Die](../hybrid-die/) make sure you are in the same `private` Network as the die. `private` referes to your system's security settings of this Network**
+**If you are using Windows and want to use the [Hybrid Die](../hybrid-die/) make sure you are in the same `private` Network as the die. `Private` referes to your system's security settings of this Network. For windows, see the screenshot below.**
+![Private network settings](./assets/img/private-network-windows.png)
 
 ## Debug in VS-Code
 
