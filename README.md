@@ -32,6 +32,9 @@ Backend has the following tasks:
 
 The backend is in flow-control when the game is running.
 
+The api and communication flow with the client web app is described in the [websocket-asyncapi.yaml](https://gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/-/blob/main/api/websocket-asyncapi.yaml).
+You can use the website [asyncapi](https://studio.asyncapi.com/) to visualize the api document (copy and paste it in).
+
 # Development
 
 Directory structure as seen in ["Golang Standard Project Layout"](https://github.com/golang-standards/project-layout)
@@ -47,7 +50,7 @@ Download dependencies and generate GO code from api spec.
 
     go mod download
     npm i
-    go generate cmd/quizzit/quizzit.go
+    go generate cmd/quizzit/quizzit.go (generates golang types from the ./api/websocket-asyncapi.yaml)
 
 ## Run
 
