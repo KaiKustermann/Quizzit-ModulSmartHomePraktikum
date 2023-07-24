@@ -27,8 +27,7 @@ Server Code, the heart of the system.
 Backend has the following tasks:
 
 * Handles Game State
-* Handles (Player) Profiles
-* future: Connects to the https://gitlab.mi.hdm-stuttgart.de/quizzit/hybrid-die 
+* Connects to the https://gitlab.mi.hdm-stuttgart.de/quizzit/hybrid-die 
 * future: Connects to the Hue Lights
 
 The backend is in flow-control when the game is running.
@@ -143,9 +142,31 @@ Can use this lovely page here: https://websocketking.com/ and connect to `ws://l
 }
 ```
 
+# Deployment
+
+## Create deployment
+
+To create a deployable gitlab release, go to the [tag section](https://gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/-/tags/) of the backend repository in gitlab. 
+
+Create a new tag with a specified new version number (e.g. v1.0.0).
+
+A new release will be created, which can be found in the [deploy section](https://gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/-/releases).
+
+In production the backend runs as binary on a RaspberryPi 4B along with the client web app. For more information regarding deploying to production, look into [the RaspberryPi Installation Guide](https://gitlab.mi.hdm-stuttgart.de/quizzit/raspberry-pi/-/blob/main/Installation-Guide-RaspberryPi.md).
+
+## System requirenments:
+
+- tested on RaspberryPi 4B
+- should run on most systems with:
+  * Windows or Linux as operating system
+  * Wifi card
+
+
+
 # Related Content
 
 * [API Specification](./api)
 * [Backend Wiki](https://gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/-/wikis/home)
 * [Game Loop](https://gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/-/wikis/home)
+* [RaspberryPi Installation Guide](https://gitlab.mi.hdm-stuttgart.de/quizzit/raspberry-pi/-/blob/main/Installation-Guide-RaspberryPi.md)
 * [Go Generate](https://go.dev/blog/generate)
