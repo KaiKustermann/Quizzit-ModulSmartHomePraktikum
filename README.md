@@ -27,13 +27,12 @@ Server Code, the heart of the system.
 Backend has the following tasks:
 
 * Handles Game State
-* Connects to the https://gitlab.mi.hdm-stuttgart.de/quizzit/hybrid-die 
+* Connects to the [hybrid die](https://gitlab.mi.hdm-stuttgart.de/quizzit/hybrid-die)
 * future: Connects to the Hue Lights
 
 The backend is in flow-control when the game is running.
 
-The api and communication flow with the client web app is described in the [websocket-asyncapi.yaml](https://gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/-/blob/main/api/websocket-asyncapi.yaml).
-You can use the website [asyncapi](https://studio.asyncapi.com/) to visualize the api document (copy and paste it in).
+The api and communication flow with the client web app is described in [the api folder](https://gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/-/tree/main/api).
 
 # Development
 
