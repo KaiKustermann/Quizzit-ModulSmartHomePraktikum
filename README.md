@@ -146,7 +146,7 @@ Some examples for valid JSONs are listed below, for all possible event, view the
 }
 ```
 
-# Deployment
+# Production
 
 ## Create deployment
 
