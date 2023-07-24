@@ -133,8 +133,7 @@ func (ctrl *HybridDieController) ping(conn net.Conn) {
 	cL := log.WithField("address", conn.RemoteAddr().String())
 	cL.Info("Starting ping to hybrid die")
 	for ctrl.isReading {
-		if ctrl.connHasBadHealth() {
-			cL.Errorf("Last message was received at %d - now it is %d, probably lost connection", ctrl.lastMessageAt, time.Now().UnixMicro())
+		if !ctrl.connIsHealthy(cL) {
 			conn.Close()
 			break
 		}
@@ -150,11 +149,21 @@ func (ctrl *HybridDieController) ping(conn net.Conn) {
 	cL.Debugf("Stopped pinging")
 }
 
-// Check if connection has bad health due to the last message was received too long ago
-func (ctrl *HybridDieController) connHasBadHealth() bool {
+// Check if connection is healthy
+// Meaning we received a message within the last 20s
+// true = healthy
+// false = unhealthy
+func (ctrl *HybridDieController) connIsHealthy(cL *log.Entry) bool {
+	cL.Tracef("Checking Health")
 	maxMicrosecondsBetweenMessages := int64(20000000)
 	now := time.Now().UnixMicro()
-	return ctrl.lastMessageAt+maxMicrosecondsBetweenMessages < now
+	isHealthy := ctrl.lastMessageAt > now-maxMicrosecondsBetweenMessages
+	if !isHealthy {
+		lastMsgReceivedSecondsAgo := time.Duration((now - ctrl.lastMessageAt) * 1000).Seconds()
+		maxSecondsBetweenMessages := time.Duration(maxMicrosecondsBetweenMessages * 1000).Seconds()
+		cL.Errorf("Last message received %.0f seconds ago (more than %.0f seconds), probably lost connection", lastMsgReceivedSecondsAgo, maxSecondsBetweenMessages)
+	}
+	return isHealthy
 }
 
 // stop listening (exits the LISTEN for icoming TCP loop)
