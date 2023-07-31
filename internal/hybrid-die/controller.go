@@ -11,21 +11,23 @@ import (
 
 // Hybrid Die Controller to handle TCP communication
 type HybridDieController struct {
-	isListening             bool
-	isReadyToCalibrate      bool
-	isReading               bool
-	callbackOnDieConnected  func()
-	callbackOnDieCalibrated func()
-	callbackOnDieLost       func()
-	callbackOnRoll          func(result int)
+	isListening                        bool
+	isReadyToCalibrate                 bool
+	isReading                          bool
+	nonInteractiveHybridDieCalibration bool
+	callbackOnDieConnected             func()
+	callbackOnDieCalibrated            func()
+	callbackOnDieLost                  func()
+	callbackOnRoll                     func(result int)
 }
 
 // Create new HybridDieController
-func NewHybridDieController() HybridDieController {
+func NewHybridDieController(nonInteractiveHybridDieCalibration bool) HybridDieController {
 	return HybridDieController{
-		isListening:        false,
-		isReadyToCalibrate: false,
-		isReading:          false,
+		isListening:                        false,
+		isReadyToCalibrate:                 false,
+		isReading:                          false,
+		nonInteractiveHybridDieCalibration: nonInteractiveHybridDieCalibration,
 	}
 }
 
@@ -111,7 +113,7 @@ func (ctrl *HybridDieController) handleMessage(msg HybridDieMessage, conn net.Co
 		}
 	case string(Hybrid_die_request_calibration):
 		log.Debug("Received 'begin calibration' request")
-		if ctrl.isReadyToCalibrate {
+		if ctrl.nonInteractiveHybridDieCalibration || ctrl.isReadyToCalibrate {
 			log.Info("Confirming 'begin calibration'")
 			conn.Write([]byte(Hybrid_die_begin_calibration))
 		}
