@@ -52,6 +52,9 @@ func (loop *Game) registerHandlers() *Game {
 		ws.RegisterMessageHandler(string(messageTypes[i]), loop.handleMessage)
 	}
 
+	log.Trace("Registering WS-Hooks so frontend can fake hybrid die connected screen")
+	ws.RegisterMessageHandler(string(msgType.Game_Die_HybridDieConnected), loop.handleMessage)
+
 	log.Trace("Registering on-connect")
 	ws.RegisterOnConnectHandler(loop.handleOnConnect)
 	return loop
