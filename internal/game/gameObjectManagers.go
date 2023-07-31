@@ -18,10 +18,10 @@ type gameObjectManagers struct {
 
 // Initialize any Managers
 // Start finding a hybrid die
-func (game *Game) setupManagers(nonInteractiveHybridDieCalibration bool) *Game {
+func (game *Game) setupManagers() *Game {
 	game.managers.playerManager = NewPlayerManager()
 	game.managers.questionManager = NewQuestionManager()
-	game.managers.hybridDieManager = hybriddie.NewHybridDieManager(nonInteractiveHybridDieCalibration)
+	game.managers.hybridDieManager = hybriddie.NewHybridDieManager()
 	game.setupForwarding()
 	game.managers.hybridDieManager.Find()
 	return game
@@ -46,10 +46,6 @@ func (game *Game) setupForwarding() *Game {
 		game.forwardToGameLoop(string(messagetypes.Game_Die_HybridDieConnected), nil)
 	}
 
-	log.Trace("Set up routing of hybrid die's 'calibration finished' to the gameloop")
-	game.managers.hybridDieManager.CallbackOnDieCalibrated = func() {
-		game.forwardToGameLoop(string(hybriddie.Hybrid_die_finished_calibration), nil)
-	}
 	return game
 }
 
