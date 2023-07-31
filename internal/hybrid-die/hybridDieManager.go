@@ -16,10 +16,10 @@ type HybridDieManager struct {
 }
 
 // Create a new HybridDieManager object
-func NewHybridDieManager() *HybridDieManager {
+func NewHybridDieManager(nonInteractiveHybridDieCalibration bool) *HybridDieManager {
 	hd := &HybridDieManager{}
 	finder := NewHybridDieFinder()
-	controller := NewHybridDieController()
+	controller := NewHybridDieController(nonInteractiveHybridDieCalibration)
 	controller.callbackOnDieConnected = hd.onDieConnected
 	controller.callbackOnDieCalibrated = hd.onDieCalibrated
 	controller.callbackOnRoll = hd.onDieRoll

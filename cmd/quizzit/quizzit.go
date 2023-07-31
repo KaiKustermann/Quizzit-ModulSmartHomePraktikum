@@ -30,7 +30,9 @@ func getServerPort() string {
 
 func main() {
 	logging.SetUpLogging()
-	gameInstance := game.NewGame()
+	// Set to 'true' if you know that your hybrid die is ready to be calibrated immediately upon connection success and needs no interaction, because it is already positioned correctly. (useful for die debugging)
+	nonInteractiveHybridDieCalibration := false
+	gameInstance := game.NewGame(nonInteractiveHybridDieCalibration)
 	defer gameInstance.Stop()
 	http.HandleFunc("/health", health.HealthCheckHttp)
 	http.HandleFunc("/ws", ws.WebsocketEndpoint)

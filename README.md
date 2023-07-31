@@ -20,6 +20,11 @@ Server Code, the heart of the system.
     - [Submit player count](#submit-player-count)
     - [Roll a category](#roll-a-category)
     - [Submit an Answer](#submit-an-answer)
+- [Hybrid Die](#hybrid-die)
+  - [Configuration to simplify Hybrid Die development](#configuration-to-simplify-hybrid-die-development)
+- [Production](#production)
+  - [Create deployment](#create-deployment)
+  - [System Requirements:](#system-requirements)
 - [Related Content](#related-content)
 
 # Scope / Purpose
@@ -59,8 +64,10 @@ To start the server:
 
 The server will start listening on http://localhost:8080.
 
-**If you are using Windows and want to use the [Hybrid Die](../hybrid-die/) make sure you are in the same `private` Network as the die. `Private` referes to your system's security settings of this Network. For windows, see the screenshot below.**
+**If you are using Windows and want to use the [Hybrid Die](../hybrid-die/), make sure you are in the same `private` Network as the die. `Private` referes to your system's security settings of this Network. For windows, see the screenshot below.**
 ![Private network settings](./assets/img/private-network-windows.png)
+
+**If you want to work on the hybrid die itself, [this trick](#configuration-to-simplify-hybrid-die-development) may be useful**
 
 ## Debug in VS-Code
 
@@ -146,6 +153,14 @@ Some examples for valid JSONs are listed below, for all possible event, view the
 }
 ```
 
+# Hybrid Die
+
+## Configuration to simplify Hybrid Die development
+
+Relates to the [Hybrid Die](https://gitlab.mi.hdm-stuttgart.de/quizzit/hybrid-die) project.
+
+You may chose to change `nonInteractiveHybridDieCalibration := true` in [quizzit main](./cmd/quizzit/quizzit.go) to support working with the hybrid die, without interaction through the frontend.
+
 # Production
 
 ## Create deployment
@@ -158,7 +173,7 @@ A new release will be created, which can be found in the [deploy section](https:
 
 In production the backend runs as binary on a RaspberryPi 4B along with the client web app. For more information regarding deploying to production, look into [the RaspberryPi Installation Guide](https://gitlab.mi.hdm-stuttgart.de/quizzit/raspberry-pi/-/blob/main/Installation-Guide-RaspberryPi.md).
 
-## System requirenments:
+## System Requirements:
 
 - tested on RaspberryPi 4B
 - should run on most systems with:

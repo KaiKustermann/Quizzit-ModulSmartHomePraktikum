@@ -18,10 +18,10 @@ type gameObjectManagers struct {
 
 // Initialize any Managers
 // Start finding a hybrid die
-func (game *Game) setupManagers() *Game {
+func (game *Game) setupManagers(nonInteractiveHybridDieCalibration bool) *Game {
 	game.managers.playerManager = NewPlayerManager()
 	game.managers.questionManager = NewQuestionManager()
-	game.managers.hybridDieManager = hybriddie.NewHybridDieManager()
+	game.managers.hybridDieManager = hybriddie.NewHybridDieManager(nonInteractiveHybridDieCalibration)
 	game.setupForwarding()
 	game.managers.hybridDieManager.Find()
 	return game
