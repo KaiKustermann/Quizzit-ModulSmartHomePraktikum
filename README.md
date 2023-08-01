@@ -15,13 +15,7 @@ Server Code, the heart of the system.
   - [Test](#test)
   - [Build](#build)
   - [Code format](#code-format)
-  - [Testing Websocket](#testing-websocket)
-    - [Submit a generic confirm](#submit-a-generic-confirm)
-    - [Submit player count](#submit-player-count)
-    - [Roll a category](#roll-a-category)
-    - [Submit an Answer](#submit-an-answer)
-- [Hybrid Die](#hybrid-die)
-  - [Configuration to simplify Hybrid Die development](#configuration-to-simplify-hybrid-die-development)
+  - [Testing via Websocket](#testing-via-websocket)
 - [Production](#production)
   - [Create deployment](#create-deployment)
   - [System Requirements:](#system-requirements)
@@ -109,58 +103,22 @@ This will create a binary named quizzit in the project directory.
 
 Golang has a built-in command-line tool called go fmt that automatically formats Go source code. The go fmt command formats your code according to a set of rules defined in the Go code [style guidelines](https://go.dev/doc/effective_go#formatting).
 
-*Could be implemented in CI/CD in the future.*
+## Testing via Websocket
 
-## Testing Websocket
+The best way to test, is using the corresponding [frontend](https://gitlab.mi.hdm-stuttgart.de/quizzit/client-web-app).
 
-Can use this lovely page here: https://websocketking.com/ and connect to `ws://localhost:8080/ws`.  
-Some examples for valid JSONs are listed below, for all possible event, view the [api specification](https://gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/-/blob/main/api/websocket-asyncapi.yaml).
+However to test new states and messages you can use this lovely page here: https://websocketking.com/ and connect to this backend - probably via: `ws://localhost:8080/ws`.
 
-### Submit a generic confirm
+Any message requires at least the `messageType`. 
+Refer to the [api specification](https://gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/-/blob/main/api/websocket-asyncapi.yaml), the active gamestate or the gameloop that is printed in the beginning.
+
+Example for an often-used Message - A simple confirm:
 
 ```json
 {
   "messageType": "player/generic/Confirm"
 }
 ```
-
-### Submit player count
-
-```json
-{
-  "messageType": "player/setup/SubmitPlayerCount",
-  "body": 3
-}
-```
-
-### Roll a category
-
-```json
-{
-  "messageType": "player/die/DigitalCategoryRollRequest"
-}
-```
-
-### Submit an Answer
-
-```json
-{
-  "messageType": "player/question/SubmitAnswer",
-  "body": {
-    "questionId": "question-1",
-    "answerId": "C"
-  } 
-}
-```
-
-# Hybrid Die
-
-## Configuration to simplify Hybrid Die development
-
-Relates to the [Hybrid Die](https://gitlab.mi.hdm-stuttgart.de/quizzit/hybrid-die) project.
-
-You may chose to change `nonInteractiveHybridDieCalibration := true` in [quizzit main](./cmd/quizzit/quizzit.go) to support working with the hybrid die, without interaction through the frontend.
-
 # Production
 
 ## Create deployment
@@ -188,4 +146,5 @@ In production the backend runs as binary on a RaspberryPi 4B along with the clie
 * [Backend Wiki](https://gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/-/wikis/home)
 * [Game Loop](https://gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/-/wikis/home)
 * [RaspberryPi Installation Guide](https://gitlab.mi.hdm-stuttgart.de/quizzit/raspberry-pi/-/blob/main/Installation-Guide-RaspberryPi.md)
+* [Hybrid Die](https://gitlab.mi.hdm-stuttgart.de/quizzit/hybrid-die)
 * [Go Generate](https://go.dev/blog/generate)

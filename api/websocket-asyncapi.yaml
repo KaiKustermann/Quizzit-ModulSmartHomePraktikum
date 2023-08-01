@@ -8,8 +8,8 @@ tags:
     description: Event sent by the client (e.G. 'player')
 info:
   title: Quizzit
-  description: A quiz game for elderly people
-  version: 0.12.0
+  description: A quiz game for nursery homes
+  version: 0.13.0
   license:
     name: not licensed
   contact:
@@ -83,10 +83,8 @@ components:
       #   - "game/die/SearchingHybridDie"
       #   - "game/die/HybridDieConnected"
       #   - "game/die/HybridDieNotFound"
-      #   - "game/die/HybridDieCalibrating"
       #   - "game/die/HybridDieReady"
       #   - "game/die/RollCategoryDigitallyPrompt"
-      #   - "game/die/TakeHybridDiePrompt"
       #   - "game/die/RollCategoryHybridDiePrompt"
       #   - "game/die/CategoryResult"
       # note: the 'enum' code generation produces incompatible code for golang and ts, so we use strings

@@ -90,11 +90,7 @@ func (pm *playerManager) GetScoreOfActivePlayer() int {
 	return pm.playerScores[pm.activePlayer]
 }
 
-// Returns boolen to signal if the active player has won the game or not
 // Returns true if the winning scire is reached by the active player and false if it is not reached
 func (pm *playerManager) HasActivePlayerReachedWinningScore() bool {
-	if pm.GetScoreOfActivePlayer() == pm.winningScore {
-		return true
-	}
-	return false
+	return pm.GetScoreOfActivePlayer() == pm.winningScore
 }
