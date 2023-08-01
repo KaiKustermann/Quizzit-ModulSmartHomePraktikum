@@ -133,7 +133,7 @@ func (loop *Game) transitionToSpecificPlayer(gsPlayerTransition gameStep) {
 // Sets stateMessage to the chosen prompt
 func (loop *Game) transitionToCategoryRoll(gsDigitalCategoryRoll gameStep, gsHybridDieCategoryRoll gameStep) {
 	playerState := loop.managers.playerManager.GetPlayerState()
-	if loop.managers.hybridDieManager.IsReady() {
+	if loop.managers.hybridDieManager.IsConnected() {
 		log.Debug("Hybrid die is ready, using HYBRIDDIE ")
 		loop.transitionToState(gsHybridDieCategoryRoll, dto.WebsocketMessageSubscribe{
 			MessageType: string(msgType.Game_Die_RollCategoryHybridDiePrompt),
@@ -188,19 +188,6 @@ func (loop *Game) transitionToHybridDieConnected(gsHybridDieConnected gameStep) 
 func (loop *Game) transitionToHybridDieNotFound(gsHybridDieNotFound gameStep) {
 	loop.transitionToState(gsHybridDieNotFound, dto.WebsocketMessageSubscribe{
 		MessageType: string(msgType.Game_Die_HybridDieNotFound),
-	})
-}
-
-func (loop *Game) transitionToBeginHybridDieCalibration(gsHybridDieCalibrating gameStep) {
-	loop.managers.hybridDieManager.SetReadyToCalibrate(true)
-	loop.transitionToState(gsHybridDieCalibrating, dto.WebsocketMessageSubscribe{
-		MessageType: string(msgType.Game_Die_HybridDieCalibrating),
-	})
-}
-
-func (loop *Game) transitionToHybridDieReady(gsHybridDieReady gameStep) {
-	loop.transitionToState(gsHybridDieReady, dto.WebsocketMessageSubscribe{
-		MessageType: string(msgType.Game_Die_HybridDieReady),
 	})
 }
 

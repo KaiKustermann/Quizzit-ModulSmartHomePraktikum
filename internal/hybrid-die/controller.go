@@ -11,23 +11,18 @@ import (
 
 // Hybrid Die Controller to handle TCP communication
 type HybridDieController struct {
-	isListening                        bool
-	isReadyToCalibrate                 bool
-	isReading                          bool
-	nonInteractiveHybridDieCalibration bool
-	callbackOnDieConnected             func()
-	callbackOnDieCalibrated            func()
-	callbackOnDieLost                  func()
-	callbackOnRoll                     func(result int)
+	isListening            bool
+	isReading              bool
+	callbackOnDieConnected func()
+	callbackOnDieLost      func()
+	callbackOnRoll         func(result int)
 }
 
 // Create new HybridDieController
-func NewHybridDieController(nonInteractiveHybridDieCalibration bool) HybridDieController {
+func NewHybridDieController() HybridDieController {
 	return HybridDieController{
-		isListening:                        false,
-		isReadyToCalibrate:                 false,
-		isReading:                          false,
-		nonInteractiveHybridDieCalibration: nonInteractiveHybridDieCalibration,
+		isListening: false,
+		isReading:   false,
 	}
 }
 
@@ -111,15 +106,8 @@ func (ctrl *HybridDieController) handleMessage(msg HybridDieMessage, conn net.Co
 		if msg.Result > 0 {
 			ctrl.cbOnRoll(msg.Result)
 		}
-	case string(Hybrid_die_request_calibration):
-		log.Debug("Received 'begin calibration' request")
-		if ctrl.nonInteractiveHybridDieCalibration || ctrl.isReadyToCalibrate {
-			log.Info("Confirming 'begin calibration'")
-			conn.Write([]byte(Hybrid_die_begin_calibration))
-		}
-	case string(Hybrid_die_finished_calibration):
-		log.Info("Calibration finished")
-		ctrl.cbDieCalibrated()
+	default:
+		log.Warnf("Unknown messagetype '%s'", msg.MessageType)
 	}
 }
 
@@ -163,12 +151,6 @@ func (ctrl *HybridDieController) Stop() {
 func (ctrl *HybridDieController) cbDieConnected() {
 	log.Debug("Calling 'onDieConnected' callback.")
 	ctrl.callbackOnDieConnected()
-}
-
-// Intermediate function to call callbacks
-func (ctrl *HybridDieController) cbDieCalibrated() {
-	log.Debug("Calling 'onDieCalibrated' callback.")
-	ctrl.callbackOnDieCalibrated()
 }
 
 // Intermediate function to call callbacks

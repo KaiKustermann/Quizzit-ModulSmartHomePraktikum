@@ -5,7 +5,6 @@ import (
 	log "github.com/sirupsen/logrus"
 	dto "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/generated-sources/dto"
 	helpers "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/helper-functions"
-	hybriddie "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/hybrid-die"
 	msgType "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/message-types"
 	ws "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/websockets"
 )
@@ -53,9 +52,8 @@ func (loop *Game) registerHandlers() *Game {
 		ws.RegisterMessageHandler(string(messageTypes[i]), loop.handleMessage)
 	}
 
-	log.Trace("Registering WS-Hooks so a WS can pretend to be a hybrid die for calibration")
+	log.Trace("Registering WS-Hooks so frontend can fake hybrid die connected screen")
 	ws.RegisterMessageHandler(string(msgType.Game_Die_HybridDieConnected), loop.handleMessage)
-	ws.RegisterMessageHandler(string(hybriddie.Hybrid_die_finished_calibration), loop.handleMessage)
 
 	log.Trace("Registering on-connect")
 	ws.RegisterOnConnectHandler(loop.handleOnConnect)

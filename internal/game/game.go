@@ -14,8 +14,8 @@ type Game struct {
 }
 
 // Construct and inject a new Game instance
-func NewGame(nonInteractiveHybridDieCalibration bool) (game Game) {
-	game.setupManagers(nonInteractiveHybridDieCalibration).constructLoop().registerHandlers()
+func NewGame() (game Game) {
+	game.setupManagers().constructLoop().registerHandlers()
 	return
 }
 

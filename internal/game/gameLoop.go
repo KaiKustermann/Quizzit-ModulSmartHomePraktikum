@@ -19,8 +19,6 @@ func (loop *Game) constructLoop() *Game {
 	gsSearchHybridDie := gameStep{Name: "Hybrid Die - Searching", MessageType: msgType.Game_Die_SearchingHybridDie}
 	gsHybridDieConnected := gameStep{Name: "Hybrid Die - Found", MessageType: msgType.Game_Die_HybridDieConnected}
 	gsHybridDieNotFound := gameStep{Name: "Hybrid Die - Not found", MessageType: msgType.Game_Die_HybridDieNotFound}
-	gsHybridDieCalibrating := gameStep{Name: "Hybrid Die - Calibrating", MessageType: msgType.Game_Die_HybridDieCalibrating}
-	gsHybridDieReady := gameStep{Name: "Hybrid Die - Ready", MessageType: msgType.Game_Die_HybridDieReady}
 	gsTransitionToSpecificPlayer := gameStep{Name: "Transition to specific player", MessageType: msgType.Game_Turn_PassToSpecificPlayer}
 	gsDigitalCategoryRoll := gameStep{Name: "Category - Roll (digital)", MessageType: msgType.Game_Die_RollCategoryDigitallyPrompt}
 	gsHybridDieCategoryRoll := gameStep{Name: "Category - Roll (hybrid-die)", MessageType: msgType.Game_Die_RollCategoryHybridDiePrompt}
@@ -46,12 +44,8 @@ func (loop *Game) constructLoop() *Game {
 	loopPrint.append(gsSetup, msgType.Player_Setup_SubmitPlayerCount, gsTransitionToNewPlayer)
 	gsSetup.addAction(string(msgType.Player_Setup_SubmitPlayerCount), func(envelope dto.WebsocketMessagePublish) {
 		loop.handlePlayerCount(envelope)
-		if loop.managers.hybridDieManager.IsReady() {
-			loop.transitionToNewPlayer(gsTransitionToNewPlayer)
-			return
-		}
 		if loop.managers.hybridDieManager.IsConnected() {
-			loop.transitionToHybridDieConnected(gsHybridDieConnected)
+			loop.transitionToNewPlayer(gsTransitionToNewPlayer)
 			return
 		}
 		loop.transitionToSearchingHybridDie(gsSearchHybridDie)
@@ -68,27 +62,14 @@ func (loop *Game) constructLoop() *Game {
 	})
 
 	// SETUP - HYBRID DIE CONNECTED
-	loopPrint.append(gsHybridDieConnected, msgType.Player_Generic_Confirm, gsHybridDieCalibrating)
+	loopPrint.append(gsHybridDieConnected, msgType.Player_Generic_Confirm, gsTransitionToNewPlayer)
 	gsHybridDieConnected.addAction(string(msgType.Player_Generic_Confirm), func(wmp dto.WebsocketMessagePublish) {
-		loop.transitionToBeginHybridDieCalibration(gsHybridDieCalibrating)
+		loop.transitionToNewPlayer(gsTransitionToNewPlayer)
 	})
 
 	// SETUP - HYBRID DIE NOT FOUND
 	loopPrint.append(gsHybridDieNotFound, msgType.Player_Generic_Confirm, gsTransitionToNewPlayer)
 	gsHybridDieNotFound.addAction(string(msgType.Player_Generic_Confirm), func(wmp dto.WebsocketMessagePublish) {
-		loop.transitionToNewPlayer(gsTransitionToNewPlayer)
-	})
-
-	// SETUP - HYBRID DIE CALIBRATING
-	loopPrint.append(gsHybridDieCalibrating, hybriddie.Hybrid_die_finished_calibration, gsHybridDieReady)
-	gsHybridDieCalibrating.addAction(string(hybriddie.Hybrid_die_finished_calibration), func(wmp dto.WebsocketMessagePublish) {
-		loop.managers.hybridDieManager.SetReadyToCalibrate(false)
-		loop.transitionToHybridDieReady(gsHybridDieReady)
-	})
-
-	// SETUP - HYBRID DIE IS READY
-	loopPrint.append(gsHybridDieReady, msgType.Player_Generic_Confirm, gsTransitionToNewPlayer)
-	gsHybridDieReady.addAction(string(msgType.Player_Generic_Confirm), func(wmp dto.WebsocketMessagePublish) {
 		loop.transitionToNewPlayer(gsTransitionToNewPlayer)
 	})
 
