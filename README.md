@@ -128,7 +128,7 @@ Example for an often-used Message - A simple confirm:
 
 To create a deployable gitlab release, go to the [tag section](https://gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/-/tags/) of the backend repository in gitlab. 
 
-Create a new tag with a specified new version number (e.g. v1.0.0).
+Create a new tag with a specified new version number (e.g. v0.0.1-RC1).
 
 A new release will be created, which can be found in the [deploy section](https://gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/-/releases).
 
