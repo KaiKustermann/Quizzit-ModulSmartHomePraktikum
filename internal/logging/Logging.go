@@ -10,11 +10,11 @@ import (
 	nested "github.com/antonfisher/nested-logrus-formatter"
 	log "github.com/sirupsen/logrus"
 	dto "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/generated-sources/dto"
+	"gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/options"
 )
 
 func SetUpLogging() {
-	// TODO: Set Log level via process env or args!
-	log.SetLevel(log.DebugLevel)
+	log.SetLevel(options.GetQuizzitOptions().LogLevel)
 	var formatter = nested.Formatter{
 		// HideKeys:        true,
 		CallerFirst:     true,

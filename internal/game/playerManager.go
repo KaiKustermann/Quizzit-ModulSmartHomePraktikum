@@ -3,6 +3,7 @@ package game
 import (
 	log "github.com/sirupsen/logrus"
 	dto "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/generated-sources/dto"
+	"gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/options"
 )
 
 // Statefully handle the player's scores and turn order
@@ -11,7 +12,6 @@ type playerManager struct {
 	activePlayer int
 	playerScores []int
 	playerTurns  []int
-	winningScore int
 }
 
 // Constructs a new PlayerManager
@@ -20,7 +20,6 @@ func NewPlayerManager() (pm playerManager) {
 	pm.playerCount = 2
 	pm.playerScores = make([]int, pm.playerCount)
 	pm.playerTurns = make([]int, pm.playerCount)
-	pm.winningScore = 5
 	return
 }
 
@@ -92,5 +91,5 @@ func (pm *playerManager) GetScoreOfActivePlayer() int {
 
 // Returns true if the winning scire is reached by the active player and false if it is not reached
 func (pm *playerManager) HasActivePlayerReachedWinningScore() bool {
-	return pm.GetScoreOfActivePlayer() == pm.winningScore
+	return pm.GetScoreOfActivePlayer() >= options.GetQuizzitOptions().ScoredPointsToWin
 }

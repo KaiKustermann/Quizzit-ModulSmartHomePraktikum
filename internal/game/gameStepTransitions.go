@@ -8,6 +8,7 @@ import (
 	helpers "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/helper-functions"
 	"gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/logging"
 	msgType "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/message-types"
+	"gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/options"
 	ws "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/websockets"
 )
 
@@ -176,7 +177,7 @@ func (loop *Game) transitionToSearchingHybridDie(gsSearchHybridDie gameStep) {
 	loop.transitionToState(gsSearchHybridDie, dto.WebsocketMessageSubscribe{
 		MessageType: string(msgType.Game_Die_SearchingHybridDie),
 	})
-	go loop.applyTimeoutForHybridDieSearch(60 * time.Second)
+	go loop.applyTimeoutForHybridDieSearch()
 }
 
 func (loop *Game) transitionToHybridDieConnected(gsHybridDieConnected gameStep) {
@@ -191,7 +192,8 @@ func (loop *Game) transitionToHybridDieNotFound(gsHybridDieNotFound gameStep) {
 	})
 }
 
-func (loop *Game) applyTimeoutForHybridDieSearch(timeout time.Duration) {
+func (loop *Game) applyTimeoutForHybridDieSearch() {
+	timeout := options.GetQuizzitOptions().HybridDieSearchTimeout
 	log.Debugf("Granting %v to find a hybrid die", timeout)
 	time.Sleep(timeout)
 	if loop.managers.hybridDieManager.IsConnected() {
