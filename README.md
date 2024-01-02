@@ -12,6 +12,7 @@ Server Code, the heart of the system.
   - [Setup](#setup)
   - [Run](#run)
   - [Debug in VS-Code](#debug-in-vs-code)
+  - [Debug Connectivity](#debug-connectivity)
   - [Test](#test)
   - [Build](#build)
   - [Code format](#code-format)
@@ -88,6 +89,23 @@ Possible VS-Code `.vscode/launch.json` configuration:
     }
   ]
 }
+```
+
+## Debug Connectivity
+
+A useful tool to debug connectivity issues is Wireshark.
+
+When running on a RaspberryPi we recommend `tshark`, a CLI version of wireshark
+
+```sh
+# Installing tshark
+sudo apt-get update
+sudo apt-get upgrade
+# During install, when prompted if non-root users need to capture packages you do not need to select 'yes' (select 'no')
+sudo apt-get install tshark
+
+# Capture packages on port 7778 and display the content as text
+sudo tshark -i wlan0 -o data.show_as_text:TRUE -T fields -f "port 7778" -e data.text
 ```
 
 ## Test
