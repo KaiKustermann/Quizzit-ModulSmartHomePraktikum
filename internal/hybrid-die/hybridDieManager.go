@@ -8,6 +8,7 @@ import (
 type HybridDieManager struct {
 	connected              bool
 	CallbackOnDieConnected func()
+	CallbackOnDieLost      func()
 	CallbackOnRoll         func(result int)
 	finder                 *HybridDieFinder
 	controller             *HybridDieController
@@ -47,6 +48,7 @@ func (hd *HybridDieManager) onDieLost() {
 	log.Info("Hybrid die is no longer ready")
 	hd.connected = false
 	hd.Find()
+	hd.CallbackOnDieLost()
 }
 
 // Is the Hybrid Die ready to be used

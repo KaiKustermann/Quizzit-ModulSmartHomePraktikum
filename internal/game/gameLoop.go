@@ -99,6 +99,10 @@ func (loop *Game) constructLoop() *Game {
 		cat := fmt.Sprintf("%v", envelope.Body)
 		loop.transitionToCategoryResponse(gsCategoryResult, cat)
 	})
+	loopPrint.append(gsHybridDieCategoryRoll, msgType.Game_Die_HybridDieLost, gsDigitalCategoryRoll)
+	gsHybridDieCategoryRoll.addAction(string(msgType.Game_Die_HybridDieLost), func(envelope dto.WebsocketMessagePublish) {
+		loop.transitionToCategoryRoll(gsDigitalCategoryRoll, gsHybridDieCategoryRoll)
+	})
 
 	// DIGITAL CATEGORY ROLL PROMPT
 	loopPrint.append(gsDigitalCategoryRoll, msgType.Player_Die_DigitalCategoryRollRequest, gsCategoryResult)

@@ -46,6 +46,11 @@ func (game *Game) setupForwarding() *Game {
 		game.forwardToGameLoop(string(messagetypes.Game_Die_HybridDieConnected), nil)
 	}
 
+	log.Trace("Set up routing of hybrid die's 'disconnect' to the gameloop")
+	game.managers.hybridDieManager.CallbackOnDieLost = func() {
+		game.forwardToGameLoop(string(messagetypes.Game_Die_HybridDieLost), nil)
+	}
+
 	return game
 }
 
