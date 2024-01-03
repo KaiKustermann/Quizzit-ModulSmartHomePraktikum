@@ -6,7 +6,7 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
-// getQualifiedLocalAddrs finds the IP addresses of local interfaces that support IPv4 and are used for external communication
+// getQualifiedLocalAddrs finds the IP addresses of local interfaces that support IPv4 broadcasting
 //
 // Qualified Addresses are returned as string array.
 func getQualifiedLocalAddrs() (qAddrs []string) {
@@ -16,6 +16,7 @@ func getQualifiedLocalAddrs() (qAddrs []string) {
 		log.Warn(err)
 		return
 	}
+	skippedInterfaces := "Skipped Interfaces (Reason): ["
 	for _, i := range ifaces {
 		addrs, err := i.Addrs()
 		if err != nil {
@@ -25,19 +26,19 @@ func getQualifiedLocalAddrs() (qAddrs []string) {
 		for _, a := range addrs {
 			switch v := a.(type) {
 			case *net.IPNet:
-				if v.IP.IsLoopback() {
-					log.Tracef("Skipping interface '%v' - Reason: Loopback", i.Name)
-				} else if v.IP.IsLinkLocalUnicast() {
-					log.Tracef("Skipping interface '%v' - Reason: LinkLocalUnicast", i.Name)
+				if v.IP.IsLinkLocalUnicast() {
+					skippedInterfaces += i.Name + " (LinkLocalUnicast), "
 				} else if len(v.Mask) != net.IPv4len {
-					log.Tracef("Skipping interface '%v' - Reason: Not IPv4", i.Name)
+					skippedInterfaces += i.Name + " (Not IPv4), "
 				} else {
 					qAddrs = append(qAddrs, v.IP.String())
 				}
 			default:
-				log.Tracef("Skipping interface '%v'", i.Name)
+				skippedInterfaces += i.Name + " (Not IP), "
 			}
 		}
 	}
+	skippedInterfaces += "]"
+	log.Trace(skippedInterfaces)
 	return
 }
