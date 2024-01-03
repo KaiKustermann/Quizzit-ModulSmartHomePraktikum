@@ -26,7 +26,9 @@ func (bc *HybridDieFinder) Start() {
 	i := 0
 	for bc.isBroadcasting {
 		i++
-		bc.sendLimitedBroadcast(i)
+		for _, addr := range getQualifiedLocalAddrs() {
+			bc.sendLimitedBroadcastFromAddr(i, net.JoinHostPort(addr, "7779"))
+		}
 		time.Sleep(3 * time.Second)
 	}
 	log.Info("Stopped searching a hybrid die")
@@ -38,7 +40,7 @@ func (bc *HybridDieFinder) Stop() {
 	bc.isBroadcasting = false
 }
 
-// Send a limited broadcast (255.255.255.255) on port 7778 from the specified localAddress
+// Send a limited broadcast (255.255.255.255:7778) from the specified localAddress
 // Containing "SuperDuperDiceConnectionCall"
 // see https://github.com/aler9/howto-udp-broadcast-golang
 func (bc *HybridDieFinder) sendLimitedBroadcastFromAddr(attempt int, localAddress string) {
@@ -78,41 +80,4 @@ func (bc *HybridDieFinder) sendLimitedBroadcastFromAddr(attempt int, localAddres
 		return
 	}
 	cL.Tracef("Wrote '%d' bytes to UDP connection ", n)
-}
-
-// Calls [sendLimitedBroadcastFromAddr] for all interfaces with source port 7779
-func (bc *HybridDieFinder) sendLimitedBroadcast(attempt int) {
-	cL := log.WithFields(log.Fields{
-		"attempt": attempt,
-		"active":  bc.isBroadcasting,
-	})
-	ifaces, err := net.Interfaces()
-	if err != nil {
-		cL.Warn(err)
-		return
-	}
-	for _, i := range ifaces {
-		addrs, err := i.Addrs()
-		if err != nil {
-			cL.Warn(err)
-			continue
-		}
-		for _, a := range addrs {
-			switch v := a.(type) {
-			case *net.IPNet:
-				if v.IP.IsLoopback() {
-					cL.Tracef("Skipping interface '%v' - Reason: Loopback", i.Name)
-				} else if v.IP.IsLinkLocalUnicast() {
-					cL.Tracef("Skipping interface '%v' - Reason: LinkLocalUnicast", i.Name)
-				} else if len(v.Mask) != net.IPv4len {
-					cL.Tracef("Skipping interface '%v' - Reason: Not IPv4", i.Name)
-				} else {
-					localAddr := net.JoinHostPort(v.IP.String(), "7779")
-					bc.sendLimitedBroadcastFromAddr(attempt, localAddr)
-				}
-			default:
-				cL.Tracef("Skipping interface '%v'", i.Name)
-			}
-		}
-	}
 }
