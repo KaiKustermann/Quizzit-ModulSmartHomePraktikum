@@ -21,6 +21,10 @@ func NewHybridDieFinder() HybridDieFinder {
 // Start finding the hybrid die
 // Broadcasts self every few seconds
 func (bc *HybridDieFinder) Start() {
+	if bc.isBroadcasting {
+		log.Warn("Is already broadcasting")
+		return
+	}
 	log.Info("Starting to search for a hybrid die")
 	bc.isBroadcasting = true
 	i := 0
@@ -51,7 +55,7 @@ func (bc *HybridDieFinder) sendLimitedBroadcastFromAddr(attempt int, localAddres
 		"attempt": attempt,
 		"local":   localAddress,
 	})
-	if attempt%10 == 0 {
+	if attempt%10 == 0 || attempt == 1 {
 		cL.Debugf("Broadcasting '%s' ", connectionCallWord)
 	}
 	cL.Tracef("Resolving own %s adress '%s'", network, localAddress)
