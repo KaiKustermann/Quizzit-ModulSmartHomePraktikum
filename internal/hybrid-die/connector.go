@@ -34,7 +34,7 @@ func (hdc *HybridDieConnector) StartListening() {
 	fullAddress := net.JoinHostPort(hdc.host, port)
 
 	cL := log.WithField("local", fullAddress)
-	cL.Debugf("Creating %s socket", network)
+	cL.Tracef("Creating %s socket", network)
 
 	hdc.isListening = true
 	sock, err := net.Listen(network, fullAddress)
@@ -85,7 +85,6 @@ func (hdc *HybridDieConnector) StopListening() {
 	cL.Debug("Stop listening")
 	hdc.isListening = false
 	if hdc.socket != nil {
-		err := (*hdc.socket).Close()
-		cL.Tracef("Expected socket closing error: %v", err)
+		defer (*hdc.socket).Close()
 	}
 }

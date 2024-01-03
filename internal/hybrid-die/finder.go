@@ -49,7 +49,7 @@ func (bc *HybridDieFinder) sendLimitedBroadcastFromAddr(attempt int, localAddres
 	connectionCallWord := "SuperDuperDiceConnectionCall"
 	cL := log.WithFields(log.Fields{
 		"attempt": attempt,
-		"active":  bc.isBroadcasting,
+		"local":   localAddress,
 	})
 	if attempt%10 == 0 {
 		cL.Debugf("Broadcasting '%s' ", connectionCallWord)
