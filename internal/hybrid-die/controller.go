@@ -4,7 +4,6 @@ import (
 	"bufio"
 	"math"
 	"net"
-	"strings"
 	"time"
 
 	log "github.com/sirupsen/logrus"
@@ -12,18 +11,17 @@ import (
 
 // Hybrid Die Controller to handle TCP communication
 type HybridDieController struct {
-	isListening            bool
 	isReading              bool
 	lastMessageAt          int64
 	callbackOnDieConnected func()
 	callbackOnDieLost      func()
 	callbackOnRoll         func(result int)
+	hybridDieConnectors    []HybridDieConnector
 }
 
 // Create new HybridDieController
 func NewHybridDieController() HybridDieController {
 	return HybridDieController{
-		isListening:   false,
 		isReading:     false,
 		lastMessageAt: math.MaxInt64,
 	}
@@ -31,50 +29,26 @@ func NewHybridDieController() HybridDieController {
 
 // Listen for incoming TCP connections on port 7777
 func (ctrl *HybridDieController) Listen() {
-	log.Info("Opening TCP socket ")
-	network := "tcp4"
-	addr := ":7777"
-	expectedCodeWord := "SmartHomeGamesDice"
-	sock, err := net.Listen(network, addr)
-	if err != nil {
-		log.Error(err)
-		return
+	log.Info("Getting possible local IPv4 addresses")
+	addresses := getQualifiedLocalAddrs()
+	c := make(chan net.Conn, 1)
+	ctrl.hybridDieConnectors = make([]HybridDieConnector, len(addresses))
+
+	log.Info("Creating a HybridDieConnector for each address")
+	for _, addr := range addresses {
+		hdc := NewHybridDieConnector(addr, c)
+		ctrl.hybridDieConnectors = append(ctrl.hybridDieConnectors, hdc)
+		go hdc.StartListening()
 	}
-	defer sock.Close()
 
-	ctrl.isListening = true
-	log.Warnf("Starting %s listener on %s", network, sock.Addr().String())
-	for ctrl.isListening {
-		log.Debug("Waiting for incoming connection... ")
-		conn, err := sock.Accept()
-		if err != nil {
-			log.Error(err)
-			continue
-		}
-		cL := log.WithField("address", conn.RemoteAddr().String())
-		cL.Info("New connection ")
+	log.Info("Waiting for a HybridDieConnector to find a die.")
+	conn := <-c
 
-		line, err := bufio.NewReader(conn).ReadString('\n')
-
-		if err != nil {
-			log.Error(err)
-			conn.Close()
-			continue
-		}
-		cL.Debugf("Successful read >>> '%s' <<<, checking content for '%s' ", line, expectedCodeWord)
-		if !strings.Contains(line, expectedCodeWord) {
-			log.Warnf("%s did not send expected keyword '%s', closing", conn.RemoteAddr().String(), expectedCodeWord)
-			conn.Close()
-			continue
-		}
-		cL.Infof("Found codeword '%s' > It is a hybrid die! ", expectedCodeWord)
-		ctrl.cbDieConnected()
-		ctrl.lastMessageAt = time.Now().UnixMicro()
-		go ctrl.ping(conn)
-		go ctrl.read(conn)
-		ctrl.stopListening()
-	}
-	log.Info("Stopped listening for new TCP connections")
+	ctrl.lastMessageAt = time.Now().UnixMicro()
+	ctrl.cbDieConnected()
+	go ctrl.ping(conn)
+	go ctrl.read(conn)
+	ctrl.stopListening()
 }
 
 // Read from the given connection and handle incoming messages
@@ -157,9 +131,12 @@ func (ctrl *HybridDieController) connIsHealthy(cL *log.Entry) bool {
 	return isHealthy
 }
 
-// stop listening (exits the LISTEN for icoming TCP loop)
+// stopListening stops all HybridDieConnector listen for TCP loop
 func (ctrl *HybridDieController) stopListening() {
-	ctrl.isListening = false
+	log.Info("Stopping HybridDieConnectors")
+	for i := 0; i < len(ctrl.hybridDieConnectors); i++ {
+		ctrl.hybridDieConnectors[i].StopListening()
+	}
 }
 
 // stop listening (exits the READ from connection loop)
