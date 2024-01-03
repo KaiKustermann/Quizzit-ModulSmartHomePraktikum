@@ -52,7 +52,7 @@ func (ctrl *HybridDieController) Listen() {
 	conn := <-c
 
 	ctrl.lastMessageAt = time.Now().UnixMicro()
-	ctrl.cbDieConnected()
+	go ctrl.cbDieConnected()
 	go ctrl.ping(conn)
 	go ctrl.read(conn)
 	ctrl.stopListening()
