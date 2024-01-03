@@ -11,17 +11,19 @@ import (
 
 // Hybrid Die Controller to handle TCP communication
 type HybridDieController struct {
+	isListening            bool
 	isReading              bool
 	lastMessageAt          int64
 	callbackOnDieConnected func()
 	callbackOnDieLost      func()
 	callbackOnRoll         func(result int)
-	hybridDieConnectors    []HybridDieConnector
+	hybridDieConnectors    []*HybridDieConnector
 }
 
 // Create new HybridDieController
 func NewHybridDieController() HybridDieController {
 	return HybridDieController{
+		isListening:   false,
 		isReading:     false,
 		lastMessageAt: math.MaxInt64,
 	}
@@ -29,15 +31,20 @@ func NewHybridDieController() HybridDieController {
 
 // Listen for incoming TCP connections on port 7777
 func (ctrl *HybridDieController) Listen() {
+	if ctrl.isListening {
+		log.Warn("Already listening")
+		return
+	}
+	ctrl.isListening = true
 	log.Info("Getting possible local IPv4 addresses")
 	addresses := getQualifiedLocalAddrs()
-	c := make(chan net.Conn, 1)
-	ctrl.hybridDieConnectors = make([]HybridDieConnector, len(addresses))
+	c := make(chan net.Conn)
+	ctrl.hybridDieConnectors = make([]*HybridDieConnector, 0, len(addresses))
 
 	log.Info("Creating a HybridDieConnector for each address")
 	for _, addr := range addresses {
 		hdc := NewHybridDieConnector(addr, c)
-		ctrl.hybridDieConnectors = append(ctrl.hybridDieConnectors, hdc)
+		ctrl.hybridDieConnectors = append(ctrl.hybridDieConnectors, &hdc)
 		go hdc.StartListening()
 	}
 
@@ -133,7 +140,8 @@ func (ctrl *HybridDieController) connIsHealthy(cL *log.Entry) bool {
 
 // stopListening stops all HybridDieConnector listen for TCP loop
 func (ctrl *HybridDieController) stopListening() {
-	log.Info("Stopping HybridDieConnectors")
+	ctrl.isListening = false
+	log.Info("Stop listening")
 	for i := 0; i < len(ctrl.hybridDieConnectors); i++ {
 		ctrl.hybridDieConnectors[i].StopListening()
 	}

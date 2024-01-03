@@ -86,5 +86,7 @@ func (hdc *HybridDieConnector) StopListening() {
 	hdc.isListening = false
 	if hdc.socket != nil {
 		defer (*hdc.socket).Close()
+	} else {
+		cL.Warn("Socket was <nil>, are the references correct?")
 	}
 }
