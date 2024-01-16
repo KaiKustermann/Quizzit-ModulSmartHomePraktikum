@@ -2,7 +2,6 @@ package game
 
 import (
 	"encoding/json"
-	"fmt"
 	"io"
 	"math/rand"
 	"os"
@@ -11,12 +10,9 @@ import (
 	log "github.com/sirupsen/logrus"
 
 	dto "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/generated-sources/dto"
+	"gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/options"
 	question "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/question"
 )
-
-const ENV_NAME_PATH = "QUIZZIT_QUESTIONS_PATH"
-const QUESTION_FILE_NAME = "questions.json"
-const ASSETS_QUESTION_FILE_PATH = "./assets/dev-questions.json"
 
 // Statefully handle the catalog of questions and the active question
 type questionManager struct {
@@ -120,30 +116,16 @@ func (qc *questionManager) SetRandomCategory() string {
 
 // Attempt to load the questions from multiple locations
 func LoadQuestions() (questions []question.Question) {
-	questions, success := loadQuestionsFromEnvPath()
-	if success {
-		validateQuestions(questions)
-		return questions
+	opts := options.GetQuizzitConfig()
+	relPath := opts.Game.QuestionsPath
+	questions, err := loadQuestionsFromFile(relPath)
+	if err != nil {
+		log.Panicf(`Could not load questions!
+			Please verify the file '%s' exists and is readable. 
+			You may also specify a different questions file using the config file or flags.`, relPath)
 	}
-	questions, success = loadFromExecDir()
-	if success {
-		validateQuestions(questions)
-		return questions
-	}
-	// Room for other loaders in order of precendence
-	questions, success = loadDevQuestions()
-	if success {
-		validateQuestions(questions)
-		return questions
-	}
-	var errorMessage string = fmt.Sprintf(
-		`Could not load questions! The application will look in the following places and take the first valid file:
-		1. '%s' as specified by the environment variable,
-		2. '%s' file next to the binary, 
-		3. '%s' (the assets directory for development)`,
-		ENV_NAME_PATH, QUESTION_FILE_NAME, ASSETS_QUESTION_FILE_PATH)
-	log.Error(errorMessage)
-	panic(errorMessage)
+	validateQuestions(questions)
+	return
 }
 
 func LoadQuestionsByCategory(category string) (questions []question.Question) {
@@ -163,86 +145,35 @@ func validateQuestions(questions []question.Question) {
 		question.LogValidationErrors(errors)
 		panic("Validation of questions failed")
 	}
-	log.Info("Validation of questions succeeded")
+	log.Debug("Validation of questions succeeded")
 }
 
-// Attempt loading questions from location as defined by the ENV var
-func loadQuestionsFromEnvPath() (questions []question.Question, success bool) {
-	log.Trace("loadQuestionsFromEnvPath")
-	envPath, isset := os.LookupEnv(ENV_NAME_PATH)
-	if !isset {
-		log.Debugf("ENV '%s' is not set ", ENV_NAME_PATH)
-		return questions, false
-	}
-	contextLogger := log.WithField("filename", envPath)
-	contextLogger.Infof("Attempting to read questions as defined by '%s' ", ENV_NAME_PATH)
+// Attempt loading questions from location as defined by QuizzitOptions
+func loadQuestionsFromFile(relPath string) (questions []question.Question, err error) {
+	log.Debugf("Loading questions from '%s' ", relPath)
 
-	absPath, err := filepath.Abs(envPath)
-	if err != nil {
-		contextLogger.Error("Could resolve file ", err)
-		return questions, false
-	}
-	return loadQuestionsFromAbsolutePath(absPath)
-}
-
-// Loads questions from 'questions.json'
-// The json put next to executable
-func loadFromExecDir() (questions []question.Question, success bool) {
-	log.WithField("filename", QUESTION_FILE_NAME).Info("Reading questions from exec directory ")
-	_, err := os.Stat(QUESTION_FILE_NAME)
-	if err != nil {
-		log.Debug(fmt.Sprintf("No '%s' file present in dir of executable ", QUESTION_FILE_NAME))
-		return questions, false
-	}
-	return loadQuestionsFromRelativePath(QUESTION_FILE_NAME)
-}
-
-// Loads questions from '../../assets/dev-questions.json'
-// Fallback, or: When running in a development environment
-func loadDevQuestions() (questions []question.Question, success bool) {
-	log.WithField("filename", ASSETS_QUESTION_FILE_PATH).Warn("Falling back to DEV Questions ")
-	return loadQuestionsFromRelativePath(ASSETS_QUESTION_FILE_PATH)
-}
-
-func loadQuestionsFromRelativePath(relPath string) (questions []question.Question, success bool) {
-	log.Trace("loadQuestionsFromRelativePath")
 	absPath, err := filepath.Abs(relPath)
 	if err != nil {
-		log.WithField("filename", relPath).Error("Could resolve file ", err)
-		return questions, false
+		return
 	}
-	log.Debugf("Expanded relative path '%s' to absolute path '%s'", relPath, absPath)
-	return loadQuestionsFromAbsolutePath(absPath)
-}
-
-func loadQuestionsFromAbsolutePath(absPath string) (questions []question.Question, success bool) {
-	contextLogger := log.WithField("filename", absPath)
-	contextLogger.Info("Loading questions ")
+	log.Tracef("Resolved relative path '%s' to abspath '%s'", relPath, absPath)
 
 	jsonFile, err := os.Open(absPath)
 	if err != nil {
-		contextLogger.Error("Could not open file ", err)
-		return questions, false
+		return
 	}
-	// defer the closing of our jsonFile so that we can parse it later on
 	defer jsonFile.Close()
+	log.Tracef("Successfully opened file '%s'", absPath)
 
-	contextLogger.Debug("Successfully opened file ")
-
-	// read our opened jsonFile as a byte array.
 	byteValue, err := io.ReadAll(jsonFile)
 	if err != nil {
-		contextLogger.Error("Failed Reading File ", err)
-		return questions, false
+		return
 	}
+	log.Tracef("Successfully read file '%s'", absPath)
 
-	// Unmarshall into  struct
 	err = json.Unmarshal(byteValue, &questions)
-	if err != nil {
-		contextLogger.Error("Failed JSON unmarshalling ", err)
-		return questions, false
+	if err == nil {
+		log.Infof("Successfully loaded %d questions from '%s'", len(questions), absPath)
 	}
-
-	contextLogger.Debug("Successfully unmarshalled JSON into struct")
-	return questions, true
+	return
 }

@@ -3,6 +3,7 @@
 package main
 
 import (
+	"fmt"
 	"net/http"
 
 	game "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/game"
@@ -15,13 +16,21 @@ import (
 )
 
 func main() {
-	logging.SetUpLogging()
+	logging.SetUpLogFormat()
+	// Set low log level to see all config messages
+	log.SetLevel(log.TraceLevel)
+	options.InitFlags()
+	options.ReloadConfig()
+	// Set log level as desired
+	log.SetLevel(options.GetQuizzitConfig().Log.Level)
+
 	gameInstance := game.NewGame()
 	defer gameInstance.Stop()
 	http.HandleFunc("/health", health.HealthCheckHttp)
 	http.HandleFunc("/ws", ws.WebsocketEndpoint)
 
-	port := options.GetQuizzitOptions().HttpPort
-	log.Warn("Serving at :" + port)
-	log.Fatal(http.ListenAndServe(":"+port, nil))
+	port := options.GetQuizzitConfig().Http.Port
+	address := fmt.Sprintf(":%d", port)
+	log.Warnf("Serving at %s", address)
+	log.Fatal(http.ListenAndServe(address, nil))
 }

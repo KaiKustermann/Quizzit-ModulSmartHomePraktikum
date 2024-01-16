@@ -82,9 +82,9 @@ Possible VS-Code `.vscode/launch.json` configuration:
       "mode": "auto",
       "program": "${workspaceFolder}/backend/cmd/quizzit/quizzit.go",
       "cwd": "${workspaceFolder}/backend",
-      "env": {
-        "LOG_LEVEL": "DEBUG"
-      },
+      "args": [
+        "-log-level", "debug"
+      ],
       "trace": "trace"
     }
   ]

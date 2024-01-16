@@ -1,54 +1,44 @@
 package options
 
 import (
-	"os"
 	"time"
 
 	log "github.com/sirupsen/logrus"
 )
 
-type QuizzitOptions struct {
-	HttpPort               string
-	LogLevel               log.Level
-	ScoredPointsToWin      int
-	HybridDieSearchTimeout time.Duration
+// Local instance holding our config
+var configInstance = QuizzitConfig{}
+
+// Get Quizzit Config
+func GetQuizzitConfig() QuizzitConfig {
+	return configInstance
 }
 
-// Local instance holding our settings
-var optionsInstance = QuizzitOptions{
-	HttpPort:               getServerPort(),
-	LogLevel:               getLogLevel(),
-	ScoredPointsToWin:      5,
-	HybridDieSearchTimeout: 30 * time.Second,
+func ReloadConfig() {
+	conf := createDefaultConfig()
+	conf.patchWithYAMLFile()
+	conf.patchwithFlags()
+	log.Infof("New config loaded: %s", conf.String())
+	configInstance = conf
 }
 
-/*
-Get Quizzit Options
-*/
-func GetQuizzitOptions() QuizzitOptions {
-	return optionsInstance
-}
-
-/*
-Take port from env 'HTTP_SERVER_PORT'
-Default: 8080
-*/
-func getServerPort() string {
-	port := os.Getenv("HTTP_SERVER_PORT")
-	if port == "" {
-		port = "8080"
+// createDefaultConfig creates a config instance with all default options as base and fallback.
+func createDefaultConfig() QuizzitConfig {
+	return QuizzitConfig{
+		Http: HttpConfig{
+			Port: 8080,
+		},
+		Log: LogConfig{
+			Level: log.InfoLevel,
+		},
+		HybridDie: HybridDieConfig{
+			Search: HybridDieSearchConfig{
+				Timeout: 30 * time.Second,
+			},
+		},
+		Game: GameConfig{
+			ScoredPointsToWin: 5,
+			QuestionsPath:     "./questions.json",
+		},
 	}
-	return port
-}
-
-/*
-Take log level from env 'LOG_LEVEL'
-Default: Info
-*/
-func getLogLevel() log.Level {
-	logLevel, err := log.ParseLevel(os.Getenv("LOG_LEVEL"))
-	if err != nil {
-		logLevel = log.InfoLevel
-	}
-	return logLevel
 }

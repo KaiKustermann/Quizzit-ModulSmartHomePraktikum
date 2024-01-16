@@ -91,5 +91,5 @@ func (pm *playerManager) GetScoreOfActivePlayer() int {
 
 // Returns true if the winning scire is reached by the active player and false if it is not reached
 func (pm *playerManager) HasActivePlayerReachedWinningScore() bool {
-	return pm.GetScoreOfActivePlayer() >= options.GetQuizzitOptions().ScoredPointsToWin
+	return pm.GetScoreOfActivePlayer() >= options.GetQuizzitConfig().Game.ScoredPointsToWin
 }

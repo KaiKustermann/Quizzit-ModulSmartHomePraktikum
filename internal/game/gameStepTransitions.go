@@ -193,7 +193,7 @@ func (loop *Game) transitionToHybridDieNotFound(gsHybridDieNotFound gameStep) {
 }
 
 func (loop *Game) applyTimeoutForHybridDieSearch() {
-	timeout := options.GetQuizzitOptions().HybridDieSearchTimeout
+	timeout := options.GetQuizzitConfig().HybridDie.Search.Timeout
 	log.Debugf("Granting %v to find a hybrid die", timeout)
 	time.Sleep(timeout)
 	if loop.managers.hybridDieManager.IsConnected() {
