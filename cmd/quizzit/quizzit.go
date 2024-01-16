@@ -17,18 +17,25 @@ import (
 
 func main() {
 	logging.SetUpLogFormat()
-	// Set low log level to see all config messages
+	log.Info("Setting log level 'trace' to see all config messages, before applying log level from configuration")
 	log.SetLevel(log.TraceLevel)
+
+	log.Debug("Initializing Configuration")
 	configuration.InitFlags()
 	configuration.ReloadConfig()
-	// Set log level as desired
+
+	log.Info("Setting log level from configuration")
 	log.SetLevel(configuration.GetQuizzitConfig().Log.Level)
 
+	log.Debug("Creating Game")
 	gameInstance := game.NewGame()
 	defer gameInstance.Stop()
+
+	log.Debug("Setting up HTTP handlers")
 	http.HandleFunc("/health", health.HealthCheckHttp)
 	http.HandleFunc("/ws", ws.WebsocketEndpoint)
 
+	log.Debug("Creating HTTP server")
 	port := configuration.GetQuizzitConfig().Http.Port
 	address := fmt.Sprintf(":%d", port)
 	log.Warnf("Serving at %s", address)
