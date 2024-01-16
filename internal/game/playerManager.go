@@ -2,8 +2,8 @@ package game
 
 import (
 	log "github.com/sirupsen/logrus"
+	configuration "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/configuration"
 	dto "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/generated-sources/dto"
-	"gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/options"
 )
 
 // Statefully handle the player's scores and turn order
@@ -91,5 +91,5 @@ func (pm *playerManager) GetScoreOfActivePlayer() int {
 
 // Returns true if the winning scire is reached by the active player and false if it is not reached
 func (pm *playerManager) HasActivePlayerReachedWinningScore() bool {
-	return pm.GetScoreOfActivePlayer() >= options.GetQuizzitOptions().ScoredPointsToWin
+	return pm.GetScoreOfActivePlayer() >= configuration.GetQuizzitConfig().Game.ScoredPointsToWin
 }

@@ -189,7 +189,7 @@ func (loop *Game) constructLoop() *Game {
 		MessageType: string(msgType.Game_Setup_Welcome),
 	})
 
-	log.Info(loopPrint.getOutput())
+	log.Debug(loopPrint.getOutput())
 
 	return loop
 }
