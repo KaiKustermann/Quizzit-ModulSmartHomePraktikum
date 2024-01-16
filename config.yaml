@@ -1,10 +1,10 @@
-http:
-  port: 8880
-log:
-  level: info
-hybrid-die:
-  search:
-    timeout: 10s
-game:
-  scored-points-to-win: 3
-  questions: "./questions.json"
+# http:
+#   port: 8880
+# log:
+#   level: info
+# hybrid-die:
+#   search:
+#     timeout: 10s
+# game:
+#   scored-points-to-win: 3
+#   questions: "./questions.json"
