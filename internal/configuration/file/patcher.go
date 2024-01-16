@@ -76,6 +76,6 @@ func patchHybridDie(conf *configmodel.HybridDieConfig, file *HybridDieYAML) {
 	if err == nil {
 		conf.Search.Timeout = dur
 	} else {
-		log.Warnf("Failed parsing Hybrid Die Seach Timeout %e", err)
+		log.Warnf("Failed parsing Hybrid Die Search Timeout '%s' %e", *file.Search.Timeout, err)
 	}
 }
