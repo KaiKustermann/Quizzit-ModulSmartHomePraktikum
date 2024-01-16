@@ -5,16 +5,18 @@ package configflag
 
 import (
 	"flag"
+	"time"
 
 	log "github.com/sirupsen/logrus"
 )
 
 // AppFlags serves as container to hold all flags in one spot.
 type AppFlags struct {
-	ConfigFile    string
-	QuestionsFile *string
-	HttpPort      *int
-	LogLevel      *log.Level
+	ConfigFile             string
+	QuestionsFile          *string
+	HttpPort               *int
+	HybridDieSearchTimeout *time.Duration
+	LogLevel               *log.Level
 }
 
 // flags is our local instance holding our settings
@@ -25,6 +27,7 @@ func InitFlags() {
 	configFile := flag.String("config", "./config.yaml", "Relative path to the config file")
 	questionsFile := flag.String("questions", "", "Relative path to the questions file. Leave empty for default")
 	httpPort := flag.Int("http-port", 0, "Port for the HTTP Server. Put '0' for default")
+	dieSearchTimeout := flag.String("die-search-timeout", "", "Maximum time to wait for the hybrid die, see time.ParseDuration. Leave empty for default")
 	logLevel := flag.String("log-level", "", "Granularity of log output, see logrus.ParseLevel. Leave empty for default")
 	flag.Parse()
 	flags.ConfigFile = *configFile
@@ -35,6 +38,15 @@ func InitFlags() {
 
 	if *httpPort != 0 {
 		flags.HttpPort = httpPort
+	}
+
+	if *dieSearchTimeout != "" {
+		dur, err := time.ParseDuration(*dieSearchTimeout)
+		if err == nil {
+			flags.HybridDieSearchTimeout = &dur
+		} else {
+			log.Warnf("Failed parsing Hybrid Die Search Timeout '%s' %e", *dieSearchTimeout, err)
+		}
 	}
 
 	if *logLevel != "" {

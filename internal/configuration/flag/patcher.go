@@ -4,6 +4,8 @@
 package configflag
 
 import (
+	"time"
+
 	log "github.com/sirupsen/logrus"
 	configmodel "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/configuration/model"
 )
@@ -14,6 +16,7 @@ func PatchwithFlags(conf *configmodel.QuizzitConfig) {
 	fl := GetAppFlags()
 	patchLogLevel(&conf.Log, fl.LogLevel)
 	patchHttpPort(&conf.Http, fl.HttpPort)
+	patchHybridDie(&conf.HybridDie, fl.HybridDieSearchTimeout)
 }
 
 // patchLogLevel patches the LogConfig field
@@ -36,4 +39,15 @@ func patchHttpPort(conf *configmodel.HttpConfig, port *int) {
 		return
 	}
 	conf.Port = *port
+}
+
+// patchHybridDie patches the HybridDieConfig field
+//
+// Only applies the patch, if the 'duration' config is not nil
+func patchHybridDie(conf *configmodel.HybridDieConfig, duration *time.Duration) {
+	if duration == nil {
+		log.Debug("Search Timeout is nil, not patching")
+		return
+	}
+	conf.Search.Timeout = *duration
 }
