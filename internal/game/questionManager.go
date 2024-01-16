@@ -122,7 +122,9 @@ func LoadQuestions() (questions []question.Question) {
 	if err != nil {
 		log.Panicf(`Could not load questions!
 			Please verify the file '%s' exists and is readable. 
-			You may also specify a different questions file using the config file or flags.`, relPath)
+			You may also specify a different questions file using the config file or flags.
+			The encountered error is:
+			%e`, relPath, err)
 	}
 	validateQuestions(questions)
 	return
