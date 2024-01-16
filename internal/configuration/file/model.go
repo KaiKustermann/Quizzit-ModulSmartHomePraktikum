@@ -1,4 +1,5 @@
-package options
+// Package configfile provides the means to read a YAML config file and patch its contents to the config model
+package configfile
 
 // HttpYAML is a container for http related options
 type HttpYAML struct {

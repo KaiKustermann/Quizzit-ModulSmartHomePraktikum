@@ -4,11 +4,11 @@ import (
 	"time"
 
 	log "github.com/sirupsen/logrus"
+	configuration "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/configuration"
 	dto "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/generated-sources/dto"
 	helpers "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/helper-functions"
 	"gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/logging"
 	msgType "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/message-types"
-	"gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/options"
 	ws "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/websockets"
 )
 
@@ -193,7 +193,7 @@ func (loop *Game) transitionToHybridDieNotFound(gsHybridDieNotFound gameStep) {
 }
 
 func (loop *Game) applyTimeoutForHybridDieSearch() {
-	timeout := options.GetQuizzitConfig().HybridDie.Search.Timeout
+	timeout := configuration.GetQuizzitConfig().HybridDie.Search.Timeout
 	log.Debugf("Granting %v to find a hybrid die", timeout)
 	time.Sleep(timeout)
 	if loop.managers.hybridDieManager.IsConnected() {

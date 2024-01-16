@@ -1,4 +1,5 @@
-package options
+// Package configfile provides the means to read a YAML config file and patch its contents to the config model
+package configfile
 
 import (
 	"io"
@@ -9,11 +10,10 @@ import (
 	"gopkg.in/yaml.v3"
 )
 
-// Attempt to load config file from the specified location
-func loadOptionsFromFile(relPath string) (config QuizzitYAML, err error) {
-	log.Infof("Loading configuration... ")
+// loadConfigurationFile works like [loadFromAbsolutePath], however takes a relative path
+func loadConfigurationFile(relPath string) (config QuizzitYAML, err error) {
 	cL := log.WithField("filename", relPath)
-	cL.Infof("Attempting to read config as defined by 'config' flag")
+	cL.Infof("Loading configuration... ")
 	absPath, err := filepath.Abs(relPath)
 	if err != nil {
 		return
@@ -22,7 +22,9 @@ func loadOptionsFromFile(relPath string) (config QuizzitYAML, err error) {
 	return loadFromAbsolutePath(absPath)
 }
 
-// loadFromAbsolutePath takes an absolute filepath and attempts to load the file as config file.
+// loadConfigurationFile attempts to load the config file from the specified absolute path
+// The config file must be in YAML format and match the definitions of [QuizzitYAML]
+// On encountering any errors, returns those errors
 func loadFromAbsolutePath(absPath string) (config QuizzitYAML, err error) {
 	cL := log.WithField("filename", absPath)
 	cL.Info("Loading config ")

@@ -1,4 +1,7 @@
-package options
+// Package configflag provides all possible flags of the application.
+// Also utilizes an easy access to the given flags at any time
+// and means to patch the [QuizzitConfig] with flag values, if set.
+package configflag
 
 import (
 	"flag"
@@ -13,10 +16,10 @@ type AppFlags struct {
 	QuestionsFile *string
 }
 
-// Local instance holding our settings
+// flags is our local instance holding our settings
 var flags = AppFlags{}
 
-// Define application's flags, parse them and read them into our options struct.
+// InitFlags defines the application's flags, parses them and reads them into our AppFlags struct.
 func InitFlags() {
 	configFile := flag.String("config", "./config.yaml", "Relative path to the config file")
 	questionsFile := flag.String("questions", "", "Relative path to the questions file")
@@ -39,6 +42,7 @@ func InitFlags() {
 
 }
 
+// GetAppFlags returns the flags
 func GetAppFlags() AppFlags {
 	return flags
 }

@@ -9,8 +9,8 @@ import (
 
 	log "github.com/sirupsen/logrus"
 
+	configuration "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/configuration"
 	dto "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/generated-sources/dto"
-	"gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/options"
 	question "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/question"
 )
 
@@ -116,7 +116,7 @@ func (qc *questionManager) SetRandomCategory() string {
 
 // Attempt to load the questions from multiple locations
 func LoadQuestions() (questions []question.Question) {
-	opts := options.GetQuizzitConfig()
+	opts := configuration.GetQuizzitConfig()
 	relPath := opts.Game.QuestionsPath
 	questions, err := loadQuestionsFromFile(relPath)
 	if err != nil {
