@@ -12,16 +12,28 @@ import (
 // Changes the values in 'conf' to any set value via flags.
 func PatchwithFlags(conf *configmodel.QuizzitConfig) {
 	fl := GetAppFlags()
-	patchLog(&conf.Log, fl.LogLevel)
+	patchLogLevel(&conf.Log, fl.LogLevel)
+	patchHttpPort(&conf.Http, fl.HttpPort)
 }
 
-// patchLog patches the LogConfig field
+// patchLogLevel patches the LogConfig field
 //
 // Only applies the patch, if the value of the 'flag' config is not nil
-func patchLog(conf *configmodel.LogConfig, flag *log.Level) {
+func patchLogLevel(conf *configmodel.LogConfig, flag *log.Level) {
 	if flag == nil {
 		log.Debug("Log Level is nil, not patching")
 		return
 	}
 	conf.Level = *flag
+}
+
+// patchHttpPort patches the HttpConfig field
+//
+// Only applies the patch, if the value of the 'port' is not nil
+func patchHttpPort(conf *configmodel.HttpConfig, port *int) {
+	if port == nil {
+		log.Debug("HTTP Port is nil, not patching")
+		return
+	}
+	conf.Port = *port
 }
