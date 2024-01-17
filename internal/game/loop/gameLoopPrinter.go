@@ -1,4 +1,4 @@
-package game
+package gameloop
 
 import (
 	"fmt"
@@ -17,11 +17,11 @@ func NewGameLoopPrinter() (glp GameLoopPrinter) {
 }
 
 // Append a transition to the final log output
-func (glp *GameLoopPrinter) append(state gameStep, action interface{}, newState gameStep) {
+func (glp *GameLoopPrinter) Append(state GameStep, action interface{}, newState GameStep) {
 	glp.out += fmt.Sprintf("%-40s%-40v%-40s\n", state.MessageType, action, newState.MessageType)
 }
 
 // Get the output to print
-func (glp *GameLoopPrinter) getOutput() string {
+func (glp *GameLoopPrinter) GetOutput() string {
 	return glp.out
 }

@@ -1,4 +1,4 @@
-package game
+package questionmanager
 
 import (
 	"encoding/json"
@@ -9,109 +9,110 @@ import (
 
 	log "github.com/sirupsen/logrus"
 
+	"gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/category"
 	configuration "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/configuration"
 	dto "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/generated-sources/dto"
 	question "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/question"
 )
 
 // Statefully handle the catalog of questions and the active question
-type questionManager struct {
+type QuestionManager struct {
 	questions      []question.Question
 	activeQuestion *question.Question
 	activeCategory string
 }
 
 // Constructs a new QuestionManager
-func NewQuestionManager() (qc questionManager) {
+func NewQuestionManager() (qm QuestionManager) {
 	log.Infof("Constructing new QuestionManager")
-	qc.questions = LoadQuestions()
+	qm.questions = LoadQuestions()
 	return
 }
 
 // Retrieve the currently active question
-func (qc *questionManager) GetActiveQuestion() question.Question {
-	return *qc.activeQuestion
+func (qm *QuestionManager) GetActiveQuestion() question.Question {
+	return *qm.activeQuestion
 }
 
 // Setter for activeQuestion
-func (qc *questionManager) SetActiveQuestion(question *question.Question) {
+func (qm *QuestionManager) SetActiveQuestion(question *question.Question) {
 	log.Infof("Setting question %s as active question", question.Id)
-	qc.activeQuestion = question
+	qm.activeQuestion = question
 }
 
 // Resets the temporary state of the active question to it's default values
-func (qc *questionManager) ResetActiveQuestion() {
-	qc.GetActiveQuestion().ResetDisabledStateOfAllAnswers()
-	qc.GetActiveQuestion().ResetSelectedStateOfAllAnswers()
+func (qm *QuestionManager) ResetActiveQuestion() {
+	qm.GetActiveQuestion().ResetDisabledStateOfAllAnswers()
+	qm.GetActiveQuestion().ResetSelectedStateOfAllAnswers()
 }
 
 // Drafts a new question of the given category and sets it as active question
-func (qc *questionManager) MoveToNextQuestion() question.Question {
-	log.Debugf("Moving to the next question of category %s", qc.activeCategory)
-	nextQuestion := qc.getRandomQuestionOfActiveCategory()
+func (qm *QuestionManager) MoveToNextQuestion() question.Question {
+	log.Debugf("Moving to the next question of category %s", qm.activeCategory)
+	nextQuestion := qm.getRandomQuestionOfActiveCategory()
 	nextQuestion.Used = true
-	qc.SetActiveQuestion(nextQuestion)
-	return qc.GetActiveQuestion()
+	qm.SetActiveQuestion(nextQuestion)
+	return qm.GetActiveQuestion()
 }
 
 // Get a random question of the active category, that has not been used yet.
 // If all questions of the category have been used, refreshes the full pool by setting them to used=false
-func (qc *questionManager) getRandomQuestionOfActiveCategory() *question.Question {
-	log.Tracef("Building an array of unused questions for category %s", qc.activeCategory)
+func (qm *QuestionManager) getRandomQuestionOfActiveCategory() *question.Question {
+	log.Tracef("Building an array of unused questions for category %s", qm.activeCategory)
 	var draftableQuestions []*question.Question
-	for i := range qc.questions {
-		question := &qc.questions[i]
-		if question.Category == qc.activeCategory && !question.Used {
+	for i := range qm.questions {
+		question := &qm.questions[i]
+		if question.Category == qm.activeCategory && !question.Used {
 			draftableQuestions = append(draftableQuestions, question)
 		}
 	}
 
 	poolSize := len(draftableQuestions)
 	if poolSize > 0 {
-		log.Debugf("Drafting a question out of %d remaining questions for category %s", poolSize, qc.activeCategory)
+		log.Debugf("Drafting a question out of %d remaining questions for category %s", poolSize, qm.activeCategory)
 		randomQuestion := draftableQuestions[rand.Intn(poolSize)]
 		return randomQuestion
 	}
 
-	log.Debugf("All questions of category %s have been used. Refreshing...", qc.activeCategory)
+	log.Debugf("All questions of category %s have been used. Refreshing...", qm.activeCategory)
 
-	qc.refreshQuestionsOfActiveCategory()
-	return qc.getRandomQuestionOfActiveCategory()
+	qm.refreshQuestionsOfActiveCategory()
+	return qm.getRandomQuestionOfActiveCategory()
 }
 
 // Marks all questions of the active categroy as 'unused'
-func (qc *questionManager) refreshQuestionsOfActiveCategory() {
-	log.Infof("Marking questions of category %s as unused", qc.activeCategory)
-	for i := range qc.questions {
-		question := qc.questions[i]
-		if question.Category == qc.activeCategory {
+func (qm *QuestionManager) refreshQuestionsOfActiveCategory() {
+	log.Infof("Marking questions of category %s as unused", qm.activeCategory)
+	for i := range qm.questions {
+		question := qm.questions[i]
+		if question.Category == qm.activeCategory {
 			log.Tracef("Marking question with ID %s as 'used'=false", question.Id)
-			qc.questions[i].Used = false
+			qm.questions[i].Used = false
 		}
 	}
-	log.Debugf("All questions of category %s marked as unused", qc.activeCategory)
+	log.Debugf("All questions of category %s marked as unused", qm.activeCategory)
 }
 
 // Get the corrextness feedback for the active question
-func (qc *questionManager) GetCorrectnessFeedback(answer dto.SubmitAnswer) dto.CorrectnessFeedback {
-	return qc.activeQuestion.GetCorrectnessFeedback(answer)
+func (qm *QuestionManager) GetCorrectnessFeedback(answer dto.SubmitAnswer) dto.CorrectnessFeedback {
+	return qm.activeQuestion.GetCorrectnessFeedback(answer)
 }
 
 // Returns the active category
-func (qc *questionManager) GetActiveCategory() string {
-	return qc.activeCategory
+func (qm *QuestionManager) GetActiveCategory() string {
+	return qm.activeCategory
 }
 
 // Sets the active category
-func (qc *questionManager) SetActiveCategory(category string) {
-	qc.activeCategory = category
+func (qm *QuestionManager) SetActiveCategory(category string) {
+	qm.activeCategory = category
 }
 
 // Set activeCategory to a random question category, returns the category for convenience
-func (qc *questionManager) SetRandomCategory() string {
-	newCategory := question.GetRandomCategory()
-	qc.SetActiveCategory(newCategory)
-	return qc.GetActiveCategory()
+func (qm *QuestionManager) SetRandomCategory() string {
+	newCategory := category.GetRandomCategory()
+	qm.SetActiveCategory(newCategory)
+	return qm.GetActiveCategory()
 }
 
 // Attempt to load the questions from multiple locations

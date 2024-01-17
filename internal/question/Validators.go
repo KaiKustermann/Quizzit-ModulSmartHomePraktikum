@@ -2,6 +2,8 @@ package question
 
 import (
 	"fmt"
+
+	"gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/category"
 )
 
 // Validates that the field Id contains a reasonable value
@@ -89,7 +91,7 @@ func validateIdUniqueness(questions []Question) (ok bool, errors []ValidationErr
 func (question Question) validateCategory() (ok bool, error ValidationError) {
 	ok = true
 	categorySupported := false
-	supportedCategories := GetSupportedQuestionCategories()
+	supportedCategories := category.GetSupportedQuestionCategories()
 	for _, category := range supportedCategories {
 		if category == question.Category {
 			categorySupported = true
@@ -107,7 +109,7 @@ func (question Question) validateCategory() (ok bool, error ValidationError) {
 // Validates that there is at least one question for a given supported category
 func validateCategoryVariety(questions []Question) (ok bool, errors []ValidationError) {
 	ok = true
-	supportedCategories := GetSupportedQuestionCategories()
+	supportedCategories := category.GetSupportedQuestionCategories()
 	for _, category := range supportedCategories {
 		categoryCount := 0
 		for _, question := range questions {

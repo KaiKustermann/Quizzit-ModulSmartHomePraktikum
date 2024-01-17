@@ -3,6 +3,7 @@ package game
 import (
 	"github.com/gorilla/websocket"
 	log "github.com/sirupsen/logrus"
+	gameloop "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/game/loop"
 	dto "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/generated-sources/dto"
 	helpers "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/helper-functions"
 	msgType "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/message-types"
@@ -12,14 +13,14 @@ import (
 // Generic handler for incoming messages
 // Check the current GameState and call the appropriate handler function
 // 'wantsFeedback' toggles if the 'conn' param is used to send error feedback
-func (loop *Game) handleMessage(conn *websocket.Conn, envelope dto.WebsocketMessagePublish, wantsFeedback bool) bool {
+func (game *Game) handleMessage(conn *websocket.Conn, envelope dto.WebsocketMessagePublish, wantsFeedback bool) bool {
 	msgType := envelope.MessageType
 	contextLogger := log.WithFields(log.Fields{
-		"GameStep":    loop.currentStep.Name,
+		"GameStep":    game.currentStep.Name,
 		"MessageType": msgType,
 	})
 	contextLogger.Debug("Attempting to handle message ")
-	pActions := loop.currentStep.possibleActions
+	pActions := game.currentStep.PossibleActions
 	for i := 0; i < len(pActions); i++ {
 		action := pActions[i]
 		if action.Action == envelope.MessageType {
@@ -27,7 +28,7 @@ func (loop *Game) handleMessage(conn *websocket.Conn, envelope dto.WebsocketMess
 			return true
 		}
 	}
-	feedback := buildErrorFeedback(loop.currentStep, envelope)
+	feedback := buildErrorFeedback(game.currentStep, envelope)
 	contextLogger.Warn(feedback.ErrorMessage + " ")
 	if wantsFeedback {
 		helpers.WriteWebsocketMessage(conn, helpers.ErrorFeedbackToWebsocketMessageSubscribe(feedback))
@@ -37,34 +38,34 @@ func (loop *Game) handleMessage(conn *websocket.Conn, envelope dto.WebsocketMess
 
 // Send out the latest state to the new client
 // Use as 'onConnect'-hook
-func (loop *Game) handleOnConnect(conn *websocket.Conn) {
-	err := helpers.WriteWebsocketMessage(conn, loop.stateMessage)
+func (game *Game) handleOnConnect(conn *websocket.Conn) {
+	err := helpers.WriteWebsocketMessage(conn, game.stateMessage)
 	if err != nil {
 		log.Error("Could not send 'OnConnect' Message to client", err)
 	}
 }
 
 // Register Hooks for the Websocket connection
-func (loop *Game) registerHandlers() *Game {
+func (game *Game) registerHandlers() *Game {
 	log.Trace("Registering WS-Hooks for commands from tablet")
 	messageTypes := msgType.GetAllMessageTypePublish()
 	for i := 0; i < len(messageTypes); i++ {
-		ws.RegisterMessageHandler(string(messageTypes[i]), loop.handleMessage)
+		ws.RegisterMessageHandler(string(messageTypes[i]), game.handleMessage)
 	}
 
 	log.Trace("Registering WS-Hooks so frontend can fake hybrid die connected screen")
-	ws.RegisterMessageHandler(string(msgType.Game_Die_HybridDieConnected), loop.handleMessage)
+	ws.RegisterMessageHandler(string(msgType.Game_Die_HybridDieConnected), game.handleMessage)
 
 	log.Trace("Registering on-connect")
-	ws.RegisterOnConnectHandler(loop.handleOnConnect)
-	return loop
+	ws.RegisterOnConnectHandler(game.handleOnConnect)
+	return game
 }
 
-func buildErrorFeedback(gs gameStep, envelope dto.WebsocketMessagePublish) (fb dto.ErrorFeedback) {
+func buildErrorFeedback(gs gameloop.GameStep, envelope dto.WebsocketMessagePublish) (fb dto.ErrorFeedback) {
 	allowedMessageTypes := []string{}
 	props := make(map[string]interface{})
-	for i := 0; i < len(gs.possibleActions); i++ {
-		allowedMessageTypes = append(allowedMessageTypes, gs.possibleActions[i].Action)
+	for i := 0; i < len(gs.PossibleActions); i++ {
+		allowedMessageTypes = append(allowedMessageTypes, gs.PossibleActions[i].Action)
 	}
 	props["supportedMessageTypes"] = allowedMessageTypes
 	fb.ErrorMessage = "MessageType not appropriate for GameStep"

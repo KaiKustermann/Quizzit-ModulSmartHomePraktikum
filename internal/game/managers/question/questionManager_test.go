@@ -1,4 +1,4 @@
-package game
+package questionmanager
 
 import (
 	"reflect"
@@ -22,7 +22,7 @@ func makeQuestion(id string, category string) (q question.Question) {
 func TestSetActiveQuestion(t *testing.T) {
 	category := "Geschichte"
 	qA := makeQuestion("question A", category)
-	qm := questionManager{}
+	qm := QuestionManager{}
 	qm.SetActiveQuestion(&qA)
 	if !reflect.DeepEqual(qm.GetActiveQuestion(), qA) {
 		t.Error("active Question should now be our question!")
@@ -31,7 +31,7 @@ func TestSetActiveQuestion(t *testing.T) {
 
 func TestGetActiveQuestion(t *testing.T) {
 	input := makeQuestion("question A", "Geschichte")
-	qm := questionManager{
+	qm := QuestionManager{
 		activeQuestion: &input,
 	}
 	activeQuestion := qm.GetActiveQuestion()
@@ -42,7 +42,7 @@ func TestGetActiveQuestion(t *testing.T) {
 
 func TestQuestionRotation(t *testing.T) {
 	activeCategory := "Geschichte"
-	qm := questionManager{
+	qm := QuestionManager{
 		questions: []question.Question{
 			makeQuestion("question A", activeCategory),
 			makeQuestion("question B", activeCategory),
