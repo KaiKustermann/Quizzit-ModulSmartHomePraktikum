@@ -5,7 +5,7 @@ import (
 
 	log "github.com/sirupsen/logrus"
 	configuration "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/configuration"
-	gameloop "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/game/loop"
+	"gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/game/loop/steps"
 	dto "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/generated-sources/dto"
 	helpers "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/helper-functions"
 	"gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/logging"
@@ -15,9 +15,9 @@ import (
 
 // transfer to a new GameState
 // stateMessage should be the message to send out for the transfer (and any new clients)
-func (gl *Game) transitionToState(next gameloop.GameStep, stateMessage dto.WebsocketMessageSubscribe) {
+func (gl *Game) transitionToState(next steps.GameStepIf, stateMessage dto.WebsocketMessageSubscribe) {
 	log.WithFields(log.Fields{
-		"name":         next.Name,
+		"name":         next.GetName(),
 		"stateMessage": stateMessage,
 	}).Debug("Switching Gamestep ")
 	gl.currentStep = next
@@ -27,7 +27,7 @@ func (gl *Game) transitionToState(next gameloop.GameStep, stateMessage dto.Webso
 
 // Sets the next GameState to Question being prompted
 // Sets stateMessage to the question Prompt
-func (game *Game) transitionToNewQuestion(gsQuestion gameloop.GameStep) {
+func (game *Game) transitionToNewQuestion(gsQuestion steps.GameStepIf) {
 	nextQuestion := game.managers.questionManager.MoveToNextQuestion()
 	game.managers.questionManager.ResetActiveQuestion()
 	nextQuestionDTO := nextQuestion.ConvertToDTO()
@@ -38,7 +38,7 @@ func (game *Game) transitionToNewQuestion(gsQuestion gameloop.GameStep) {
 
 // Sets the next GameState to displaying CorrectnessFeedback
 // Sets stateMessage to the feedback
-func (game *Game) transitionToCorrectnessFeedback(gsCorrectnessFeedback gameloop.GameStep, envelope dto.WebsocketMessagePublish) {
+func (game *Game) transitionToCorrectnessFeedback(gsCorrectnessFeedback steps.GameStepIf, envelope dto.WebsocketMessagePublish) {
 	answer := dto.SubmitAnswer{}
 	err := helpers.InterfaceToStruct(envelope.Body, &answer)
 	if err != nil {
@@ -70,7 +70,7 @@ func (game *Game) handlePlayerCount(envelope dto.WebsocketMessagePublish) {
 
 // handles the transition to a new player,
 // e.g. for a player that did not have any turn yet
-func (game *Game) transitionToNewPlayer(gsTransitionToNewPlayer gameloop.GameStep) {
+func (game *Game) transitionToNewPlayer(gsTransitionToNewPlayer steps.GameStepIf) {
 	game.managers.playerManager.MoveToNextPlayer()
 	playerState := game.managers.playerManager.IncreasePlayerTurnOfActivePlayer()
 	stateMessage := dto.WebsocketMessageSubscribe{
@@ -82,7 +82,7 @@ func (game *Game) transitionToNewPlayer(gsTransitionToNewPlayer gameloop.GameSte
 
 // handles the transition to the gamestate gsNewPlayerColorPrompt
 // sets state message to NewPlayerColorPrompt
-func (game *Game) transitionToNewPlayerColorPrompt(gsNewPlayerColorPrompt gameloop.GameStep) {
+func (game *Game) transitionToNewPlayerColorPrompt(gsNewPlayerColorPrompt steps.GameStepIf) {
 	playerState := game.managers.playerManager.GetPlayerState()
 	stateMessage := dto.WebsocketMessageSubscribe{
 		MessageType: string(msgType.Game_Turn_NewPlayerColorPrompt),
@@ -95,7 +95,7 @@ func (game *Game) transitionToNewPlayerColorPrompt(gsNewPlayerColorPrompt gamelo
 // handles a generic transition to the next player
 // if it is the first round of the next player it transitions to gsTransitionToNewPlayer,
 // otherwise it transitions to gsTransitionToSpecificPlayer
-func (game *Game) transitionToNextPlayer(gsTransitionToSpecificPlayer gameloop.GameStep, gsTransitionToNewPlayer gameloop.GameStep) {
+func (game *Game) transitionToNextPlayer(gsTransitionToSpecificPlayer steps.GameStepIf, gsTransitionToNewPlayer steps.GameStepIf) {
 	nextPlayerTurn := game.managers.playerManager.GetTurnOfNextPlayer()
 	if nextPlayerTurn == 0 {
 		game.transitionToNewPlayer(gsTransitionToNewPlayer)
@@ -106,7 +106,7 @@ func (game *Game) transitionToNextPlayer(gsTransitionToSpecificPlayer gameloop.G
 
 // handles the transition ro the gamestep gsRemindPlayerColorPrompt;
 // sets state message to RemindPlayerColorPrompt
-func (game *Game) transitionToReminder(gsRemindPlayerColorPrompt gameloop.GameStep) {
+func (game *Game) transitionToReminder(gsRemindPlayerColorPrompt steps.GameStepIf) {
 	playerState := game.managers.playerManager.GetPlayerState()
 	stateMessage := dto.WebsocketMessageSubscribe{
 		MessageType: string(msgType.Game_Turn_RemindPlayerColorPrompt),
@@ -118,7 +118,7 @@ func (game *Game) transitionToReminder(gsRemindPlayerColorPrompt gameloop.GameSt
 
 // Sets the next GameState to PassToSpecificPlayer
 // Sets stateMessage to the pass-to-player message
-func (game *Game) transitionToSpecificPlayer(gsPlayerTransition gameloop.GameStep) {
+func (game *Game) transitionToSpecificPlayer(gsPlayerTransition steps.GameStepIf) {
 	game.managers.playerManager.MoveToNextPlayer()
 	playerState := game.managers.playerManager.IncreasePlayerTurnOfActivePlayer()
 	stateMessage := dto.WebsocketMessageSubscribe{
@@ -133,7 +133,7 @@ func (game *Game) transitionToSpecificPlayer(gsPlayerTransition gameloop.GameSte
 
 // Calls transitiontoCategoryRoll digitally/hybriddie depending on the die's readystate.
 // Sets stateMessage to the chosen prompt
-func (game *Game) transitionToCategoryRoll(gsDigitalCategoryRoll gameloop.GameStep, gsHybridDieCategoryRoll gameloop.GameStep) {
+func (game *Game) transitionToCategoryRoll(gsDigitalCategoryRoll steps.GameStepIf, gsHybridDieCategoryRoll steps.GameStepIf) {
 	playerState := game.managers.playerManager.GetPlayerState()
 	if game.managers.hybridDieManager.IsConnected() {
 		log.Debug("Hybrid die is ready, using HYBRIDDIE ")
@@ -152,7 +152,7 @@ func (game *Game) transitionToCategoryRoll(gsDigitalCategoryRoll gameloop.GameSt
 
 // Sets the next GameState to displaying CategoryResponse
 // Sets stateMessage to the rolled category
-func (game *Game) transitionToCategoryResponse(gsCategoryResult gameloop.GameStep, category string) {
+func (game *Game) transitionToCategoryResponse(gsCategoryResult steps.GameStepIf, category string) {
 	game.managers.questionManager.SetActiveCategory(category)
 	playerState := game.managers.playerManager.GetPlayerState()
 	stateMessage := dto.WebsocketMessageSubscribe{
@@ -165,7 +165,7 @@ func (game *Game) transitionToCategoryResponse(gsCategoryResult gameloop.GameSte
 	game.transitionToState(gsCategoryResult, stateMessage)
 }
 
-func (game *Game) transitionToPlayerWon(gsPlayerWon gameloop.GameStep) {
+func (game *Game) transitionToPlayerWon(gsPlayerWon steps.GameStepIf) {
 	playerState := game.managers.playerManager.GetPlayerState()
 	game.transitionToState(gsPlayerWon, dto.WebsocketMessageSubscribe{
 		MessageType: string(msgType.Game_Generic_PlayerWonPrompt),
@@ -174,20 +174,20 @@ func (game *Game) transitionToPlayerWon(gsPlayerWon gameloop.GameStep) {
 	})
 }
 
-func (game *Game) transitionToSearchingHybridDie(gsSearchHybridDie gameloop.GameStep) {
+func (game *Game) transitionToSearchingHybridDie(gsSearchHybridDie steps.GameStepIf) {
 	game.transitionToState(gsSearchHybridDie, dto.WebsocketMessageSubscribe{
 		MessageType: string(msgType.Game_Die_SearchingHybridDie),
 	})
 	go game.applyTimeoutForHybridDieSearch()
 }
 
-func (game *Game) transitionToHybridDieConnected(gsHybridDieConnected gameloop.GameStep) {
+func (game *Game) transitionToHybridDieConnected(gsHybridDieConnected steps.GameStepIf) {
 	game.transitionToState(gsHybridDieConnected, dto.WebsocketMessageSubscribe{
 		MessageType: string(msgType.Game_Die_HybridDieConnected),
 	})
 }
 
-func (game *Game) transitionToHybridDieNotFound(gsHybridDieNotFound gameloop.GameStep) {
+func (game *Game) transitionToHybridDieNotFound(gsHybridDieNotFound steps.GameStepIf) {
 	game.transitionToState(gsHybridDieNotFound, dto.WebsocketMessageSubscribe{
 		MessageType: string(msgType.Game_Die_HybridDieNotFound),
 	})

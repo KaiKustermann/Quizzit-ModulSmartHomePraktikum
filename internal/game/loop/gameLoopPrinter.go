@@ -2,6 +2,8 @@ package gameloop
 
 import (
 	"fmt"
+
+	"gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/game/loop/steps"
 )
 
 // A kind of Log Appender that specializes in printing the game loop
@@ -17,8 +19,8 @@ func NewGameLoopPrinter() (glp GameLoopPrinter) {
 }
 
 // Append a transition to the final log output
-func (glp *GameLoopPrinter) Append(state GameStep, action interface{}, newState GameStep) {
-	glp.out += fmt.Sprintf("%-40s%-40v%-40s\n", state.MessageType, action, newState.MessageType)
+func (glp *GameLoopPrinter) Append(state steps.GameStepIf, action interface{}, newState steps.GameStepIf) {
+	glp.out += fmt.Sprintf("%-40s%-40v%-40s\n", state.GetMessageType(), action, newState.GetMessageType())
 }
 
 // Get the output to print

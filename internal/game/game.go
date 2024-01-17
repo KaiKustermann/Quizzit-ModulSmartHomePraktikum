@@ -4,7 +4,7 @@ import (
 	"github.com/gorilla/websocket"
 	log "github.com/sirupsen/logrus"
 	"gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/category"
-	gameloop "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/game/loop"
+	"gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/game/loop/steps"
 	player "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/game/managers/player"
 	question "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/game/managers/question"
 	dto "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/generated-sources/dto"
@@ -16,7 +16,7 @@ import (
 // Contains the game steps and their transitions
 // Handles incoming messages and updates clients on state changes
 type Game struct {
-	currentStep  gameloop.GameStep
+	currentStep  steps.GameStepIf
 	stateMessage dto.WebsocketMessageSubscribe
 	managers     gameObjectManagers
 }

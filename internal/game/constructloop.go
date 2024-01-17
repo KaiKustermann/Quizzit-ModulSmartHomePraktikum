@@ -5,6 +5,7 @@ import (
 
 	log "github.com/sirupsen/logrus"
 	gameloop "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/game/loop"
+	"gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/game/loop/steps"
 	dto "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/generated-sources/dto"
 	helpers "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/helper-functions"
 	hybriddie "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/hybrid-die"
@@ -15,21 +16,21 @@ import (
 // Construct the Game by defining the loop
 func (game *Game) constructLoop() *Game {
 	loopPrint := gameloop.NewGameLoopPrinter()
-	gsWelcome := gameloop.GameStep{Name: "Welcome", MessageType: msgType.Game_Setup_Welcome}
-	gsSetup := gameloop.GameStep{Name: "Setup - Select Player Count", MessageType: msgType.Game_Setup_SelectPlayerCount}
-	gsSearchHybridDie := gameloop.GameStep{Name: "Hybrid Die - Searching", MessageType: msgType.Game_Die_SearchingHybridDie}
-	gsHybridDieConnected := gameloop.GameStep{Name: "Hybrid Die - Found", MessageType: msgType.Game_Die_HybridDieConnected}
-	gsHybridDieNotFound := gameloop.GameStep{Name: "Hybrid Die - Not found", MessageType: msgType.Game_Die_HybridDieNotFound}
-	gsTransitionToSpecificPlayer := gameloop.GameStep{Name: "Transition to specific player", MessageType: msgType.Game_Turn_PassToSpecificPlayer}
-	gsDigitalCategoryRoll := gameloop.GameStep{Name: "Category - Roll (digital)", MessageType: msgType.Game_Die_RollCategoryDigitallyPrompt}
-	gsHybridDieCategoryRoll := gameloop.GameStep{Name: "Category - Roll (hybrid-die)", MessageType: msgType.Game_Die_RollCategoryHybridDiePrompt}
-	gsCategoryResult := gameloop.GameStep{Name: "Category - Result", MessageType: msgType.Game_Die_CategoryResult}
-	gsQuestion := gameloop.GameStep{Name: "Question", MessageType: msgType.Game_Question_Question}
-	gsCorrectnessFeedback := gameloop.GameStep{Name: "Correctness Feedback", MessageType: msgType.Game_Question_CorrectnessFeedback}
-	gsTransitionToNewPlayer := gameloop.GameStep{Name: "Turn 1 - Player transition - Pass to new player", MessageType: msgType.Game_Turn_PassToNewPlayer}
-	gsNewPlayerColor := gameloop.GameStep{Name: "Turn 1 - Player transition - New Player color Prompt", MessageType: msgType.Game_Turn_NewPlayerColorPrompt}
-	gsRemindPlayerColor := gameloop.GameStep{Name: "Turn 1 - Reminder - Display Color", MessageType: msgType.Game_Turn_RemindPlayerColorPrompt}
-	gsPlayerWon := gameloop.GameStep{Name: "Finished", MessageType: msgType.Game_Generic_PlayerWonPrompt}
+	gsWelcome := steps.NewBaseGameStep("Welcome", msgType.Game_Setup_Welcome)
+	gsSetup := steps.NewBaseGameStep("Setup - Select Player Count", msgType.Game_Setup_SelectPlayerCount)
+	gsSearchHybridDie := steps.NewBaseGameStep("Hybrid Die - Searching", msgType.Game_Die_SearchingHybridDie)
+	gsHybridDieConnected := steps.NewBaseGameStep("Hybrid Die - Found", msgType.Game_Die_HybridDieConnected)
+	gsHybridDieNotFound := steps.NewBaseGameStep("Hybrid Die - Not found", msgType.Game_Die_HybridDieNotFound)
+	gsTransitionToSpecificPlayer := steps.NewBaseGameStep("Transition to specific player", msgType.Game_Turn_PassToSpecificPlayer)
+	gsDigitalCategoryRoll := steps.NewBaseGameStep("Category - Roll (digital)", msgType.Game_Die_RollCategoryDigitallyPrompt)
+	gsHybridDieCategoryRoll := steps.NewBaseGameStep("Category - Roll (hybrid-die)", msgType.Game_Die_RollCategoryHybridDiePrompt)
+	gsCategoryResult := steps.NewBaseGameStep("Category - Result", msgType.Game_Die_CategoryResult)
+	gsQuestion := steps.NewBaseGameStep("Question", msgType.Game_Question_Question)
+	gsCorrectnessFeedback := steps.NewBaseGameStep("Correctness Feedback", msgType.Game_Question_CorrectnessFeedback)
+	gsTransitionToNewPlayer := steps.NewBaseGameStep("Turn 1 - Player transition - Pass to new player", msgType.Game_Turn_PassToNewPlayer)
+	gsNewPlayerColor := steps.NewBaseGameStep("Turn 1 - Player transition - New Player color Prompt", msgType.Game_Turn_NewPlayerColorPrompt)
+	gsRemindPlayerColor := steps.NewBaseGameStep("Turn 1 - Reminder - Display Color", msgType.Game_Turn_RemindPlayerColorPrompt)
+	gsPlayerWon := steps.NewBaseGameStep("Finished", msgType.Game_Generic_PlayerWonPrompt)
 
 	// WELCOME SCREEN
 	loopPrint.Append(gsWelcome, msgType.Player_Generic_Confirm, gsSetup)
