@@ -16,7 +16,7 @@ import (
 // Construct the Game by defining the loop
 func (game *Game) constructLoop() *Game {
 	loopPrint := gameloop.NewGameLoopPrinter()
-	gsWelcome := steps.NewBaseGameStep("Welcome", msgType.Game_Setup_Welcome)
+	gsWelcome := steps.NewWelcomeStep()
 	gsSetup := steps.NewBaseGameStep("Setup - Select Player Count", msgType.Game_Setup_SelectPlayerCount)
 	gsSearchHybridDie := steps.NewBaseGameStep("Hybrid Die - Searching", msgType.Game_Die_SearchingHybridDie)
 	gsHybridDieConnected := steps.NewBaseGameStep("Hybrid Die - Found", msgType.Game_Die_HybridDieConnected)
