@@ -7,7 +7,6 @@ import (
 )
 
 type GameStepIf interface {
-	AddAction(action string, handler func(dto.WebsocketMessagePublish))
 	GetMessageType() messagetypes.MessageTypeSubscribe
 	GetPossibleActions() []string
 	GetName() string

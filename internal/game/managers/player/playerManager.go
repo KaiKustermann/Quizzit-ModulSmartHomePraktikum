@@ -15,12 +15,14 @@ type PlayerManager struct {
 }
 
 // Constructs a new PlayerManager
-func NewPlayerManager() (pm PlayerManager) {
+func NewPlayerManager() *PlayerManager {
+	log.Infof("Constructing new PlayerManager")
+	pm := &PlayerManager{}
 	pm.activePlayer = -1
 	pm.playerCount = 2
 	pm.playerScores = make([]int, pm.playerCount)
 	pm.playerTurns = make([]int, pm.playerCount)
-	return
+	return pm
 }
 
 // Set/Change Player count

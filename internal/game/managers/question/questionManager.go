@@ -23,10 +23,11 @@ type QuestionManager struct {
 }
 
 // Constructs a new QuestionManager
-func NewQuestionManager() (qm QuestionManager) {
+func NewQuestionManager() *QuestionManager {
 	log.Infof("Constructing new QuestionManager")
+	qm := &QuestionManager{}
 	qm.questions = LoadQuestions()
-	return
+	return qm
 }
 
 // Retrieve the currently active question
