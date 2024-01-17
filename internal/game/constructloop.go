@@ -41,7 +41,6 @@ func (game *Game) constructLoop() *Game {
 
 	// SETUP - SUBMIT PLAYER COUNT
 	loopPrint.Append(gsSetup, msgType.Player_Setup_SubmitPlayerCount, gsSearchHybridDie)
-	loopPrint.Append(gsSetup, msgType.Player_Setup_SubmitPlayerCount, gsHybridDieConnected)
 	loopPrint.Append(gsSetup, msgType.Player_Setup_SubmitPlayerCount, gsTransitionToNewPlayer)
 	gsSetup.AddAction(string(msgType.Player_Setup_SubmitPlayerCount), func(envelope dto.WebsocketMessagePublish) {
 		game.handlePlayerCount(envelope)
