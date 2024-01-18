@@ -177,15 +177,11 @@ func (game *Game) constructLoop() *Game {
 	// PLAYER WON
 	loopPrint.Append(gsPlayerWon, msgType.Player_Generic_Confirm, gsWelcome)
 	gsPlayerWon.AddAction(string(msgType.Player_Generic_Confirm), func(envelope dto.WebsocketMessagePublish) {
-		game.TransitionToState(gsWelcome, dto.WebsocketMessageSubscribe{
-			MessageType: string(msgType.Game_Setup_Welcome),
-		})
+		game.TransitionToGameStep(gsWelcome)
 	})
 
-	// Set an initial StepGameGame
-	game.TransitionToState(gsWelcome, dto.WebsocketMessageSubscribe{
-		MessageType: string(msgType.Game_Setup_Welcome),
-	})
+	// Set an initial GameStep
+	game.TransitionToGameStep(gsWelcome)
 
 	log.Debug(loopPrint.GetOutput())
 

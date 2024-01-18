@@ -1,7 +1,6 @@
-package welcomestep
+package steps
 
 import (
-	"gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/game/loop/steps"
 	"gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/game/managers"
 	dto "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/generated-sources/dto"
 	messagetypes "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/message-types"
@@ -11,7 +10,24 @@ const name = "Welcome"
 const msgType = messagetypes.Game_Setup_Welcome
 
 type WelcomeStep struct {
-	base steps.Transitions
+	base Transitions
+}
+
+// GetStateMessage is called upon entering this GameStep
+//
+// Must return the stateMessage that is send to clients
+func (s *WelcomeStep) GetStateMessage(managers managers.GameObjectManagers) dto.WebsocketMessageSubscribe {
+	return dto.WebsocketMessageSubscribe{
+		MessageType: string(msgType),
+	}
+}
+
+// AddSetupTransition adds the transition to the SetupStep
+func (s *WelcomeStep) AddSetupTransition(setupStep GameStepIf) {
+	s.base.AddTransition(string(messagetypes.Player_Generic_Confirm),
+		func(_ managers.GameObjectManagers, _ dto.WebsocketMessagePublish) GameStepIf {
+			return setupStep
+		})
 }
 
 // GetMessageType returns the [MessageTypeSubscribe] sent to frontend when this step is active
@@ -22,14 +38,6 @@ func (s *WelcomeStep) GetMessageType() messagetypes.MessageTypeSubscribe {
 // GetName returns a human-friendly name for this step
 func (s *WelcomeStep) GetName() string {
 	return name
-}
-
-// AddSetupTransition adds the transition to the SetupStep
-func (s *WelcomeStep) AddSetupTransition(setupStep steps.GameStepIf) {
-	s.base.AddTransition(string(messagetypes.Player_Generic_Confirm),
-		func(_ managers.GameObjectManagers, _ dto.WebsocketMessagePublish) steps.GameStepIf {
-			return setupStep
-		})
 }
 
 // AddAction exposes [Transitions] GetPossibleActions

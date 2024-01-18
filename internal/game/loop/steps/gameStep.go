@@ -2,6 +2,7 @@ package steps
 
 import (
 	log "github.com/sirupsen/logrus"
+	"gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/game/managers"
 	dto "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/generated-sources/dto"
 	messagetypes "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/message-types"
 )
@@ -10,7 +11,8 @@ type GameStepIf interface {
 	GetMessageType() messagetypes.MessageTypeSubscribe
 	GetPossibleActions() []string
 	GetName() string
-	HandleMessage(envelope dto.WebsocketMessagePublish) (success bool)
+	GetStateMessage(managers managers.GameObjectManagers) dto.WebsocketMessageSubscribe
+	HandleMessage(managers managers.GameObjectManagers, envelope dto.WebsocketMessagePublish) (success bool)
 }
 
 // A node inside the Game

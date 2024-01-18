@@ -13,9 +13,9 @@ import (
 	ws "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/websockets"
 )
 
-// transfer to a new GameState
-// stateMessage should be the message to send out for the transfer (and any new clients)
-func (gl *Game) TransitionToState(next steps.GameStepIf, stateMessage dto.WebsocketMessageSubscribe) {
+// TransitionToGameStep moves the GameLoop forward to the next Step
+func (gl *Game) TransitionToGameStep(next steps.GameStepIf) {
+	stateMessage := next.GetStateMessage(gl.managers)
 	log.WithFields(log.Fields{
 		"name":         next.GetName(),
 		"stateMessage": stateMessage,
