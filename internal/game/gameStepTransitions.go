@@ -15,14 +15,18 @@ import (
 
 // TransitionToGameStep moves the GameLoop forward to the next Step
 func (gl *Game) TransitionToGameStep(next steps.GameStepIf) {
-	stateMessage := next.GetStateMessage(gl.managers)
+	nextState := dto.WebsocketMessageSubscribe{}
+	nextState.Body = next.GetMessageBody(gl.managers)
+	nextState.MessageType = string(next.GetMessageType())
+	playerState := gl.managers.PlayerManager.GetPlayerState()
+	nextState.PlayerState = &playerState
 	log.WithFields(log.Fields{
 		"name":         next.GetName(),
-		"stateMessage": stateMessage,
+		"stateMessage": nextState,
 	}).Debug("Switching Gamestep ")
 	gl.currentStep = next
-	gl.stateMessage = stateMessage
-	ws.BroadCast(stateMessage)
+	gl.stateMessage = nextState
+	ws.BroadCast(nextState)
 }
 
 // Sets the next GameState to Question being prompted

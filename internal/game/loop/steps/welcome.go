@@ -10,13 +10,11 @@ type WelcomeStep struct {
 	base Transitions
 }
 
-// GetStateMessage is called upon entering this GameStep
+// GetMessageBody is called upon entering this GameStep
 //
-// Must return the stateMessage that is send to clients
-func (s *WelcomeStep) GetStateMessage(managers managers.GameObjectManagers) dto.WebsocketMessageSubscribe {
-	return dto.WebsocketMessageSubscribe{
-		MessageType: string(s.GetMessageType()),
-	}
+// Must return the body for the stateMessage that is send to clients
+func (s *WelcomeStep) GetMessageBody(managers managers.GameObjectManagers) interface{} {
+	return nil
 }
 
 // AddSetupTransition adds the transition to the SetupStep

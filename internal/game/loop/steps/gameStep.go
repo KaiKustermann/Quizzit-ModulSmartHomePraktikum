@@ -11,7 +11,7 @@ type GameStepIf interface {
 	GetMessageType() messagetypes.MessageTypeSubscribe
 	GetPossibleActions() []string
 	GetName() string
-	GetStateMessage(managers managers.GameObjectManagers) dto.WebsocketMessageSubscribe
+	GetMessageBody(managers managers.GameObjectManagers) (wsMessageBody interface{})
 	HandleMessage(managers managers.GameObjectManagers, envelope dto.WebsocketMessagePublish) (success bool)
 }
 
@@ -52,6 +52,10 @@ func (gs *BaseGameStep) GetName() string {
 	return gs.name
 }
 
+func (gs *BaseGameStep) GetStateMessage(_ managers.GameObjectManagers) dto.WebsocketMessageSubscribe {
+	return dto.WebsocketMessageSubscribe{CorrelationId: "TODO: STUB!!"}
+}
+
 func (gs *BaseGameStep) GetPossibleActions() []string {
 	allowedMessageTypes := make([]string, 0, len(gs.possibleActions))
 	for i := 0; i < len(gs.possibleActions); i++ {
@@ -60,21 +64,7 @@ func (gs *BaseGameStep) GetPossibleActions() []string {
 	return allowedMessageTypes
 }
 
-func (gs *BaseGameStep) HandleMessage(envelope dto.WebsocketMessagePublish) (success bool) {
-	msgType := envelope.MessageType
-	contextLogger := log.WithFields(log.Fields{
-		"GameStep":    gs.name,
-		"MessageType": msgType,
-	})
-	contextLogger.Debug("Attempting to handle message ")
-	pActions := gs.possibleActions
-	for i := 0; i < len(pActions); i++ {
-		action := pActions[i]
-		if action.action == envelope.MessageType {
-			action.handler(envelope)
-			return true
-		}
-	}
-	contextLogger.Warn("MessageType not appropriate for GameStep ")
+func (gs *BaseGameStep) HandleMessage(_ managers.GameObjectManagers, envelope dto.WebsocketMessagePublish) (success bool) {
+	log.Warn("STUB! ")
 	return false
 }

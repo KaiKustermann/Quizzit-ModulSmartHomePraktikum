@@ -7,9 +7,7 @@ import (
 	gameloop "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/game/loop"
 	"gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/game/loop/steps"
 	dto "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/generated-sources/dto"
-	helpers "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/helper-functions"
 	hybriddie "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/hybrid-die"
-	"gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/logging"
 	msgType "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/message-types"
 )
 
@@ -25,8 +23,8 @@ func (game *Game) constructLoop() *Game {
 	gsDigitalCategoryRoll := steps.NewBaseGameStep("Category - Roll (digital)", msgType.Game_Die_RollCategoryDigitallyPrompt)
 	gsHybridDieCategoryRoll := steps.NewBaseGameStep("Category - Roll (hybrid-die)", msgType.Game_Die_RollCategoryHybridDiePrompt)
 	gsCategoryResult := steps.NewBaseGameStep("Category - Result", msgType.Game_Die_CategoryResult)
-	gsQuestion := steps.NewBaseGameStep("Question", msgType.Game_Question_Question)
-	gsCorrectnessFeedback := steps.NewBaseGameStep("Correctness Feedback", msgType.Game_Question_CorrectnessFeedback)
+	gsQuestion := &steps.QuestionStep{}
+	gsCorrectnessFeedback := &steps.CorrectnessFeedbackStep{}
 	gsTransitionToNewPlayer := steps.NewBaseGameStep("Turn 1 - Player transition - Pass to new player", msgType.Game_Turn_PassToNewPlayer)
 	gsNewPlayerColor := steps.NewBaseGameStep("Turn 1 - Player transition - New Player color Prompt", msgType.Game_Turn_NewPlayerColorPrompt)
 	gsRemindPlayerColor := steps.NewBaseGameStep("Turn 1 - Reminder - Display Color", msgType.Game_Turn_RemindPlayerColorPrompt)
@@ -116,55 +114,20 @@ func (game *Game) constructLoop() *Game {
 
 	// QUESTION
 	loopPrint.Append(gsQuestion, msgType.Player_Question_SubmitAnswer, gsCorrectnessFeedback)
-	gsQuestion.AddAction(string(msgType.Player_Question_SubmitAnswer), func(envelope dto.WebsocketMessagePublish) {
-		game.transitionToCorrectnessFeedback(gsCorrectnessFeedback, envelope)
-	})
+	gsQuestion.AddSubmitAnswerTransition(gsCorrectnessFeedback)
+
 	loopPrint.Append(gsQuestion, msgType.Player_Question_UseJoker, gsQuestion)
-	gsQuestion.AddAction(string(msgType.Player_Question_UseJoker), func(envelope dto.WebsocketMessagePublish) {
-		if game.managers.QuestionManager.GetActiveQuestion().IsJokerAlreadyUsed() {
-			logging.EnvelopeLog(envelope).Warn("Joker was already used, so the Request is discarded")
-			return
-		}
-		game.managers.QuestionManager.GetActiveQuestion().UseJoker()
-		playerState := game.managers.PlayerManager.GetPlayerState()
-		updatedQuestionDTO := game.managers.QuestionManager.GetActiveQuestion().ConvertToDTO()
-		game.TransitionToState(gsQuestion, helpers.QuestionToWebsocketMessageSubscribe(*updatedQuestionDTO, playerState))
-	})
+	gsQuestion.AddUseJokerTransition()
+
 	loopPrint.Append(gsQuestion, msgType.Player_Question_SelectAnswer, gsQuestion)
-	gsQuestion.AddAction(string(msgType.Player_Question_SelectAnswer), func(envelope dto.WebsocketMessagePublish) {
-		selectedAnswer := dto.SelectAnswer{}
-		err := helpers.InterfaceToStruct(envelope.Body, &selectedAnswer)
-		if err != nil {
-			logging.EnvelopeLog(envelope).Warn("Received bad message body for this messageType")
-			return
-		}
-		if game.managers.QuestionManager.GetActiveQuestion().IsAnswerWithGivenIdDisabled(selectedAnswer.AnswerId) {
-			logging.EnvelopeLog(envelope).Warnf("Answer with id %s is not set to selected, because it is already set to disabled", selectedAnswer.AnswerId)
-			return
-		}
-		game.managers.QuestionManager.GetActiveQuestion().SetSelectedAnswerByAnswerId(selectedAnswer.AnswerId)
-		playerState := game.managers.PlayerManager.GetPlayerState()
-		updatedQuestionDTO := game.managers.QuestionManager.GetActiveQuestion().ConvertToDTO()
-		game.TransitionToState(gsQuestion, helpers.QuestionToWebsocketMessageSubscribe(*updatedQuestionDTO, playerState))
-	})
+	gsQuestion.AddSelectAnswerTransition()
 
 	// FEEDBACK
 	loopPrint.Append(gsCorrectnessFeedback, msgType.Player_Generic_Confirm, gsPlayerWon)
 	loopPrint.Append(gsCorrectnessFeedback, msgType.Player_Generic_Confirm, gsRemindPlayerColor)
 	loopPrint.Append(gsCorrectnessFeedback, msgType.Player_Generic_Confirm, gsTransitionToNewPlayer)
 	loopPrint.Append(gsCorrectnessFeedback, msgType.Player_Generic_Confirm, gsTransitionToSpecificPlayer)
-	gsCorrectnessFeedback.AddAction(string(msgType.Player_Generic_Confirm), func(envelope dto.WebsocketMessagePublish) {
-		if game.managers.PlayerManager.HasActivePlayerReachedWinningScore() {
-			game.TransitionToGameStep(gsPlayerWon)
-		} else {
-			activeplayerTurn := game.managers.PlayerManager.GetTurnOfActivePlayer()
-			if activeplayerTurn == 1 {
-				game.transitionToReminder(gsRemindPlayerColor)
-			} else {
-				game.transitionToNextPlayer(gsTransitionToSpecificPlayer, gsTransitionToNewPlayer)
-			}
-		}
-	})
+	gsCorrectnessFeedback.AddTransitions(gsPlayerWon, gsRemindPlayerColor, gsTransitionToSpecificPlayer, gsTransitionToNewPlayer)
 
 	// REMIND PLAYER COLOR PROMPT
 	loopPrint.Append(gsRemindPlayerColor, msgType.Player_Generic_Confirm, gsTransitionToNewPlayer)

@@ -10,22 +10,16 @@ type PlayerWonStep struct {
 	base Transitions
 }
 
-// GetStateMessage is called upon entering this GameStep
+// GetMessageBody is called upon entering this GameStep
 //
-// Must return the stateMessage that is send to clients
-func (s *PlayerWonStep) GetStateMessage(managers managers.GameObjectManagers) dto.WebsocketMessageSubscribe {
-	playerState := managers.PlayerManager.GetPlayerState()
-	activePlayerId := managers.PlayerManager.GetActivePlayerId()
-	return dto.WebsocketMessageSubscribe{
-		MessageType: string(s.GetMessageType()),
-		Body:        dto.PlayerWonPrompt{PlayerId: activePlayerId},
-		PlayerState: &playerState,
-	}
+// Must return the body for the stateMessage that is send to clients
+func (s *PlayerWonStep) GetMessageBody(managers managers.GameObjectManagers) interface{} {
+	return dto.PlayerWonPrompt{PlayerId: managers.PlayerManager.GetActivePlayerId()}
 }
 
-// AddWelcomeTransition adds the transition to the WelcomeStep
+// AddWelcomeTransition adds the transition to the [WelcomeStep]
 func (s *PlayerWonStep) AddWelcomeTransition(welcomeStep *WelcomeStep) {
-	var action ActionHandler = func(man managers.GameObjectManagers, msg dto.WebsocketMessagePublish) GameStepIf {
+	var action ActionHandler = func(managers managers.GameObjectManagers, msg dto.WebsocketMessagePublish) GameStepIf {
 		return welcomeStep
 	}
 	s.base.AddTransition(string(messagetypes.Player_Generic_Confirm), action)

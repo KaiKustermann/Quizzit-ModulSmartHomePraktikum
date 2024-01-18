@@ -4,6 +4,7 @@ import (
 	"math/rand"
 	"time"
 
+	log "github.com/sirupsen/logrus"
 	dto "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/generated-sources/dto"
 )
 
@@ -25,23 +26,26 @@ func (q Question) ConvertToDTO() *dto.Question {
 	return &dto.Question{Id: q.Id, Query: q.Query, Answers: answers, Category: string(q.Category)}
 }
 
-// Get the correctnessFeedback for a given question and SubmitAnswer, returns a DTO of type CorrectnessFeedback
-func (q Question) GetCorrectnessFeedback(submitAnswer dto.SubmitAnswer) dto.CorrectnessFeedback {
-	var selectedAnswerIsCorrect bool = false
-	var correctAnswer *dto.PossibleAnswer
-	var selectedAnswer *dto.PossibleAnswer
+// GetCorrectnessFeedback returns feedback for the currently selected answer
+func (q Question) GetCorrectnessFeedback() (fb dto.CorrectnessFeedback) {
+	fb = dto.CorrectnessFeedback{
+		Question:                q.ConvertToDTO(),
+		SelectedAnswerIsCorrect: false,
+	}
 	for _, a := range q.Answers {
 		if a.IsCorrect {
-			correctAnswer = a.ConvertToDTO()
-			if a.Id == submitAnswer.AnswerId {
-				selectedAnswerIsCorrect = true
+			fb.CorrectAnswer = a.ConvertToDTO()
+			if a.IsSelected {
+				fb.SelectedAnswerIsCorrect = true
+				fb.SelectedAnswer = fb.CorrectAnswer
+				return
 			}
 		}
-		if a.Id == submitAnswer.AnswerId {
-			selectedAnswer = a.ConvertToDTO()
+		if a.IsSelected {
+			fb.SelectedAnswer = a.ConvertToDTO()
 		}
 	}
-	return dto.CorrectnessFeedback{SelectedAnswerIsCorrect: selectedAnswerIsCorrect, CorrectAnswer: correctAnswer, SelectedAnswer: selectedAnswer, Question: q.ConvertToDTO()}
+	return
 }
 
 func (q Question) IsJokerAlreadyUsed() bool {
@@ -55,6 +59,7 @@ func (q Question) IsJokerAlreadyUsed() bool {
 
 // Sets two random uncorrect answers to disabled
 func (q Question) UseJoker() {
+	log.Debug("Using Joker on active question ")
 	// Initialize the random number generator with a unique seed
 	rand.Seed(time.Now().UnixNano())
 
