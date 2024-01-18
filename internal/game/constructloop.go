@@ -6,7 +6,6 @@ import (
 	log "github.com/sirupsen/logrus"
 	gameloop "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/game/loop"
 	"gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/game/loop/steps"
-	welcomestep "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/game/loop/steps/welcome"
 	dto "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/generated-sources/dto"
 	helpers "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/helper-functions"
 	hybriddie "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/hybrid-die"
@@ -17,7 +16,7 @@ import (
 // Construct the Game by defining the loop
 func (game *Game) constructLoop() *Game {
 	loopPrint := gameloop.NewGameLoopPrinter()
-	gsWelcome := &welcomestep.WelcomeStep{}
+	gsWelcome := &steps.WelcomeStep{}
 	gsSetup := steps.NewBaseGameStep("Setup - Select Player Count", msgType.Game_Setup_SelectPlayerCount)
 	gsSearchHybridDie := steps.NewBaseGameStep("Hybrid Die - Searching", msgType.Game_Die_SearchingHybridDie)
 	gsHybridDieConnected := steps.NewBaseGameStep("Hybrid Die - Found", msgType.Game_Die_HybridDieConnected)
@@ -31,7 +30,7 @@ func (game *Game) constructLoop() *Game {
 	gsTransitionToNewPlayer := steps.NewBaseGameStep("Turn 1 - Player transition - Pass to new player", msgType.Game_Turn_PassToNewPlayer)
 	gsNewPlayerColor := steps.NewBaseGameStep("Turn 1 - Player transition - New Player color Prompt", msgType.Game_Turn_NewPlayerColorPrompt)
 	gsRemindPlayerColor := steps.NewBaseGameStep("Turn 1 - Reminder - Display Color", msgType.Game_Turn_RemindPlayerColorPrompt)
-	gsPlayerWon := steps.NewBaseGameStep("Finished", msgType.Game_Generic_PlayerWonPrompt)
+	gsPlayerWon := &steps.PlayerWonStep{}
 
 	// WELCOME SCREEN
 	loopPrint.Append(gsWelcome, msgType.Player_Generic_Confirm, gsSetup)
@@ -156,7 +155,7 @@ func (game *Game) constructLoop() *Game {
 	loopPrint.Append(gsCorrectnessFeedback, msgType.Player_Generic_Confirm, gsTransitionToSpecificPlayer)
 	gsCorrectnessFeedback.AddAction(string(msgType.Player_Generic_Confirm), func(envelope dto.WebsocketMessagePublish) {
 		if game.managers.PlayerManager.HasActivePlayerReachedWinningScore() {
-			game.transitionToPlayerWon(gsPlayerWon)
+			game.TransitionToGameStep(gsPlayerWon)
 		} else {
 			activeplayerTurn := game.managers.PlayerManager.GetTurnOfActivePlayer()
 			if activeplayerTurn == 1 {
@@ -176,9 +175,7 @@ func (game *Game) constructLoop() *Game {
 
 	// PLAYER WON
 	loopPrint.Append(gsPlayerWon, msgType.Player_Generic_Confirm, gsWelcome)
-	gsPlayerWon.AddAction(string(msgType.Player_Generic_Confirm), func(envelope dto.WebsocketMessagePublish) {
-		game.TransitionToGameStep(gsWelcome)
-	})
+	gsPlayerWon.AddWelcomeTransition(gsWelcome)
 
 	// Set an initial GameStep
 	game.TransitionToGameStep(gsWelcome)

@@ -6,9 +6,6 @@ import (
 	messagetypes "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/message-types"
 )
 
-const name = "Welcome"
-const msgType = messagetypes.Game_Setup_Welcome
-
 type WelcomeStep struct {
 	base Transitions
 }
@@ -18,26 +15,26 @@ type WelcomeStep struct {
 // Must return the stateMessage that is send to clients
 func (s *WelcomeStep) GetStateMessage(managers managers.GameObjectManagers) dto.WebsocketMessageSubscribe {
 	return dto.WebsocketMessageSubscribe{
-		MessageType: string(msgType),
+		MessageType: string(s.GetMessageType()),
 	}
 }
 
 // AddSetupTransition adds the transition to the SetupStep
 func (s *WelcomeStep) AddSetupTransition(setupStep GameStepIf) {
-	s.base.AddTransition(string(messagetypes.Player_Generic_Confirm),
-		func(_ managers.GameObjectManagers, _ dto.WebsocketMessagePublish) GameStepIf {
-			return setupStep
-		})
+	var action ActionHandler = func(_ managers.GameObjectManagers, _ dto.WebsocketMessagePublish) GameStepIf {
+		return setupStep
+	}
+	s.base.AddTransition(string(messagetypes.Player_Generic_Confirm), action)
 }
 
 // GetMessageType returns the [MessageTypeSubscribe] sent to frontend when this step is active
 func (s *WelcomeStep) GetMessageType() messagetypes.MessageTypeSubscribe {
-	return msgType
+	return messagetypes.Game_Setup_Welcome
 }
 
 // GetName returns a human-friendly name for this step
 func (s *WelcomeStep) GetName() string {
-	return name
+	return "Welcome"
 }
 
 // AddAction exposes [Transitions] GetPossibleActions
