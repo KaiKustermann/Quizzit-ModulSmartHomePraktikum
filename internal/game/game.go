@@ -4,7 +4,7 @@ import (
 	"github.com/gorilla/websocket"
 	log "github.com/sirupsen/logrus"
 	"gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/category"
-	"gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/game/loop/steps"
+	gameloop "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/game/loop"
 	"gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/game/managers"
 	player "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/game/managers/player"
 	questionmanager "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/game/managers/question"
@@ -18,12 +18,12 @@ import (
 // Contains the game steps and their transitions
 // Handles incoming messages and updates clients on state changes
 type Game struct {
-	currentStep  steps.GameStepIf
+	currentStep  gameloop.GameStepIf
 	stateMessage dto.WebsocketMessageSubscribe
 	managers     managers.GameObjectManagers
 }
 
-// Construct and inject a new Game instance
+// NewGame constructs and injects a new Game instance
 func NewGame() (game Game) {
 	game.managers.PlayerManager = player.NewPlayerManager()
 	game.managers.QuestionManager = questionmanager.NewQuestionManager()
@@ -51,8 +51,12 @@ func (game *Game) forwardToGameLoop(messageType string, body interface{}) {
 		}, false)
 }
 
-// TransitionToGameStep moves the GameLoop forward to the next Step
-func (game *Game) TransitionToGameStep(next steps.GameStepIf) {
+// TransitionToGameStep moves the GameLoop forward to the next Step.
+//
+// Calls 'OnEnterStep' on the next step prior to receiving message body and type
+//
+// Then retrieves the player state and updates self as well as clients
+func (game *Game) TransitionToGameStep(next gameloop.GameStepIf) {
 	next.OnEnterStep(game.managers)
 	nextState := dto.WebsocketMessageSubscribe{}
 	nextState.Body = next.GetMessageBody(game.managers)

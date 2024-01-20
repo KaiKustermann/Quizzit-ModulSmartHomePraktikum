@@ -1,13 +1,15 @@
 package steps
 
 import (
+	gameloop "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/game/loop"
 	"gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/game/managers"
 	dto "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/generated-sources/dto"
 	messagetypes "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/message-types"
 )
 
+// PlayerWonStep displays the winner of the game
 type PlayerWonStep struct {
-	base Transitions
+	base gameloop.Transitions
 }
 
 // GetMessageBody is called upon entering this GameStep
@@ -19,7 +21,7 @@ func (s *PlayerWonStep) GetMessageBody(managers managers.GameObjectManagers) int
 
 // AddWelcomeTransition adds the transition to the [WelcomeStep]
 func (s *PlayerWonStep) AddWelcomeTransition(welcomeStep *WelcomeStep) {
-	var action ActionHandler = func(managers managers.GameObjectManagers, msg dto.WebsocketMessagePublish) (nextstep GameStepIf, success bool) {
+	var action gameloop.ActionHandler = func(managers managers.GameObjectManagers, msg dto.WebsocketMessagePublish) (nextstep gameloop.GameStepIf, success bool) {
 		return welcomeStep, true
 	}
 	s.base.AddTransition(string(messagetypes.Player_Generic_Confirm), action)
@@ -41,7 +43,7 @@ func (s *PlayerWonStep) GetPossibleActions() []string {
 }
 
 // AddAction exposes [Transitions] HandleMessage
-func (s *PlayerWonStep) HandleMessage(managers managers.GameObjectManagers, envelope dto.WebsocketMessagePublish) (nextstep GameStepIf, success bool) {
+func (s *PlayerWonStep) HandleMessage(managers managers.GameObjectManagers, envelope dto.WebsocketMessagePublish) (nextstep gameloop.GameStepIf, success bool) {
 	return s.base.HandleMessage(managers, envelope)
 }
 

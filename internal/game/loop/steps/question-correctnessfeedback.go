@@ -1,13 +1,17 @@
 package steps
 
 import (
+	gameloop "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/game/loop"
 	"gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/game/managers"
 	dto "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/generated-sources/dto"
 	messagetypes "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/message-types"
 )
 
+// CorrectnessFeedbackStep shows whether the submitted answer was correct or not
+//
+// If incorrect, also shows the correct answer
 type CorrectnessFeedbackStep struct {
-	base Transitions
+	base gameloop.Transitions
 }
 
 // GetMessageBody is called upon entering this GameStep
@@ -22,9 +26,9 @@ func (s *CorrectnessFeedbackStep) GetMessageBody(managers managers.GameObjectMan
 	return feedback
 }
 
-// AddWelcomeTransition adds stransition to [PlayerWonStep], [RemindPlayerColorStep], [SpecificPlayerStep], [NewPlayerStep]
+// AddTransitions adds stransition to [PlayerWonStep], [RemindPlayerColorStep], [SpecificPlayerStep], [NewPlayerStep]
 func (s *CorrectnessFeedbackStep) AddTransitions(playerWonStep *PlayerWonStep, remindColorStep *RemindPlayerColorStep, passToSpecificPlayer *SpecificPlayerStep, passToNewPlayer *NewPlayerStep) {
-	var action ActionHandler = func(managers managers.GameObjectManagers, msg dto.WebsocketMessagePublish) (nextstep GameStepIf, success bool) {
+	var action gameloop.ActionHandler = func(managers managers.GameObjectManagers, msg dto.WebsocketMessagePublish) (nextstep gameloop.GameStepIf, success bool) {
 		if managers.PlayerManager.HasActivePlayerReachedWinningScore() {
 			return playerWonStep, true
 		}
@@ -59,7 +63,7 @@ func (s *CorrectnessFeedbackStep) GetPossibleActions() []string {
 }
 
 // AddAction exposes [Transitions] HandleMessage
-func (s *CorrectnessFeedbackStep) HandleMessage(managers managers.GameObjectManagers, envelope dto.WebsocketMessagePublish) (nextstep GameStepIf, success bool) {
+func (s *CorrectnessFeedbackStep) HandleMessage(managers managers.GameObjectManagers, envelope dto.WebsocketMessagePublish) (nextstep gameloop.GameStepIf, success bool) {
 	return s.base.HandleMessage(managers, envelope)
 }
 

@@ -1,13 +1,15 @@
 package steps
 
 import (
+	gameloop "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/game/loop"
 	"gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/game/managers"
 	dto "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/generated-sources/dto"
 	messagetypes "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/message-types"
 )
 
+// NewPlayerColorStep requests the tablet be passed to a new player
 type NewPlayerStep struct {
-	base Transitions
+	base gameloop.Transitions
 }
 
 // GetMessageBody is called upon entering this GameStep
@@ -19,7 +21,7 @@ func (s *NewPlayerStep) GetMessageBody(_ managers.GameObjectManagers) interface{
 
 // AddTransitionToNewPlayerColor adds the transition to [NewPlayerColorStep]
 func (s *NewPlayerStep) AddTransitionToNewPlayerColor(gsNewPlayerColor *NewPlayerColorStep) {
-	var action ActionHandler = func(_ managers.GameObjectManagers, _ dto.WebsocketMessagePublish) (nextstep GameStepIf, success bool) {
+	var action gameloop.ActionHandler = func(_ managers.GameObjectManagers, _ dto.WebsocketMessagePublish) (nextstep gameloop.GameStepIf, success bool) {
 		return gsNewPlayerColor, true
 	}
 	s.base.AddTransition(string(messagetypes.Player_Generic_Confirm), action)
@@ -41,7 +43,7 @@ func (s *NewPlayerStep) GetPossibleActions() []string {
 }
 
 // AddAction exposes [Transitions] HandleMessage
-func (s *NewPlayerStep) HandleMessage(managers managers.GameObjectManagers, envelope dto.WebsocketMessagePublish) (nextstep GameStepIf, success bool) {
+func (s *NewPlayerStep) HandleMessage(managers managers.GameObjectManagers, envelope dto.WebsocketMessagePublish) (nextstep gameloop.GameStepIf, success bool) {
 	return s.base.HandleMessage(managers, envelope)
 }
 

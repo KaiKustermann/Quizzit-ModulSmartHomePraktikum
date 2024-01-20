@@ -1,9 +1,11 @@
-package steps
+package gameloop
 
 import (
 	"gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/game/managers"
 	dto "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/generated-sources/dto"
 )
+
+type ActionHandler func(managers.GameObjectManagers, dto.WebsocketMessagePublish) (nextstep GameStepIf, success bool)
 
 // Transitions provides a common base for action handling to all [GameStepIf] structs
 type Transitions struct {
@@ -16,8 +18,6 @@ type Transition struct {
 	action  string
 	handler ActionHandler
 }
-
-type ActionHandler func(managers.GameObjectManagers, dto.WebsocketMessagePublish) (nextstep GameStepIf, success bool)
 
 // Utility function to add a [Transition] to a GameStep
 func (gs *Transitions) AddTransition(action string, handler ActionHandler) {

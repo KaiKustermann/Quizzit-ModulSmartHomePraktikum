@@ -3,7 +3,7 @@ package game
 import (
 	"github.com/gorilla/websocket"
 	log "github.com/sirupsen/logrus"
-	"gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/game/loop/steps"
+	gameloop "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/game/loop"
 	dto "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/generated-sources/dto"
 	helpers "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/helper-functions"
 	msgType "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/message-types"
@@ -58,7 +58,7 @@ func (game *Game) registerHandlers() *Game {
 	return game
 }
 
-func buildErrorFeedback(gs steps.GameStepIf, envelope dto.WebsocketMessagePublish) (fb dto.ErrorFeedback) {
+func buildErrorFeedback(gs gameloop.GameStepIf, envelope dto.WebsocketMessagePublish) (fb dto.ErrorFeedback) {
 	props := make(map[string]interface{})
 	props["supportedMessageTypes"] = gs.GetPossibleActions()
 	fb.ErrorMessage = "MessageType not appropriate for GameStep"

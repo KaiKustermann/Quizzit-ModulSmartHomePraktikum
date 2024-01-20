@@ -8,24 +8,29 @@ import (
 	msgType "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/message-types"
 )
 
-// Construct the Game by defining the loop
+// constructLoop initializes all the GameSteps and links them by adding their transitions
+//
+// Also prints out the gameloop once on DEBUG
 func (game *Game) constructLoop() *Game {
 	loopPrint := gameloop.NewGameLoopPrinter()
+	// INSTANTIATE ALL GAME STEPS
 	gsWelcome := &steps.WelcomeStep{}
 	gsSetup := &steps.SetupStep{}
-	gsSearchHybridDie := &steps.SearchHybridDieStep{Send: game.forwardToGameLoop}
+	gsSearchHybridDie := &steps.HybridDieSearchStep{Send: game.forwardToGameLoop}
 	gsHybridDieConnected := &steps.HybridDieConnectedStep{}
 	gsHybridDieNotFound := &steps.HybridDieNotFoundStep{}
 	gsTransitionToNewPlayer := &steps.NewPlayerStep{}
 	gsNewPlayerColor := &steps.NewPlayerColorStep{}
 	gsRemindPlayerColor := &steps.RemindPlayerColorStep{}
 	gsTransitionToSpecificPlayer := &steps.SpecificPlayerStep{}
-	gsDigitalCategoryRoll := &steps.CategoryDigitalRollStep{}
-	gsHybridDieCategoryRoll := &steps.CategoryHybridDieRollStep{}
+	gsDigitalCategoryRoll := &steps.CategoryRollDigitalStep{}
+	gsHybridDieCategoryRoll := &steps.CategoryRollHybridDieStep{}
 	gsCategoryResult := &steps.CategoryResultStep{}
 	gsQuestion := &steps.QuestionStep{}
 	gsCorrectnessFeedback := &steps.CorrectnessFeedbackStep{}
 	gsPlayerWon := &steps.PlayerWonStep{}
+
+	// LINK THEM TOGETHER
 
 	// WELCOME SCREEN
 	loopPrint.Append(gsWelcome, msgType.Player_Generic_Confirm, gsSetup)

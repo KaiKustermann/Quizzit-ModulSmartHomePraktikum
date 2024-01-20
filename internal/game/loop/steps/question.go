@@ -2,14 +2,18 @@ package steps
 
 import (
 	log "github.com/sirupsen/logrus"
+	gameloop "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/game/loop"
 	"gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/game/managers"
 	dto "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/generated-sources/dto"
 	helpers "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/helper-functions"
 	messagetypes "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/message-types"
 )
 
+// QuestionStep displays the question to the players
+//
+// Also takes care of handling a joker useage and disabling two answers if used.
 type QuestionStep struct {
-	base Transitions
+	base gameloop.Transitions
 }
 
 // GetMessageBody is called upon entering this GameStep
@@ -20,8 +24,10 @@ func (s *QuestionStep) GetMessageBody(managers managers.GameObjectManagers) inte
 }
 
 // AddSelectAnswerTransition adds handling of answer selection
+//
+// This transition will transition to self
 func (s *QuestionStep) AddSelectAnswerTransition() {
-	var action ActionHandler = func(managers managers.GameObjectManagers, msg dto.WebsocketMessagePublish) (nextstep GameStepIf, success bool) {
+	var action gameloop.ActionHandler = func(managers managers.GameObjectManagers, msg dto.WebsocketMessagePublish) (nextstep gameloop.GameStepIf, success bool) {
 		selectedAnswer := dto.SelectAnswer{}
 		log.Trace("Transforming message body to struct")
 		err := helpers.InterfaceToStruct(msg.Body, &selectedAnswer)
@@ -37,7 +43,7 @@ func (s *QuestionStep) AddSelectAnswerTransition() {
 
 // AddSubmitAnswerTransition adds the transition to the [CorrectnessFeedbackStep]
 func (s *QuestionStep) AddSubmitAnswerTransition(correctnessFeedbackStep *CorrectnessFeedbackStep) {
-	var action ActionHandler = func(managers managers.GameObjectManagers, msg dto.WebsocketMessagePublish) (nextstep GameStepIf, success bool) {
+	var action gameloop.ActionHandler = func(managers managers.GameObjectManagers, msg dto.WebsocketMessagePublish) (nextstep gameloop.GameStepIf, success bool) {
 		submittedAnswer := dto.SubmitAnswer{}
 		log.Trace("Transforming message body to struct")
 		err := helpers.InterfaceToStruct(msg.Body, &submittedAnswer)
@@ -55,8 +61,10 @@ func (s *QuestionStep) AddSubmitAnswerTransition(correctnessFeedbackStep *Correc
 }
 
 // AddUseJokerTransition adds handling when using a joker
+//
+// This transition will transition to self
 func (s *QuestionStep) AddUseJokerTransition() {
-	var action ActionHandler = func(managers managers.GameObjectManagers, msg dto.WebsocketMessagePublish) (nextstep GameStepIf, success bool) {
+	var action gameloop.ActionHandler = func(managers managers.GameObjectManagers, msg dto.WebsocketMessagePublish) (nextstep gameloop.GameStepIf, success bool) {
 		if managers.QuestionManager.GetActiveQuestion().IsJokerAlreadyUsed() {
 			log.Warn("Joker was already used, so the Request is discarded ")
 		} else {
@@ -97,7 +105,7 @@ func (s *QuestionStep) GetPossibleActions() []string {
 }
 
 // AddAction exposes [Transitions] HandleMessage
-func (s *QuestionStep) HandleMessage(managers managers.GameObjectManagers, envelope dto.WebsocketMessagePublish) (nextstep GameStepIf, success bool) {
+func (s *QuestionStep) HandleMessage(managers managers.GameObjectManagers, envelope dto.WebsocketMessagePublish) (nextstep gameloop.GameStepIf, success bool) {
 	return s.base.HandleMessage(managers, envelope)
 }
 

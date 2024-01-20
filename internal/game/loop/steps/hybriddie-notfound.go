@@ -1,13 +1,15 @@
 package steps
 
 import (
+	gameloop "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/game/loop"
 	"gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/game/managers"
 	dto "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/generated-sources/dto"
 	messagetypes "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/message-types"
 )
 
+// HybridDieNotFoundStep displays that the hybrid-die could not be found
 type HybridDieNotFoundStep struct {
-	base Transitions
+	base gameloop.Transitions
 }
 
 // GetMessageBody is called upon entering this GameStep
@@ -19,7 +21,7 @@ func (s *HybridDieNotFoundStep) GetMessageBody(managers managers.GameObjectManag
 
 // AddTransitionToNewPlayer adds the transition to [NewPlayerStep]
 func (s *HybridDieNotFoundStep) AddTransitionToNewPlayer(gsNewPlayer *NewPlayerStep) {
-	var action ActionHandler = func(managers managers.GameObjectManagers, _ dto.WebsocketMessagePublish) (nextstep GameStepIf, success bool) {
+	var action gameloop.ActionHandler = func(managers managers.GameObjectManagers, _ dto.WebsocketMessagePublish) (nextstep gameloop.GameStepIf, success bool) {
 		managers.PlayerManager.MoveToNextPlayer()
 		managers.PlayerManager.IncreasePlayerTurnOfActivePlayer()
 		return gsNewPlayer, true
@@ -43,7 +45,7 @@ func (s *HybridDieNotFoundStep) GetPossibleActions() []string {
 }
 
 // AddAction exposes [Transitions] HandleMessage
-func (s *HybridDieNotFoundStep) HandleMessage(managers managers.GameObjectManagers, envelope dto.WebsocketMessagePublish) (nextstep GameStepIf, success bool) {
+func (s *HybridDieNotFoundStep) HandleMessage(managers managers.GameObjectManagers, envelope dto.WebsocketMessagePublish) (nextstep gameloop.GameStepIf, success bool) {
 	return s.base.HandleMessage(managers, envelope)
 }
 
