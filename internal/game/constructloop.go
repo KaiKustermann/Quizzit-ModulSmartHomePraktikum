@@ -13,7 +13,7 @@ func (game *Game) constructLoop() *Game {
 	loopPrint := gameloop.NewGameLoopPrinter()
 	gsWelcome := &steps.WelcomeStep{}
 	gsSetup := &steps.SetupStep{}
-	gsSearchHybridDie := &steps.SearchHybridDieStep{}
+	gsSearchHybridDie := &steps.SearchHybridDieStep{Send: game.forwardToGameLoop}
 	gsHybridDieConnected := &steps.HybridDieConnectedStep{}
 	gsHybridDieNotFound := &steps.HybridDieNotFoundStep{}
 	gsTransitionToNewPlayer := &steps.NewPlayerStep{}

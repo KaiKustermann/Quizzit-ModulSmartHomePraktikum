@@ -64,7 +64,7 @@ func (s *QuestionStep) AddUseJokerTransition() {
 		}
 		return s, true
 	}
-	s.base.AddTransition(string(messagetypes.Player_Question_SelectAnswer), action)
+	s.base.AddTransition(string(messagetypes.Player_Question_UseJoker), action)
 }
 
 // selectAnswerById selects the given answer, if it is not disabled

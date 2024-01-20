@@ -12,6 +12,7 @@ import (
 
 type SearchHybridDieStep struct {
 	base Transitions
+	Send func(messageType string, body interface{})
 }
 
 // GetMessageBody is called upon entering this GameStep
@@ -74,5 +75,5 @@ func (s *SearchHybridDieStep) setTimeout(managers managers.GameObjectManagers) {
 		return
 	}
 	log.Warnf("Could not find a hybriddie within %v, canceling", timeout)
-	s.HandleMessage(managers, dto.WebsocketMessagePublish{MessageType: string(messagetypes.Game_Die_HybridDieNotFound)})
+	s.Send(string(messagetypes.Game_Die_HybridDieNotFound), nil)
 }
