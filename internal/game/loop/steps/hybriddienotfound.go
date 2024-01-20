@@ -6,42 +6,44 @@ import (
 	messagetypes "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/message-types"
 )
 
-type WelcomeStep struct {
+type HybridDieNotFoundStep struct {
 	base Transitions
 }
 
 // GetMessageBody is called upon entering this GameStep
 //
 // Must return the body for the stateMessage that is send to clients
-func (s *WelcomeStep) GetMessageBody(managers managers.GameObjectManagers) interface{} {
+func (s *HybridDieNotFoundStep) GetMessageBody(managers managers.GameObjectManagers) interface{} {
 	return nil
 }
 
-// AddSetupTransition adds the transition to the [SetupStep]
-func (s *WelcomeStep) AddSetupTransition(setupStep *SetupStep) {
-	var action ActionHandler = func(_ managers.GameObjectManagers, _ dto.WebsocketMessagePublish) (nextstep GameStepIf, success bool) {
-		return setupStep, true
+// AddTransitionToNewPlayer adds the transition to [NewPlayerStep]
+func (s *HybridDieNotFoundStep) AddTransitionToNewPlayer(gsNewPlayer *NewPlayerStep) {
+	var action ActionHandler = func(managers managers.GameObjectManagers, _ dto.WebsocketMessagePublish) (nextstep GameStepIf, success bool) {
+		managers.PlayerManager.MoveToNextPlayer()
+		managers.PlayerManager.IncreasePlayerTurnOfActivePlayer()
+		return gsNewPlayer, true
 	}
 	s.base.AddTransition(string(messagetypes.Player_Generic_Confirm), action)
 }
 
 // GetMessageType returns the [MessageTypeSubscribe] sent to frontend when this step is active
-func (s *WelcomeStep) GetMessageType() messagetypes.MessageTypeSubscribe {
-	return messagetypes.Game_Setup_Welcome
+func (s *HybridDieNotFoundStep) GetMessageType() messagetypes.MessageTypeSubscribe {
+	return messagetypes.Game_Die_HybridDieNotFound
 }
 
 // GetName returns a human-friendly name for this step
-func (s *WelcomeStep) GetName() string {
-	return "Welcome"
+func (s *HybridDieNotFoundStep) GetName() string {
+	return "Hybrid Die - Not Found"
 }
 
 // AddAction exposes [Transitions] GetPossibleActions
-func (s *WelcomeStep) GetPossibleActions() []string {
+func (s *HybridDieNotFoundStep) GetPossibleActions() []string {
 	return s.base.GetPossibleActions()
 }
 
 // AddAction exposes [Transitions] HandleMessage
-func (s *WelcomeStep) HandleMessage(managers managers.GameObjectManagers, envelope dto.WebsocketMessagePublish) (nextstep GameStepIf, success bool) {
+func (s *HybridDieNotFoundStep) HandleMessage(managers managers.GameObjectManagers, envelope dto.WebsocketMessagePublish) (nextstep GameStepIf, success bool) {
 	return s.base.HandleMessage(managers, envelope)
 }
 
@@ -50,6 +52,6 @@ func (s *WelcomeStep) HandleMessage(managers managers.GameObjectManagers, envelo
 // Can be used to modify state or take other actions if necessary.
 //
 // If the step possibly returns itself upon handleMessage take into account that it will invoke this function again!
-func (s *WelcomeStep) OnEnterStep(managers managers.GameObjectManagers) {
+func (s *HybridDieNotFoundStep) OnEnterStep(managers managers.GameObjectManagers) {
 	// Nothing
 }

@@ -22,21 +22,23 @@ func (s *CorrectnessFeedbackStep) GetMessageBody(managers managers.GameObjectMan
 	return feedback
 }
 
-// AddWelcomeTransition adds stransition to [PlayerWonStep], remindColorStep, passToSpecificPlayer, passToNewPlayer
-func (s *CorrectnessFeedbackStep) AddTransitions(playerWonStep *PlayerWonStep, remindColorStep GameStepIf, passToSpecificPlayer GameStepIf, passToNewPlayer GameStepIf) {
-	var action ActionHandler = func(managers managers.GameObjectManagers, msg dto.WebsocketMessagePublish) GameStepIf {
+// AddWelcomeTransition adds stransition to [PlayerWonStep], [RemindPlayerColorStep], [SpecificPlayerStep], [NewPlayerStep]
+func (s *CorrectnessFeedbackStep) AddTransitions(playerWonStep *PlayerWonStep, remindColorStep *RemindPlayerColorStep, passToSpecificPlayer *SpecificPlayerStep, passToNewPlayer *NewPlayerStep) {
+	var action ActionHandler = func(managers managers.GameObjectManagers, msg dto.WebsocketMessagePublish) (nextstep GameStepIf, success bool) {
 		if managers.PlayerManager.HasActivePlayerReachedWinningScore() {
-			return playerWonStep
+			return playerWonStep, true
 		}
 		activeplayerTurn := managers.PlayerManager.GetTurnOfActivePlayer()
 		if activeplayerTurn == 1 {
-			return remindColorStep
+			return remindColorStep, true
 		}
 		nextPlayerTurn := managers.PlayerManager.GetTurnOfNextPlayer()
+		managers.PlayerManager.MoveToNextPlayer()
+		managers.PlayerManager.IncreasePlayerTurnOfActivePlayer()
 		if nextPlayerTurn == 0 {
-			return passToNewPlayer
+			return passToNewPlayer, true
 		}
-		return passToSpecificPlayer
+		return passToSpecificPlayer, true
 	}
 	s.base.AddTransition(string(messagetypes.Player_Generic_Confirm), action)
 }
@@ -57,6 +59,15 @@ func (s *CorrectnessFeedbackStep) GetPossibleActions() []string {
 }
 
 // AddAction exposes [Transitions] HandleMessage
-func (s *CorrectnessFeedbackStep) HandleMessage(managers managers.GameObjectManagers, envelope dto.WebsocketMessagePublish) (success bool) {
+func (s *CorrectnessFeedbackStep) HandleMessage(managers managers.GameObjectManagers, envelope dto.WebsocketMessagePublish) (nextstep GameStepIf, success bool) {
 	return s.base.HandleMessage(managers, envelope)
+}
+
+// OnEnterStep is called by the gameloop upon entering this step
+//
+// Can be used to modify state or take other actions if necessary.
+//
+// If the step possibly returns itself upon handleMessage take into account that it will invoke this function again!
+func (s *CorrectnessFeedbackStep) OnEnterStep(managers managers.GameObjectManagers) {
+	// Nothing
 }

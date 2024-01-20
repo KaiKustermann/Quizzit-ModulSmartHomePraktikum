@@ -6,42 +6,46 @@ import (
 	messagetypes "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/message-types"
 )
 
-type WelcomeStep struct {
+type CategoryResultStep struct {
 	base Transitions
 }
 
 // GetMessageBody is called upon entering this GameStep
 //
 // Must return the body for the stateMessage that is send to clients
-func (s *WelcomeStep) GetMessageBody(managers managers.GameObjectManagers) interface{} {
-	return nil
+func (s *CategoryResultStep) GetMessageBody(managers managers.GameObjectManagers) interface{} {
+	return dto.CategoryResult{
+		Category: managers.QuestionManager.GetActiveCategory(),
+	}
 }
 
-// AddSetupTransition adds the transition to the [SetupStep]
-func (s *WelcomeStep) AddSetupTransition(setupStep *SetupStep) {
-	var action ActionHandler = func(_ managers.GameObjectManagers, _ dto.WebsocketMessagePublish) (nextstep GameStepIf, success bool) {
-		return setupStep, true
+// AddTransitionToQuestion adds transition to [QuestionStep]
+func (s *CategoryResultStep) AddTransitionToQuestion(gsQuestion *QuestionStep) {
+	var action ActionHandler = func(managers managers.GameObjectManagers, _ dto.WebsocketMessagePublish) (nextstep GameStepIf, success bool) {
+		managers.QuestionManager.MoveToNextQuestion()
+		managers.QuestionManager.ResetActiveQuestion()
+		return gsQuestion, true
 	}
 	s.base.AddTransition(string(messagetypes.Player_Generic_Confirm), action)
 }
 
 // GetMessageType returns the [MessageTypeSubscribe] sent to frontend when this step is active
-func (s *WelcomeStep) GetMessageType() messagetypes.MessageTypeSubscribe {
-	return messagetypes.Game_Setup_Welcome
+func (s *CategoryResultStep) GetMessageType() messagetypes.MessageTypeSubscribe {
+	return messagetypes.Game_Die_CategoryResult
 }
 
 // GetName returns a human-friendly name for this step
-func (s *WelcomeStep) GetName() string {
-	return "Welcome"
+func (s *CategoryResultStep) GetName() string {
+	return "Category - Result"
 }
 
 // AddAction exposes [Transitions] GetPossibleActions
-func (s *WelcomeStep) GetPossibleActions() []string {
+func (s *CategoryResultStep) GetPossibleActions() []string {
 	return s.base.GetPossibleActions()
 }
 
 // AddAction exposes [Transitions] HandleMessage
-func (s *WelcomeStep) HandleMessage(managers managers.GameObjectManagers, envelope dto.WebsocketMessagePublish) (nextstep GameStepIf, success bool) {
+func (s *CategoryResultStep) HandleMessage(managers managers.GameObjectManagers, envelope dto.WebsocketMessagePublish) (nextstep GameStepIf, success bool) {
 	return s.base.HandleMessage(managers, envelope)
 }
 
@@ -50,6 +54,6 @@ func (s *WelcomeStep) HandleMessage(managers managers.GameObjectManagers, envelo
 // Can be used to modify state or take other actions if necessary.
 //
 // If the step possibly returns itself upon handleMessage take into account that it will invoke this function again!
-func (s *WelcomeStep) OnEnterStep(managers managers.GameObjectManagers) {
+func (s *CategoryResultStep) OnEnterStep(managers managers.GameObjectManagers) {
 	// Nothing
 }

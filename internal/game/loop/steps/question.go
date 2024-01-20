@@ -21,48 +21,48 @@ func (s *QuestionStep) GetMessageBody(managers managers.GameObjectManagers) inte
 
 // AddSelectAnswerTransition adds handling of answer selection
 func (s *QuestionStep) AddSelectAnswerTransition() {
-	var action ActionHandler = func(managers managers.GameObjectManagers, msg dto.WebsocketMessagePublish) GameStepIf {
+	var action ActionHandler = func(managers managers.GameObjectManagers, msg dto.WebsocketMessagePublish) (nextstep GameStepIf, success bool) {
 		selectedAnswer := dto.SelectAnswer{}
 		log.Trace("Transforming message body to struct")
 		err := helpers.InterfaceToStruct(msg.Body, &selectedAnswer)
 		if err != nil {
 			log.Warn("Received bad message body for this messageType")
-			return s
+			return s, false
 		}
 		s.selectAnswerById(managers, selectedAnswer.AnswerId)
-		return s
+		return s, true
 	}
 	s.base.AddTransition(string(messagetypes.Player_Question_SelectAnswer), action)
 }
 
 // AddSubmitAnswerTransition adds the transition to the [CorrectnessFeedbackStep]
 func (s *QuestionStep) AddSubmitAnswerTransition(correctnessFeedbackStep *CorrectnessFeedbackStep) {
-	var action ActionHandler = func(managers managers.GameObjectManagers, msg dto.WebsocketMessagePublish) GameStepIf {
+	var action ActionHandler = func(managers managers.GameObjectManagers, msg dto.WebsocketMessagePublish) (nextstep GameStepIf, success bool) {
 		submittedAnswer := dto.SubmitAnswer{}
 		log.Trace("Transforming message body to struct")
 		err := helpers.InterfaceToStruct(msg.Body, &submittedAnswer)
 		if err != nil {
 			log.Warn("Received bad message body for this messageType")
-			return s
+			return s, false
 		}
 		couldSelect := s.selectAnswerById(managers, submittedAnswer.AnswerId)
 		if !couldSelect {
-			return s
+			return s, false
 		}
-		return correctnessFeedbackStep
+		return correctnessFeedbackStep, true
 	}
 	s.base.AddTransition(string(messagetypes.Player_Question_SubmitAnswer), action)
 }
 
 // AddUseJokerTransition adds handling when using a joker
 func (s *QuestionStep) AddUseJokerTransition() {
-	var action ActionHandler = func(managers managers.GameObjectManagers, msg dto.WebsocketMessagePublish) GameStepIf {
+	var action ActionHandler = func(managers managers.GameObjectManagers, msg dto.WebsocketMessagePublish) (nextstep GameStepIf, success bool) {
 		if managers.QuestionManager.GetActiveQuestion().IsJokerAlreadyUsed() {
 			log.Warn("Joker was already used, so the Request is discarded ")
 		} else {
 			managers.QuestionManager.GetActiveQuestion().UseJoker()
 		}
-		return s
+		return s, true
 	}
 	s.base.AddTransition(string(messagetypes.Player_Question_SelectAnswer), action)
 }
@@ -97,6 +97,15 @@ func (s *QuestionStep) GetPossibleActions() []string {
 }
 
 // AddAction exposes [Transitions] HandleMessage
-func (s *QuestionStep) HandleMessage(managers managers.GameObjectManagers, envelope dto.WebsocketMessagePublish) (success bool) {
+func (s *QuestionStep) HandleMessage(managers managers.GameObjectManagers, envelope dto.WebsocketMessagePublish) (nextstep GameStepIf, success bool) {
 	return s.base.HandleMessage(managers, envelope)
+}
+
+// OnEnterStep is called by the gameloop upon entering this step
+//
+// Can be used to modify state or take other actions if necessary.
+//
+// If the step possibly returns itself upon handleMessage take into account that it will invoke this function again!
+func (s *QuestionStep) OnEnterStep(managers managers.GameObjectManagers) {
+	// Nothing
 }

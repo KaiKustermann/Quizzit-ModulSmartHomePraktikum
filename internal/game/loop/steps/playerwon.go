@@ -19,8 +19,8 @@ func (s *PlayerWonStep) GetMessageBody(managers managers.GameObjectManagers) int
 
 // AddWelcomeTransition adds the transition to the [WelcomeStep]
 func (s *PlayerWonStep) AddWelcomeTransition(welcomeStep *WelcomeStep) {
-	var action ActionHandler = func(managers managers.GameObjectManagers, msg dto.WebsocketMessagePublish) GameStepIf {
-		return welcomeStep
+	var action ActionHandler = func(managers managers.GameObjectManagers, msg dto.WebsocketMessagePublish) (nextstep GameStepIf, success bool) {
+		return welcomeStep, true
 	}
 	s.base.AddTransition(string(messagetypes.Player_Generic_Confirm), action)
 }
@@ -41,6 +41,15 @@ func (s *PlayerWonStep) GetPossibleActions() []string {
 }
 
 // AddAction exposes [Transitions] HandleMessage
-func (s *PlayerWonStep) HandleMessage(managers managers.GameObjectManagers, envelope dto.WebsocketMessagePublish) (success bool) {
+func (s *PlayerWonStep) HandleMessage(managers managers.GameObjectManagers, envelope dto.WebsocketMessagePublish) (nextstep GameStepIf, success bool) {
 	return s.base.HandleMessage(managers, envelope)
+}
+
+// OnEnterStep is called by the gameloop upon entering this step
+//
+// Can be used to modify state or take other actions if necessary.
+//
+// If the step possibly returns itself upon handleMessage take into account that it will invoke this function again!
+func (s *PlayerWonStep) OnEnterStep(managers managers.GameObjectManagers) {
+	// Nothing
 }

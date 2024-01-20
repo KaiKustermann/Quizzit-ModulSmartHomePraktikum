@@ -19,8 +19,9 @@ func (game *Game) handleMessage(conn *websocket.Conn, envelope dto.WebsocketMess
 		"MessageType": envelope.MessageType,
 	})
 	contextLogger.Trace("Attempting to handle message ")
-	success := game.currentStep.HandleMessage(game.managers, envelope)
+	nextStep, success := game.currentStep.HandleMessage(game.managers, envelope)
 	if success {
+		game.TransitionToGameStep(nextStep)
 		contextLogger.Debug("Message handled ")
 		return true
 	}

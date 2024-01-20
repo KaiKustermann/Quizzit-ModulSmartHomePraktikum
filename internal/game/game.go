@@ -11,6 +11,7 @@ import (
 	dto "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/generated-sources/dto"
 	hybriddie "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/hybrid-die"
 	messagetypes "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/message-types"
+	ws "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/websockets"
 )
 
 // Heart of the Game
@@ -48,6 +49,23 @@ func (game *Game) forwardToGameLoop(messageType string, body interface{}) {
 			MessageType: messageType,
 			Body:        body,
 		}, false)
+}
+
+// TransitionToGameStep moves the GameLoop forward to the next Step
+func (game *Game) TransitionToGameStep(next steps.GameStepIf) {
+	next.OnEnterStep(game.managers)
+	nextState := dto.WebsocketMessageSubscribe{}
+	nextState.Body = next.GetMessageBody(game.managers)
+	nextState.MessageType = string(next.GetMessageType())
+	playerState := game.managers.PlayerManager.GetPlayerState()
+	nextState.PlayerState = &playerState
+	log.WithFields(log.Fields{
+		"name":         next.GetName(),
+		"stateMessage": nextState,
+	}).Debug("Switching Gamestep ")
+	game.currentStep = next
+	game.stateMessage = nextState
+	ws.BroadCast(nextState)
 }
 
 // Set up any forwarding to the gameloop
