@@ -15,7 +15,7 @@ type HybridDieNotFoundStep struct {
 
 // AddTransitionToNewPlayer adds the transition to [NewPlayerStep]
 func (s *HybridDieNotFoundStep) AddTransitionToNewPlayer(gsNewPlayer *NewPlayerStep) {
-	var action gameloop.ActionHandler = func(managers managers.GameObjectManagers, _ dto.WebsocketMessagePublish) (nextstep gameloop.GameStepIf, success bool) {
+	var action gameloop.ActionHandler = func(managers *managers.GameObjectManagers, _ dto.WebsocketMessagePublish) (nextstep gameloop.GameStepIf, success bool) {
 		managers.PlayerManager.MoveToNextPlayer()
 		managers.PlayerManager.IncreasePlayerTurnOfActivePlayer()
 		return gsNewPlayer, true

@@ -16,7 +16,7 @@ type SetupStep struct {
 
 // AddTransitions adds the transition to [NewPlayerStep] or [HybridDieSearchStep]
 func (s *SetupStep) AddTransitions(gsNewPlayer *NewPlayerStep, gsSearchHybridDie *HybridDieSearchStep) {
-	var action gameloop.ActionHandler = func(managers managers.GameObjectManagers, msg dto.WebsocketMessagePublish) (nextstep gameloop.GameStepIf, success bool) {
+	var action gameloop.ActionHandler = func(managers *managers.GameObjectManagers, msg dto.WebsocketMessagePublish) (nextstep gameloop.GameStepIf, success bool) {
 		pCasFloat, ok := msg.Body.(float64)
 		if !ok {
 			log.Warn("Received bad message body for this messageType")

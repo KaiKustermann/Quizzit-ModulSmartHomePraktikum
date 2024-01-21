@@ -16,15 +16,17 @@ type RemindPlayerColorStep struct {
 // GetMessageBody is called upon entering this GameStep
 //
 // Must return the body for the stateMessage that is send to clients
-func (s *RemindPlayerColorStep) GetMessageBody(managers managers.GameObjectManagers) interface{} {
+func (s *RemindPlayerColorStep) GetMessageBody(managers *managers.GameObjectManagers) interface{} {
 	return dto.NewPlayerColorPrompt{TargetPlayerId: managers.PlayerManager.GetActivePlayerId()}
 }
 
 // AddTransitionToNextPlayer adds the transition to the [NewPlayerStep] and [SpecificPlayerStep]
 func (s *RemindPlayerColorStep) AddTransitionToNextPlayer(gsNewPlayer *NewPlayerStep, passToSpecificPlayer *SpecificPlayerStep) {
-	var action gameloop.ActionHandler = func(managers managers.GameObjectManagers, _ dto.WebsocketMessagePublish) (nextstep gameloop.GameStepIf, success bool) {
-		nextPlayerTurn := managers.PlayerManager.GetTurnOfNextPlayer()
-		if nextPlayerTurn == 0 {
+	var action gameloop.ActionHandler = func(managers *managers.GameObjectManagers, _ dto.WebsocketMessagePublish) (nextstep gameloop.GameStepIf, success bool) {
+		managers.PlayerManager.MoveToNextPlayer()
+		playerTurn := managers.PlayerManager.GetTurnOfActivePlayer()
+		managers.PlayerManager.IncreasePlayerTurnOfActivePlayer()
+		if playerTurn == 0 {
 			return gsNewPlayer, true
 		}
 		return passToSpecificPlayer, true

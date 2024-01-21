@@ -17,13 +17,13 @@ type SpecificPlayerStep struct {
 // GetMessageBody is called upon entering this GameStep
 //
 // Must return the body for the stateMessage that is send to clients
-func (s *SpecificPlayerStep) GetMessageBody(managers managers.GameObjectManagers) interface{} {
+func (s *SpecificPlayerStep) GetMessageBody(managers *managers.GameObjectManagers) interface{} {
 	return dto.NewPlayerColorPrompt{TargetPlayerId: managers.PlayerManager.GetActivePlayerId()}
 }
 
 // AddTransitionToDieRoll adds the transition to [CategoryDigitalRollStep] or [CategoryHybridDieRollStep]
 func (s *SpecificPlayerStep) AddTransitionToDieRoll(gsDigitalCategoryRoll *CategoryRollDigitalStep, gsHybridDieCategoryRoll *CategoryRollHybridDieStep) {
-	var action gameloop.ActionHandler = func(managers managers.GameObjectManagers, _ dto.WebsocketMessagePublish) (nextstep gameloop.GameStepIf, success bool) {
+	var action gameloop.ActionHandler = func(managers *managers.GameObjectManagers, _ dto.WebsocketMessagePublish) (nextstep gameloop.GameStepIf, success bool) {
 		if managers.HybridDieManager.IsConnected() {
 			log.Debug("Hybrid die is ready, using HYBRIDDIE ")
 			return gsHybridDieCategoryRoll, true

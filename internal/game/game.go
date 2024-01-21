@@ -20,14 +20,16 @@ import (
 type Game struct {
 	currentStep  gameloop.GameStepIf
 	stateMessage dto.WebsocketMessageSubscribe
-	managers     managers.GameObjectManagers
+	managers     *managers.GameObjectManagers
 }
 
 // NewGame constructs and injects a new Game instance
 func NewGame() (game Game) {
-	game.managers.PlayerManager = player.NewPlayerManager()
-	game.managers.QuestionManager = questionmanager.NewQuestionManager()
-	game.managers.HybridDieManager = hybriddie.NewHybridDieManager()
+	game.managers = &managers.GameObjectManagers{
+		PlayerManager:    player.NewPlayerManager(),
+		QuestionManager:  questionmanager.NewQuestionManager(),
+		HybridDieManager: hybriddie.NewHybridDieManager(),
+	}
 	game.registerHybridDieCallbacks()
 	game.managers.HybridDieManager.Find()
 	game.constructLoop().registerHandlers()

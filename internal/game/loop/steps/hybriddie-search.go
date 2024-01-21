@@ -20,7 +20,7 @@ type HybridDieSearchStep struct {
 
 // AddTransitionToHybridDieConnected adds transition to [HybridDieConnectedStep]
 func (s *HybridDieSearchStep) AddTransitionToHybridDieConnected(hdConnectedStep *HybridDieConnectedStep) {
-	var action gameloop.ActionHandler = func(managers managers.GameObjectManagers, msg dto.WebsocketMessagePublish) (nextstep gameloop.GameStepIf, success bool) {
+	var action gameloop.ActionHandler = func(managers *managers.GameObjectManagers, msg dto.WebsocketMessagePublish) (nextstep gameloop.GameStepIf, success bool) {
 		return hdConnectedStep, true
 	}
 	msgType := messagetypes.Game_Die_HybridDieConnected
@@ -30,7 +30,7 @@ func (s *HybridDieSearchStep) AddTransitionToHybridDieConnected(hdConnectedStep 
 
 // AddTransitionToHybridDieNotFound adds transition to [HybridDieNotFoundStep]
 func (s *HybridDieSearchStep) AddTransitionToHybridDieNotFound(hdNotFoundStep *HybridDieNotFoundStep) {
-	var action gameloop.ActionHandler = func(managers managers.GameObjectManagers, msg dto.WebsocketMessagePublish) (nextstep gameloop.GameStepIf, success bool) {
+	var action gameloop.ActionHandler = func(managers *managers.GameObjectManagers, msg dto.WebsocketMessagePublish) (nextstep gameloop.GameStepIf, success bool) {
 		return hdNotFoundStep, true
 	}
 	msgType := messagetypes.Game_Die_HybridDieNotFound
@@ -48,11 +48,11 @@ func (s *HybridDieSearchStep) GetMessageType() messagetypes.MessageTypeSubscribe
 // Can be used to modify state or take other actions if necessary.
 //
 // If the step possibly returns itself upon handleMessage take into account that it will invoke this function again!
-func (s *HybridDieSearchStep) OnEnterStep(managers managers.GameObjectManagers) {
+func (s *HybridDieSearchStep) OnEnterStep(managers *managers.GameObjectManagers) {
 	go s.setTimeout(managers)
 }
 
-func (s *HybridDieSearchStep) setTimeout(managers managers.GameObjectManagers) {
+func (s *HybridDieSearchStep) setTimeout(managers *managers.GameObjectManagers) {
 	timeout := configuration.GetQuizzitConfig().HybridDie.Search.Timeout
 	log.Debugf("Granting %v to find a hybrid die", timeout)
 	time.Sleep(timeout)

@@ -20,7 +20,7 @@ type QuestionStep struct {
 // GetMessageBody is called upon entering this GameStep
 //
 // Must return the body for the stateMessage that is send to clients
-func (s *QuestionStep) GetMessageBody(managers managers.GameObjectManagers) interface{} {
+func (s *QuestionStep) GetMessageBody(managers *managers.GameObjectManagers) interface{} {
 	return managers.QuestionManager.GetActiveQuestion().ConvertToDTO()
 }
 
@@ -28,7 +28,7 @@ func (s *QuestionStep) GetMessageBody(managers managers.GameObjectManagers) inte
 //
 // This transition will transition to self
 func (s *QuestionStep) AddSelectAnswerTransition() {
-	var action gameloop.ActionHandler = func(managers managers.GameObjectManagers, msg dto.WebsocketMessagePublish) (nextstep gameloop.GameStepIf, success bool) {
+	var action gameloop.ActionHandler = func(managers *managers.GameObjectManagers, msg dto.WebsocketMessagePublish) (nextstep gameloop.GameStepIf, success bool) {
 		selectedAnswer := dto.SelectAnswer{}
 		log.Trace("Transforming message body to struct")
 		err := helpers.InterfaceToStruct(msg.Body, &selectedAnswer)
@@ -46,7 +46,7 @@ func (s *QuestionStep) AddSelectAnswerTransition() {
 
 // AddSubmitAnswerTransition adds the transition to the [CorrectnessFeedbackStep]
 func (s *QuestionStep) AddSubmitAnswerTransition(correctnessFeedbackStep *CorrectnessFeedbackStep) {
-	var action gameloop.ActionHandler = func(managers managers.GameObjectManagers, msg dto.WebsocketMessagePublish) (nextstep gameloop.GameStepIf, success bool) {
+	var action gameloop.ActionHandler = func(managers *managers.GameObjectManagers, msg dto.WebsocketMessagePublish) (nextstep gameloop.GameStepIf, success bool) {
 		submittedAnswer := dto.SubmitAnswer{}
 		log.Trace("Transforming message body to struct")
 		err := helpers.InterfaceToStruct(msg.Body, &submittedAnswer)
@@ -69,7 +69,7 @@ func (s *QuestionStep) AddSubmitAnswerTransition(correctnessFeedbackStep *Correc
 //
 // This transition will transition to self
 func (s *QuestionStep) AddUseJokerTransition() {
-	var action gameloop.ActionHandler = func(managers managers.GameObjectManagers, msg dto.WebsocketMessagePublish) (nextstep gameloop.GameStepIf, success bool) {
+	var action gameloop.ActionHandler = func(managers *managers.GameObjectManagers, msg dto.WebsocketMessagePublish) (nextstep gameloop.GameStepIf, success bool) {
 		if managers.QuestionManager.GetActiveQuestion().IsJokerAlreadyUsed() {
 			log.Warn("Joker was already used, so the Request is discarded ")
 		} else {
@@ -85,7 +85,7 @@ func (s *QuestionStep) AddUseJokerTransition() {
 // selectAnswerById selects the given answer, if it is not disabled
 //
 // Returns whether or not the answer was successfully selected
-func (s *QuestionStep) selectAnswerById(managers managers.GameObjectManagers, answerId string) (successfulSelect bool) {
+func (s *QuestionStep) selectAnswerById(managers *managers.GameObjectManagers, answerId string) (successfulSelect bool) {
 	log.Tracef("Attempting to select answer with id '%s'", answerId)
 	if managers.QuestionManager.GetActiveQuestion().IsAnswerWithGivenIdDisabled(answerId) {
 		log.Warnf("Answer with id '%s' is disabled, not selecting! ", answerId)

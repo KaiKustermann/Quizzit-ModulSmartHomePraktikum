@@ -24,7 +24,7 @@ func (gs *BaseGameStep) GetPossibleActions() []string {
 	return allowedMessageTypes
 }
 
-func (gs *BaseGameStep) HandleMessage(managers managers.GameObjectManagers, envelope dto.WebsocketMessagePublish) (nextstep GameStepIf, success bool) {
+func (gs *BaseGameStep) HandleMessage(managers *managers.GameObjectManagers, envelope dto.WebsocketMessagePublish) (nextstep GameStepIf, success bool) {
 	success = false
 	pActions := gs.transitions
 	for i := 0; i < len(pActions); i++ {
@@ -41,13 +41,13 @@ func (gs *BaseGameStep) HandleMessage(managers managers.GameObjectManagers, enve
 // Can be used to modify state or take other actions if necessary.
 //
 // If the step possibly returns itself upon handleMessage take into account that it will invoke this function again!
-func (s *BaseGameStep) OnEnterStep(managers managers.GameObjectManagers) {
+func (s *BaseGameStep) OnEnterStep(managers *managers.GameObjectManagers) {
 	// Nothing
 }
 
 // GetMessageBody is called upon entering this GameStep
 //
 // Must return the body for the stateMessage that is send to clients
-func (s *BaseGameStep) GetMessageBody(managers managers.GameObjectManagers) interface{} {
+func (s *BaseGameStep) GetMessageBody(managers *managers.GameObjectManagers) interface{} {
 	return nil
 }

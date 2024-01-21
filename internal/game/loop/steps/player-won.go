@@ -16,13 +16,13 @@ type PlayerWonStep struct {
 // GetMessageBody is called upon entering this GameStep
 //
 // Must return the body for the stateMessage that is send to clients
-func (s *PlayerWonStep) GetMessageBody(managers managers.GameObjectManagers) interface{} {
+func (s *PlayerWonStep) GetMessageBody(managers *managers.GameObjectManagers) interface{} {
 	return dto.PlayerWonPrompt{PlayerId: managers.PlayerManager.GetActivePlayerId()}
 }
 
 // AddWelcomeTransition adds the transition to the [WelcomeStep]
 func (s *PlayerWonStep) AddWelcomeTransition(welcomeStep *WelcomeStep) {
-	var action gameloop.ActionHandler = func(managers managers.GameObjectManagers, msg dto.WebsocketMessagePublish) (nextstep gameloop.GameStepIf, success bool) {
+	var action gameloop.ActionHandler = func(managers *managers.GameObjectManagers, msg dto.WebsocketMessagePublish) (nextstep gameloop.GameStepIf, success bool) {
 		return welcomeStep, true
 	}
 	msgType := messagetypes.Player_Generic_Confirm

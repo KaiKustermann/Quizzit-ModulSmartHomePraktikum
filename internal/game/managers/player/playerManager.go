@@ -81,19 +81,6 @@ func (pm *PlayerManager) IncreasePlayerTurnOfActivePlayer() (state dto.PlayerSta
 	return pm.GetPlayerState()
 }
 
-// Returns the turn of the next player, so the current active player plus one
-func (pm *PlayerManager) GetTurnOfNextPlayer() int {
-	log.Trace("Getting turn of next player")
-	nextPlayer := pm.activePlayer + 1
-	if nextPlayer >= pm.playerCount {
-		log.Trace("Current player is last player, next player is first player [0] ")
-		nextPlayer = 0
-	}
-	turn := pm.playerTurns[nextPlayer]
-	log.Debugf("Turn of player '%d' (the next player) is '%d'", nextPlayer, turn)
-	return pm.playerTurns[nextPlayer]
-}
-
 // Returns the turn of the active player
 func (pm *PlayerManager) GetTurnOfActivePlayer() int {
 	turn := pm.playerTurns[pm.activePlayer]

@@ -18,13 +18,13 @@ type CorrectnessFeedbackStep struct {
 // GetMessageBody is called upon entering this GameStep
 //
 // Must return the body for the stateMessage that is send to clients
-func (s *CorrectnessFeedbackStep) GetMessageBody(managers managers.GameObjectManagers) interface{} {
+func (s *CorrectnessFeedbackStep) GetMessageBody(managers *managers.GameObjectManagers) interface{} {
 	return managers.QuestionManager.GetCorrectnessFeedback()
 }
 
 // AddTransitions adds stransition to [PlayerWonStep], [RemindPlayerColorStep], [SpecificPlayerStep], [NewPlayerStep]
 func (s *CorrectnessFeedbackStep) AddTransitions(playerWonStep *PlayerWonStep, remindColorStep *RemindPlayerColorStep, passToSpecificPlayer *SpecificPlayerStep, passToNewPlayer *NewPlayerStep) {
-	var action gameloop.ActionHandler = func(managers managers.GameObjectManagers, msg dto.WebsocketMessagePublish) (nextstep gameloop.GameStepIf, success bool) {
+	var action gameloop.ActionHandler = func(managers *managers.GameObjectManagers, msg dto.WebsocketMessagePublish) (nextstep gameloop.GameStepIf, success bool) {
 		if managers.PlayerManager.HasActivePlayerReachedWinningScore() {
 			return playerWonStep, true
 		}
@@ -32,10 +32,10 @@ func (s *CorrectnessFeedbackStep) AddTransitions(playerWonStep *PlayerWonStep, r
 		if activeplayerTurn == 1 {
 			return remindColorStep, true
 		}
-		nextPlayerTurn := managers.PlayerManager.GetTurnOfNextPlayer()
 		managers.PlayerManager.MoveToNextPlayer()
+		playerTurn := managers.PlayerManager.GetTurnOfActivePlayer()
 		managers.PlayerManager.IncreasePlayerTurnOfActivePlayer()
-		if nextPlayerTurn == 0 {
+		if playerTurn == 0 {
 			return passToNewPlayer, true
 		}
 		return passToSpecificPlayer, true
@@ -58,7 +58,7 @@ func (s *CorrectnessFeedbackStep) GetMessageType() messagetypes.MessageTypeSubsc
 // Can be used to modify state or take other actions if necessary.
 //
 // If the step possibly returns itself upon handleMessage take into account that it will invoke this function again!
-func (s *CorrectnessFeedbackStep) OnEnterStep(managers managers.GameObjectManagers) {
+func (s *CorrectnessFeedbackStep) OnEnterStep(managers *managers.GameObjectManagers) {
 	feedback := managers.QuestionManager.GetCorrectnessFeedback()
 	if feedback.SelectedAnswerIsCorrect {
 		managers.PlayerManager.IncreaseScoreOfActivePlayer()

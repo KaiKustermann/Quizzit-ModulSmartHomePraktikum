@@ -15,7 +15,7 @@ type NewPlayerStep struct {
 
 // AddTransitionToNewPlayerColor adds the transition to [NewPlayerColorStep]
 func (s *NewPlayerStep) AddTransitionToNewPlayerColor(gsNewPlayerColor *NewPlayerColorStep) {
-	var action gameloop.ActionHandler = func(_ managers.GameObjectManagers, _ dto.WebsocketMessagePublish) (nextstep gameloop.GameStepIf, success bool) {
+	var action gameloop.ActionHandler = func(_ *managers.GameObjectManagers, _ dto.WebsocketMessagePublish) (nextstep gameloop.GameStepIf, success bool) {
 		return gsNewPlayerColor, true
 	}
 	msgType := messagetypes.Player_Generic_Confirm

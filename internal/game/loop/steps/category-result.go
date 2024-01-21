@@ -16,7 +16,7 @@ type CategoryResultStep struct {
 // GetMessageBody is called upon entering this GameStep
 //
 // Must return the body for the stateMessage that is send to clients
-func (s *CategoryResultStep) GetMessageBody(managers managers.GameObjectManagers) interface{} {
+func (s *CategoryResultStep) GetMessageBody(managers *managers.GameObjectManagers) interface{} {
 	return dto.CategoryResult{
 		Category: managers.QuestionManager.GetActiveCategory(),
 	}
@@ -24,7 +24,7 @@ func (s *CategoryResultStep) GetMessageBody(managers managers.GameObjectManagers
 
 // AddTransitionToQuestion adds transition to [QuestionStep]
 func (s *CategoryResultStep) AddTransitionToQuestion(gsQuestion *QuestionStep) {
-	var action gameloop.ActionHandler = func(managers managers.GameObjectManagers, _ dto.WebsocketMessagePublish) (nextstep gameloop.GameStepIf, success bool) {
+	var action gameloop.ActionHandler = func(managers *managers.GameObjectManagers, _ dto.WebsocketMessagePublish) (nextstep gameloop.GameStepIf, success bool) {
 		managers.QuestionManager.MoveToNextQuestion()
 		managers.QuestionManager.ResetActiveQuestion()
 		return gsQuestion, true
