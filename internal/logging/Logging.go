@@ -1,28 +1,21 @@
 package logging
 
 import (
-	"fmt"
-	"path"
-	"runtime"
-	"strings"
-	"time"
-
-	nested "github.com/antonfisher/nested-logrus-formatter"
 	log "github.com/sirupsen/logrus"
 )
 
+// SetUpLogFormat sets a custom formatter for log output
 func SetUpLogFormat() {
-	var formatter = nested.Formatter{
-		// HideKeys:        true,
-		CallerFirst:     true,
-		FieldsOrder:     []string{"time", "component", "category"},
-		TimestampFormat: time.RFC3339,
-		CustomCallerFormatter: func(f *runtime.Frame) string {
-			filename := path.Base(f.File)
-			fun := strings.Replace(f.Function, "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server", "", 1)
-			return fmt.Sprintf(" %s:%d::%s()", filename, f.Line, fun)
-		},
-	}
 	log.SetFormatter(&formatter)
 	log.SetReportCaller(true)
+}
+
+// CreateFileLoggingHook creates a logrus.hook to log to file
+func CreateFileLoggingHook() (*FileLoggerHook, error) {
+	return NewFileLoggerHook(log.TraceLevel, &formatter, LumberJackConfig{
+		Filename:   "logs/quizzit.log",
+		MaxSize:    50, // megabytes
+		MaxBackups: 3,
+		MaxAge:     90, //days
+	})
 }

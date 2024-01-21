@@ -18,6 +18,7 @@ type AppFlags struct {
 	DieDisabled            *string
 	HybridDieSearchTimeout *time.Duration
 	LogLevel               *log.Level
+	LogFileLevel           *log.Level
 }
 
 // flags is our local instance holding our settings
@@ -32,6 +33,7 @@ func InitFlags() {
 	// TODO: could maybe do duration as flag type
 	dieSearchTimeout := flag.String("die-search-timeout", "", "Maximum time to wait for the hybrid die, see time.ParseDuration. Leave empty for default")
 	logLevel := flag.String("log-level", "", "Granularity of log output, see logrus.ParseLevel. Leave empty for default")
+	logFileLevel := flag.String("log-file-level", "", "Granularity of log output for logfile, see logrus.ParseLevel. Leave empty for default")
 	flag.Parse()
 	flags.ConfigFile = *configFile
 
@@ -62,6 +64,15 @@ func InitFlags() {
 			flags.LogLevel = &lvl
 		} else {
 			log.Warnf("Failed parsing Log Level '%s' %e", *logLevel, err)
+		}
+	}
+
+	if *logFileLevel != "" {
+		lvl, err := log.ParseLevel(*logFileLevel)
+		if err == nil {
+			flags.LogFileLevel = &lvl
+		} else {
+			log.Warnf("Failed parsing LogFile Level '%s' %e", *logLevel, err)
 		}
 	}
 

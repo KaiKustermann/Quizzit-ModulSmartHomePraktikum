@@ -15,12 +15,13 @@ import (
 func PatchwithFlags(conf *configmodel.QuizzitConfig) {
 	fl := GetAppFlags()
 	patchLogLevel(&conf.Log, fl.LogLevel)
+	patchLogLevelFile(&conf.Log, fl.LogFileLevel)
 	patchHttpPort(&conf.Http, fl.HttpPort)
 	patchHybridDieDisabled(&conf.HybridDie, fl.DieDisabled)
 	patchHybridDieSearch(&conf.HybridDie, fl.HybridDieSearchTimeout)
 }
 
-// patchLogLevel patches the LogConfig field
+// patchLogLevel patches the LogConfig Level field
 //
 // Only applies the patch, if the value of the 'flag' config is not nil
 func patchLogLevel(conf *configmodel.LogConfig, flag *log.Level) {
@@ -29,6 +30,17 @@ func patchLogLevel(conf *configmodel.LogConfig, flag *log.Level) {
 		return
 	}
 	conf.Level = *flag
+}
+
+// patchLogLevelFile patches the LogConfig FileLevel field
+//
+// Only applies the patch, if the value of the 'flag' config is not nil
+func patchLogLevelFile(conf *configmodel.LogConfig, flag *log.Level) {
+	if flag == nil {
+		log.Debug("Log File Level is nil, not patching")
+		return
+	}
+	conf.FileLevel = *flag
 }
 
 // patchHttpPort patches the HttpConfig field

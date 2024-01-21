@@ -73,13 +73,41 @@ func patchHttp(conf *configmodel.HttpConfig, file *HttpYAML) {
 //
 // Only applies the patch, if the value of the 'file' config is not nil
 func patchLog(conf *configmodel.LogConfig, file *LogYAML) {
-	if file == nil || file.Level == nil {
+	if file == nil {
+		log.Debug("Log is nil, not patching")
+		return
+	}
+	patchLogLevel(conf, file.Level)
+	patchLogFileLevel(conf, file.FileLevel)
+}
+
+// patchLogLevel patches the LogConfig.Level field
+//
+// Only applies the patch, if the value of the 'file' config is not nil
+func patchLogLevel(conf *configmodel.LogConfig, file *string) {
+	if file == nil {
 		log.Debug("Log Level is nil, not patching")
 		return
 	}
-	lvl, err := log.ParseLevel(*file.Level)
+	lvl, err := log.ParseLevel(*file)
 	if err == nil {
 		conf.Level = lvl
+	} else {
+		log.Warnf("Failed parsing Log Level %e", err)
+	}
+}
+
+// patchLogFileLevel patches the LogConfig.FileLevel field
+//
+// Only applies the patch, if the value of the 'file' config is not nil
+func patchLogFileLevel(conf *configmodel.LogConfig, file *string) {
+	if file == nil {
+		log.Debug("Log FileLevel is nil, not patching")
+		return
+	}
+	lvl, err := log.ParseLevel(*file)
+	if err == nil {
+		conf.FileLevel = lvl
 	} else {
 		log.Warnf("Failed parsing Log Level %e", err)
 	}

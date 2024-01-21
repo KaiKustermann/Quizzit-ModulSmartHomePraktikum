@@ -82,7 +82,7 @@ func (qm *QuestionManager) RefreshAllQuestions() {
 
 // setActiveQuestion sets the active [Question]
 func (qm *QuestionManager) setActiveQuestion(question *question.Question) {
-	log.Infof("Setting question %s as active question", question.Id)
+	log.Debugf("Setting question %s as active question", question.Id)
 	qm.activeQuestion = question
 }
 

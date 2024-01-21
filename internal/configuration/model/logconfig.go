@@ -9,10 +9,11 @@ import (
 
 // LogConfig is a container for log related options
 type LogConfig struct {
-	Level logrus.Level
+	Level     logrus.Level
+	FileLevel logrus.Level
 }
 
 // String returns a string representation of this struct for logging purposes
 func (c *LogConfig) String() string {
-	return fmt.Sprintf("{level: %d}", c.Level)
+	return fmt.Sprintf("{level: %d, file-level: %d}", c.Level, c.FileLevel)
 }

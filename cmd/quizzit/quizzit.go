@@ -17,6 +17,13 @@ import (
 
 func main() {
 	logging.SetUpLogFormat()
+	fileLoggingHook, err := logging.CreateFileLoggingHook()
+	if err != nil {
+		log.Fatalf("Failed to initialize file logging hook: %v", err)
+	} else {
+		log.AddHook(fileLoggingHook)
+	}
+
 	log.Info("Setting log level 'trace' to see all config messages, before applying log level from configuration")
 	log.SetLevel(log.TraceLevel)
 
@@ -26,6 +33,7 @@ func main() {
 
 	log.Info("Setting log level from configuration")
 	log.SetLevel(configuration.GetQuizzitConfig().Log.Level)
+	fileLoggingHook.SetLevel(configuration.GetQuizzitConfig().Log.FileLevel)
 
 	log.Debug("Creating Game")
 	gameInstance := game.NewGame()

@@ -36,7 +36,8 @@ func createDefaultConfig() model.QuizzitConfig {
 			Port: 8080,
 		},
 		Log: model.LogConfig{
-			Level: log.InfoLevel,
+			Level:     log.InfoLevel,
+			FileLevel: log.InfoLevel,
 		},
 		HybridDie: model.HybridDieConfig{
 			Disabled: false,

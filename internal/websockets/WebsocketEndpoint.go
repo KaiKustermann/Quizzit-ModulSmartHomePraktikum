@@ -113,7 +113,7 @@ func listen(conn *websocket.Conn) {
 		if err == nil {
 			handled = routeByMessageType(conn, envelope)
 		}
-		log.WithField("handled", handled).Info()
+		log.Tracef("Message handled? %v", handled)
 	}
 	log.Info("Disconnected listener")
 }

@@ -8,7 +8,8 @@ type HttpYAML struct {
 
 // LogYAML is a container for log related options
 type LogYAML struct {
-	Level *string `yaml:"level"`
+	Level     *string `yaml:"level"`
+	FileLevel *string `yaml:"file-level"`
 }
 
 // HybridDieYAML is a container for hybrid-die related options

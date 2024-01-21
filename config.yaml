@@ -2,6 +2,7 @@
 #   port: 8880
 # log:
 #   level: info
+#   file-level: info
 # hybrid-die:
 #   disabled: yes
 #   search:
