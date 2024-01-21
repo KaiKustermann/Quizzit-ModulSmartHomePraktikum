@@ -23,10 +23,11 @@ type QuestionManager struct {
 }
 
 // Constructs a new QuestionManager
-func NewQuestionManager() (qm QuestionManager) {
+func NewQuestionManager() *QuestionManager {
 	log.Infof("Constructing new QuestionManager")
+	qm := &QuestionManager{}
 	qm.questions = LoadQuestions()
-	return
+	return qm
 }
 
 // Retrieve the currently active question
@@ -93,9 +94,9 @@ func (qm *QuestionManager) refreshQuestionsOfActiveCategory() {
 	log.Debugf("All questions of category %s marked as unused", qm.activeCategory)
 }
 
-// Get the corrextness feedback for the active question
-func (qm *QuestionManager) GetCorrectnessFeedback(answer dto.SubmitAnswer) dto.CorrectnessFeedback {
-	return qm.activeQuestion.GetCorrectnessFeedback(answer)
+// GetCorrectnessFeedback exposes GetCorrectnessFeedback of the active question
+func (qm *QuestionManager) GetCorrectnessFeedback() dto.CorrectnessFeedback {
+	return qm.activeQuestion.GetCorrectnessFeedback()
 }
 
 // Returns the active category

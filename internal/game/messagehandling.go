@@ -14,22 +14,19 @@ import (
 // Check the current GameState and call the appropriate handler function
 // 'wantsFeedback' toggles if the 'conn' param is used to send error feedback
 func (game *Game) handleMessage(conn *websocket.Conn, envelope dto.WebsocketMessagePublish, wantsFeedback bool) bool {
-	msgType := envelope.MessageType
 	contextLogger := log.WithFields(log.Fields{
-		"GameStep":    game.currentStep.Name,
-		"MessageType": msgType,
+		"GameStep":    game.currentStep.GetMessageType(),
+		"MessageType": envelope.MessageType,
 	})
-	contextLogger.Debug("Attempting to handle message ")
-	pActions := game.currentStep.PossibleActions
-	for i := 0; i < len(pActions); i++ {
-		action := pActions[i]
-		if action.Action == envelope.MessageType {
-			action.Handler(envelope)
-			return true
-		}
+	contextLogger.Trace("Attempting to handle message ")
+	nextStep, success := game.currentStep.HandleMessage(game.managers, envelope)
+	if success {
+		game.TransitionToGameStep(nextStep)
+		contextLogger.Debug("Message handled ")
+		return true
 	}
+	contextLogger.Warn("MessageType not appropriate for GameStep ")
 	feedback := buildErrorFeedback(game.currentStep, envelope)
-	contextLogger.Warn(feedback.ErrorMessage + " ")
 	if wantsFeedback {
 		helpers.WriteWebsocketMessage(conn, helpers.ErrorFeedbackToWebsocketMessageSubscribe(feedback))
 	}
@@ -61,13 +58,9 @@ func (game *Game) registerHandlers() *Game {
 	return game
 }
 
-func buildErrorFeedback(gs gameloop.GameStep, envelope dto.WebsocketMessagePublish) (fb dto.ErrorFeedback) {
-	allowedMessageTypes := []string{}
+func buildErrorFeedback(gs gameloop.GameStepIf, envelope dto.WebsocketMessagePublish) (fb dto.ErrorFeedback) {
 	props := make(map[string]interface{})
-	for i := 0; i < len(gs.PossibleActions); i++ {
-		allowedMessageTypes = append(allowedMessageTypes, gs.PossibleActions[i].Action)
-	}
-	props["supportedMessageTypes"] = allowedMessageTypes
+	props["supportedMessageTypes"] = gs.GetPossibleActions()
 	fb.ErrorMessage = "MessageType not appropriate for GameStep"
 	fb.ReceivedMessage = &envelope
 	fb.AdditionalProperties = props

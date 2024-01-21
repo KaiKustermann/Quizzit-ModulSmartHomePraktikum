@@ -5,43 +5,40 @@ import (
 	log "github.com/sirupsen/logrus"
 	"gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/category"
 	gameloop "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/game/loop"
+	"gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/game/managers"
 	player "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/game/managers/player"
-	question "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/game/managers/question"
+	questionmanager "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/game/managers/question"
 	dto "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/generated-sources/dto"
 	hybriddie "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/hybrid-die"
 	messagetypes "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/message-types"
+	ws "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/websockets"
 )
 
 // Heart of the Game
 // Contains the game steps and their transitions
 // Handles incoming messages and updates clients on state changes
 type Game struct {
-	currentStep  gameloop.GameStep
+	currentStep  gameloop.GameStepIf
 	stateMessage dto.WebsocketMessageSubscribe
-	managers     gameObjectManagers
+	managers     *managers.GameObjectManagers
 }
 
-// Holds manager objects for the game
-type gameObjectManagers struct {
-	questionManager  question.QuestionManager
-	playerManager    player.PlayerManager
-	hybridDieManager *hybriddie.HybridDieManager
-}
-
-// Construct and inject a new Game instance
+// NewGame constructs and injects a new Game instance
 func NewGame() (game Game) {
-	game.managers.playerManager = player.NewPlayerManager()
-	game.managers.questionManager = question.NewQuestionManager()
-	game.managers.hybridDieManager = hybriddie.NewHybridDieManager()
+	game.managers = &managers.GameObjectManagers{
+		PlayerManager:    player.NewPlayerManager(),
+		QuestionManager:  questionmanager.NewQuestionManager(),
+		HybridDieManager: hybriddie.NewHybridDieManager(),
+	}
 	game.registerHybridDieCallbacks()
-	game.managers.hybridDieManager.Find()
+	game.managers.HybridDieManager.Find()
 	game.constructLoop().registerHandlers()
 	return
 }
 
 // Stop/End the game, call any resource stops necessary
 func (game *Game) Stop() {
-	game.managers.hybridDieManager.Stop()
+	game.managers.HybridDieManager.Stop()
 }
 
 // Forward a message to the gameloop 'handlemessage'
@@ -56,11 +53,54 @@ func (game *Game) forwardToGameLoop(messageType string, body interface{}) {
 		}, false)
 }
 
+// TransitionToGameStep moves the GameLoop forward to the next Step and updates connected clients.
+//
+// 1. Calls 'OnEnterStep' on the next GameStep
+//
+// 2. Calls 'DelegateStep' on the next GameStep
+//
+// 3. If 'DelegateStep' returns 'switch'=TRUE, calls self with the new delegateStep and stops this execution.
+//
+// 4. Calls 'GetMessageBody' on the next GameStep
+//
+// 5. Calls 'GetMessageType' on the next GameStep
+//
+// 6. Retrieves the player state
+//
+// 7. Build next GameState from retrieved information
+//
+// 8. Updates self as well as clients with the new GameState and Step
+func (game *Game) TransitionToGameStep(next gameloop.GameStepIf) {
+	cLog := log.WithFields(log.Fields{
+		"name": next.GetMessageType(),
+	})
+	cLog.Tracef("Switching Gamestep")
+	next.OnEnterStep(game.managers)
+	delegate, switchStep := next.DelegateStep(game.managers)
+	if switchStep {
+		cLog.Trace("Delegating Gamestep")
+		game.TransitionToGameStep(delegate)
+		cLog.Trace("Gamestep delegated.")
+		return
+	} else {
+		cLog.Trace("Not delegating Gamestep")
+	}
+	nextState := dto.WebsocketMessageSubscribe{}
+	nextState.Body = next.GetMessageBody(game.managers)
+	nextState.MessageType = next.GetMessageType()
+	playerState := game.managers.PlayerManager.GetPlayerState()
+	nextState.PlayerState = &playerState
+	game.currentStep = next
+	game.stateMessage = nextState
+	cLog.Debugf("Next gameState: %v ", nextState)
+	ws.BroadCast(nextState)
+}
+
 // Set up any forwarding to the gameloop
 // This way we can put in 'messages' that do not come from the Websocket
 func (game *Game) registerHybridDieCallbacks() *Game {
 	log.Trace("Set up routing of hybrid die's 'roll result' to the gameloop")
-	game.managers.hybridDieManager.CallbackOnRoll = func(result int) {
+	game.managers.HybridDieManager.CallbackOnRoll = func(result int) {
 		if result < 1 {
 			log.Errorf("HybridDie roll returned '%d', invalid, skipping... ", result)
 			return
@@ -71,12 +111,12 @@ func (game *Game) registerHybridDieCallbacks() *Game {
 	}
 
 	log.Trace("Set up routing of hybrid die's 'connected' to the gameloop")
-	game.managers.hybridDieManager.CallbackOnDieConnected = func() {
+	game.managers.HybridDieManager.CallbackOnDieConnected = func() {
 		game.forwardToGameLoop(string(messagetypes.Game_Die_HybridDieConnected), nil)
 	}
 
 	log.Trace("Set up routing of hybrid die's 'disconnect' to the gameloop")
-	game.managers.hybridDieManager.CallbackOnDieLost = func() {
+	game.managers.HybridDieManager.CallbackOnDieLost = func() {
 		game.forwardToGameLoop(string(messagetypes.Game_Die_HybridDieLost), nil)
 	}
 
