@@ -23,7 +23,6 @@ func (s *HybridDieConnectedStep) AddTransitionToNextPlayer(gsNextPlayer *PlayerT
 	gameloopprinter.Append(s, msgType, gsNextPlayer)
 }
 
-// GetMessageType returns the [MessageTypeSubscribe] sent to frontend when this step is active
 func (s *HybridDieConnectedStep) GetMessageType() string {
 	return string(messagetypes.Game_Die_HybridDieConnected)
 }

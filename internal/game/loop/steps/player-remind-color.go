@@ -13,9 +13,6 @@ type RemindPlayerColorStep struct {
 	gameloop.BaseGameStep
 }
 
-// GetMessageBody is called upon entering this GameStep
-//
-// Must return the body for the stateMessage that is send to clients
 func (s *RemindPlayerColorStep) GetMessageBody(managers *managers.GameObjectManagers) interface{} {
 	return dto.NewPlayerColorPrompt{TargetPlayerId: managers.PlayerManager.GetActivePlayerId()}
 }
@@ -30,7 +27,6 @@ func (s *RemindPlayerColorStep) AddTransitionToNextPlayer(gsNextPlayer *PlayerTu
 	gameloopprinter.Append(s, msgType, gsNextPlayer)
 }
 
-// GetMessageType returns the [MessageTypeSubscribe] sent to frontend when this step is active
 func (s *RemindPlayerColorStep) GetMessageType() string {
 	return string(messagetypes.Game_Turn_RemindPlayerColorPrompt)
 }

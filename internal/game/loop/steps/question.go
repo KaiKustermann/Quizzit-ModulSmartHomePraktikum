@@ -17,9 +17,6 @@ type QuestionStep struct {
 	gameloop.BaseGameStep
 }
 
-// GetMessageBody is called upon entering this GameStep
-//
-// Must return the body for the stateMessage that is send to clients
 func (s *QuestionStep) GetMessageBody(managers *managers.GameObjectManagers) interface{} {
 	return managers.QuestionManager.GetActiveQuestion().ConvertToDTO()
 }
@@ -96,7 +93,6 @@ func (s *QuestionStep) selectAnswerById(managers *managers.GameObjectManagers, a
 	return true
 }
 
-// GetMessageType returns the [MessageTypeSubscribe] sent to frontend when this step is active
 func (s *QuestionStep) GetMessageType() string {
 	return string(messagetypes.Game_Question_Question)
 }

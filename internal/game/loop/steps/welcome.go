@@ -23,7 +23,6 @@ func (s *WelcomeStep) AddSetupTransition(setupStep *SetupStep) {
 	gameloopprinter.Append(s, msgType, setupStep)
 }
 
-// GetMessageType returns the [MessageTypeSubscribe] sent to frontend when this step is active
 func (s *WelcomeStep) GetMessageType() string {
 	return string(messagetypes.Game_Setup_Welcome)
 }

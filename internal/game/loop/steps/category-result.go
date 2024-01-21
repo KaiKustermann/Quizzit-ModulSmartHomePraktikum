@@ -13,9 +13,6 @@ type CategoryResultStep struct {
 	gameloop.BaseGameStep
 }
 
-// GetMessageBody is called upon entering this GameStep
-//
-// Must return the body for the stateMessage that is send to clients
 func (s *CategoryResultStep) GetMessageBody(managers *managers.GameObjectManagers) interface{} {
 	return dto.CategoryResult{
 		Category: managers.QuestionManager.GetActiveCategory(),
@@ -34,7 +31,6 @@ func (s *CategoryResultStep) AddTransitionToQuestion(gsQuestion *QuestionStep) {
 	gameloopprinter.Append(s, msgType, gsQuestion)
 }
 
-// GetMessageType returns the [MessageTypeSubscribe] sent to frontend when this step is active
 func (s *CategoryResultStep) GetMessageType() string {
 	return string(messagetypes.Game_Die_CategoryResult)
 }

@@ -15,9 +15,6 @@ type CorrectnessFeedbackStep struct {
 	gameloop.BaseGameStep
 }
 
-// GetMessageBody is called upon entering this GameStep
-//
-// Must return the body for the stateMessage that is send to clients
 func (s *CorrectnessFeedbackStep) GetMessageBody(managers *managers.GameObjectManagers) interface{} {
 	return managers.QuestionManager.GetCorrectnessFeedback()
 }
@@ -37,11 +34,7 @@ func (s *CorrectnessFeedbackStep) GetMessageType() string {
 	return string(messagetypes.Game_Question_CorrectnessFeedback)
 }
 
-// OnEnterStep is called by the gameloop upon entering this step
-//
-// Can be used to modify state or take other actions if necessary.
-//
-// If the step possibly returns itself upon handleMessage take into account that it will invoke this function again!
+// OnEnterStep checks if the selected answer was correct and increases the score, if so.
 func (s *CorrectnessFeedbackStep) OnEnterStep(managers *managers.GameObjectManagers) {
 	feedback := managers.QuestionManager.GetCorrectnessFeedback()
 	if feedback.SelectedAnswerIsCorrect {

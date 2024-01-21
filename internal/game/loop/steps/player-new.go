@@ -23,7 +23,6 @@ func (s *NewPlayerStep) AddTransitionToNewPlayerColor(gsNewPlayerColor *NewPlaye
 	gameloopprinter.Append(s, msgType, gsNewPlayerColor)
 }
 
-// GetMessageType returns the [MessageTypeSubscribe] sent to frontend when this step is active
 func (s *NewPlayerStep) GetMessageType() string {
 	return string(messagetypes.Game_Turn_PassToNewPlayer)
 }

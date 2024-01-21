@@ -24,7 +24,6 @@ func (s *CategoryRollDigitalStep) AddTransitionToCategoryResult(gsCategoryResult
 	gameloopprinter.Append(s, msgType, gsCategoryResult)
 }
 
-// GetMessageType returns the [MessageTypeSubscribe] sent to frontend when this step is active
 func (s *CategoryRollDigitalStep) GetMessageType() string {
 	return string(messagetypes.Game_Die_RollCategoryDigitallyPrompt)
 }

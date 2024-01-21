@@ -13,9 +13,6 @@ type PlayerWonStep struct {
 	gameloop.BaseGameStep
 }
 
-// GetMessageBody is called upon entering this GameStep
-//
-// Must return the body for the stateMessage that is send to clients
 func (s *PlayerWonStep) GetMessageBody(managers *managers.GameObjectManagers) interface{} {
 	return dto.PlayerWonPrompt{PlayerId: managers.PlayerManager.GetActivePlayerId()}
 }
@@ -30,7 +27,6 @@ func (s *PlayerWonStep) AddWelcomeTransition(welcomeStep *WelcomeStep) {
 	gameloopprinter.Append(s, msgType, welcomeStep)
 }
 
-// GetMessageType returns the [MessageTypeSubscribe] sent to frontend when this step is active
 func (s *PlayerWonStep) GetMessageType() string {
 	return string(messagetypes.Game_Generic_PlayerWonPrompt)
 }

@@ -35,7 +35,6 @@ func (s *SetupStep) AddTransitions(gsPlayerTurnStart *PlayerTurnStartDelegate, g
 	gameloopprinter.Append(s, msgType, gsSearchHybridDie)
 }
 
-// GetMessageType returns the [MessageTypeSubscribe] sent to frontend when this step is active
 func (s *SetupStep) GetMessageType() string {
 	return string(messagetypes.Game_Setup_SelectPlayerCount)
 }
