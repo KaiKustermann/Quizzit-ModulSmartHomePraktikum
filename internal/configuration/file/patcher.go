@@ -91,14 +91,32 @@ func patchLog(conf *configmodel.LogConfig, file *LogYAML) {
 //
 // Only applies the patch, if the value of the 'file' config is not nil and a valid duration was provided
 func patchHybridDie(conf *configmodel.HybridDieConfig, file *HybridDieYAML) {
-	if file == nil || file.Search.Timeout == nil {
+	if file == nil {
+		log.Debug("HybridDie YAML is nil, not patching")
+		return
+	}
+	patchHybridDieSearch(&conf.Search, file.Search)
+	if file.Disabled == nil {
+		log.Debug("HybridDie Disabled is nil, not patching")
+	} else {
+		conf.Disabled = *file.Disabled
+	}
+}
+
+// patchHybridDie patches the HybridDieConfig field
+//
+// The duration, given by the 'file' config is parsed.
+//
+// Only applies the patch, if the value of the 'file' config is not nil and a valid duration was provided
+func patchHybridDieSearch(conf *configmodel.HybridDieSearchConfig, file *HybridDieSearchYAML) {
+	if file == nil || file.Timeout == nil {
 		log.Debug("Search Timeout is nil, not patching")
 		return
 	}
-	dur, err := time.ParseDuration(*file.Search.Timeout)
+	dur, err := time.ParseDuration(*file.Timeout)
 	if err == nil {
-		conf.Search.Timeout = dur
+		conf.Timeout = dur
 	} else {
-		log.Warnf("Failed parsing Hybrid Die Search Timeout '%s' %e", *file.Search.Timeout, err)
+		log.Warnf("Failed parsing Hybrid Die Search Timeout '%s' %e", *file.Timeout, err)
 	}
 }

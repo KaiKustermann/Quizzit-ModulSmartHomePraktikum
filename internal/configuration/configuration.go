@@ -39,6 +39,7 @@ func createDefaultConfig() model.QuizzitConfig {
 			Level: log.InfoLevel,
 		},
 		HybridDie: model.HybridDieConfig{
+			Disabled: false,
 			Search: model.HybridDieSearchConfig{
 				Timeout: 30 * time.Second,
 			},

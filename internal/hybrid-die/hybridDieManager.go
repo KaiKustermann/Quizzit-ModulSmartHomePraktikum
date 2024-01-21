@@ -2,6 +2,7 @@ package hybriddie
 
 import (
 	log "github.com/sirupsen/logrus"
+	"gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/configuration"
 )
 
 // High-Level Access to HybridDie
@@ -59,6 +60,11 @@ func (hd *HybridDieManager) IsConnected() bool {
 
 // Start finding a hybrid die
 func (hd *HybridDieManager) Find() {
+	conf := configuration.GetQuizzitConfig()
+	if conf.HybridDie.Disabled {
+		log.Info("Skipping find a hybrid die, because the hybrid die is disabled in config.")
+		return
+	}
 	log.Infof("Connecting a hybrid die")
 	go hd.controller.Listen()
 	go hd.finder.Start()

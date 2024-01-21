@@ -8,12 +8,13 @@ import (
 
 // HybridDieConfig is a container for hybrid-die related options
 type HybridDieConfig struct {
-	Search HybridDieSearchConfig
+	Disabled bool
+	Search   HybridDieSearchConfig
 }
 
 // String returns a string representation of this struct for logging purposes
 func (c *HybridDieConfig) String() string {
-	return fmt.Sprintf("{search: %s}", c.Search.String())
+	return fmt.Sprintf("{disabled: %v, search: %s}", c.Disabled, c.Search.String())
 }
 
 // HybridDieSearchConfig holds options related to the hybrid die search

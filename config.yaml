@@ -3,6 +3,7 @@
 # log:
 #   level: info
 # hybrid-die:
+#   disabled: yes
 #   search:
 #     timeout: 10s
 # game:

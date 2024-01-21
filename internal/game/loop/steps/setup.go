@@ -2,6 +2,7 @@ package steps
 
 import (
 	log "github.com/sirupsen/logrus"
+	"gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/configuration"
 	gameloop "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/game/loop"
 	gameloopprinter "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/game/loop/printer"
 	"gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/game/managers"
@@ -30,7 +31,9 @@ func (s *SetupStep) AddTransitions(gsPlayerTurnStart *PlayerTurnStartDelegate, g
 		}
 		pC := int(pCasFloat)
 		managers.PlayerManager.SetPlayercount(pC)
-		if managers.HybridDieManager.IsConnected() {
+
+		conf := configuration.GetQuizzitConfig()
+		if conf.HybridDie.Disabled || managers.HybridDieManager.IsConnected() {
 			return gsPlayerTurnStart, true
 		}
 		return gsSearchHybridDie, true

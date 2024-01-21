@@ -4,6 +4,7 @@ import (
 	"github.com/gorilla/websocket"
 	log "github.com/sirupsen/logrus"
 	"gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/category"
+	"gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/configuration"
 	gameloop "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/game/loop"
 	"gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/game/managers"
 	player "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/game/managers/player"
@@ -99,6 +100,11 @@ func (game *Game) TransitionToGameStep(next gameloop.GameStepIf) {
 // Set up any forwarding to the gameloop
 // This way we can put in 'messages' that do not come from the Websocket
 func (game *Game) registerHybridDieCallbacks() *Game {
+	conf := configuration.GetQuizzitConfig()
+	if conf.HybridDie.Disabled {
+		log.Info("Skipping to register hybrid die callbacks, because the hybrid die is disabled in config.")
+		return game
+	}
 	log.Trace("Set up routing of hybrid die's 'roll result' to the gameloop")
 	game.managers.HybridDieManager.CallbackOnRoll = func(result int) {
 		if result < 1 {

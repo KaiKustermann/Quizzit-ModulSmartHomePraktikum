@@ -13,7 +13,8 @@ type LogYAML struct {
 
 // HybridDieYAML is a container for hybrid-die related options
 type HybridDieYAML struct {
-	Search *HybridDieSearchYAML `yaml:"search"`
+	Disabled *bool                `yaml:"disabled"`
+	Search   *HybridDieSearchYAML `yaml:"search"`
 }
 
 // HybridDieSearchYAML holds options related to the hybrid die search

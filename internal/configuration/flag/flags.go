@@ -15,6 +15,7 @@ type AppFlags struct {
 	ConfigFile             string
 	QuestionsFile          *string
 	HttpPort               *int
+	DieDisabled            *string
 	HybridDieSearchTimeout *time.Duration
 	LogLevel               *log.Level
 }
@@ -27,6 +28,8 @@ func InitFlags() {
 	configFile := flag.String("config", "./config.yaml", "Relative path to the config file")
 	questionsFile := flag.String("questions", "", "Relative path to the questions file. Leave empty for default")
 	httpPort := flag.Int("http-port", 0, "Port for the HTTP Server. Put '0' for default")
+	dieDisabled := flag.String("die-disable", "", "Disable any hybrid-die functionality. Use 'yes' and 'no'. Leave empty for default")
+	// TODO: could maybe do duration as flag type
 	dieSearchTimeout := flag.String("die-search-timeout", "", "Maximum time to wait for the hybrid die, see time.ParseDuration. Leave empty for default")
 	logLevel := flag.String("log-level", "", "Granularity of log output, see logrus.ParseLevel. Leave empty for default")
 	flag.Parse()
@@ -38,6 +41,10 @@ func InitFlags() {
 
 	if *httpPort != 0 {
 		flags.HttpPort = httpPort
+	}
+
+	if *dieDisabled != "" {
+		flags.DieDisabled = dieDisabled
 	}
 
 	if *dieSearchTimeout != "" {
