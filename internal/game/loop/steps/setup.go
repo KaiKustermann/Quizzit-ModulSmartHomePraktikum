@@ -11,7 +11,7 @@ import (
 
 // SetupStep prompts the player to chose the amount of players for the game
 type SetupStep struct {
-	base gameloop.Transitions
+	gameloop.Transitions
 }
 
 // GetMessageBody is called upon entering this GameStep
@@ -39,7 +39,7 @@ func (s *SetupStep) AddTransitions(gsNewPlayer *NewPlayerStep, gsSearchHybridDie
 		return gsSearchHybridDie, true
 	}
 	msgType := messagetypes.Player_Setup_SubmitPlayerCount
-	s.base.AddTransition(string(msgType), action)
+	s.AddTransition(string(msgType), action)
 	gameloopprinter.Append(s, msgType, gsNewPlayer)
 	gameloopprinter.Append(s, msgType, gsSearchHybridDie)
 }
@@ -47,16 +47,6 @@ func (s *SetupStep) AddTransitions(gsNewPlayer *NewPlayerStep, gsSearchHybridDie
 // GetMessageType returns the [MessageTypeSubscribe] sent to frontend when this step is active
 func (s *SetupStep) GetMessageType() messagetypes.MessageTypeSubscribe {
 	return messagetypes.Game_Setup_SelectPlayerCount
-}
-
-// AddAction exposes [Transitions] GetPossibleActions
-func (s *SetupStep) GetPossibleActions() []string {
-	return s.base.GetPossibleActions()
-}
-
-// AddAction exposes [Transitions] HandleMessage
-func (s *SetupStep) HandleMessage(managers managers.GameObjectManagers, envelope dto.WebsocketMessagePublish) (nextstep gameloop.GameStepIf, success bool) {
-	return s.base.HandleMessage(managers, envelope)
 }
 
 // OnEnterStep is called by the gameloop upon entering this step

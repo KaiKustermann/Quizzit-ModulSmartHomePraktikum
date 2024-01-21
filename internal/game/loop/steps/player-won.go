@@ -10,7 +10,7 @@ import (
 
 // PlayerWonStep displays the winner of the game
 type PlayerWonStep struct {
-	base gameloop.Transitions
+	gameloop.Transitions
 }
 
 // GetMessageBody is called upon entering this GameStep
@@ -26,23 +26,13 @@ func (s *PlayerWonStep) AddWelcomeTransition(welcomeStep *WelcomeStep) {
 		return welcomeStep, true
 	}
 	msgType := messagetypes.Player_Generic_Confirm
-	s.base.AddTransition(string(msgType), action)
+	s.AddTransition(string(msgType), action)
 	gameloopprinter.Append(s, msgType, welcomeStep)
 }
 
 // GetMessageType returns the [MessageTypeSubscribe] sent to frontend when this step is active
 func (s *PlayerWonStep) GetMessageType() messagetypes.MessageTypeSubscribe {
 	return messagetypes.Game_Generic_PlayerWonPrompt
-}
-
-// AddAction exposes [Transitions] GetPossibleActions
-func (s *PlayerWonStep) GetPossibleActions() []string {
-	return s.base.GetPossibleActions()
-}
-
-// AddAction exposes [Transitions] HandleMessage
-func (s *PlayerWonStep) HandleMessage(managers managers.GameObjectManagers, envelope dto.WebsocketMessagePublish) (nextstep gameloop.GameStepIf, success bool) {
-	return s.base.HandleMessage(managers, envelope)
 }
 
 // OnEnterStep is called by the gameloop upon entering this step

@@ -11,7 +11,7 @@ import (
 
 // NewPlayerColorStep informs the new player of their color
 type NewPlayerColorStep struct {
-	base gameloop.Transitions
+	gameloop.Transitions
 }
 
 // GetMessageBody is called upon entering this GameStep
@@ -32,7 +32,7 @@ func (s *NewPlayerColorStep) AddTransitionToDieRoll(gsDigitalCategoryRoll *Categ
 		return gsDigitalCategoryRoll, true
 	}
 	msgType := messagetypes.Player_Generic_Confirm
-	s.base.AddTransition(string(msgType), action)
+	s.AddTransition(string(msgType), action)
 	gameloopprinter.Append(s, msgType, gsDigitalCategoryRoll)
 	gameloopprinter.Append(s, msgType, gsHybridDieCategoryRoll)
 }
@@ -40,16 +40,6 @@ func (s *NewPlayerColorStep) AddTransitionToDieRoll(gsDigitalCategoryRoll *Categ
 // GetMessageType returns the [MessageTypeSubscribe] sent to frontend when this step is active
 func (s *NewPlayerColorStep) GetMessageType() messagetypes.MessageTypeSubscribe {
 	return messagetypes.Game_Turn_NewPlayerColorPrompt
-}
-
-// AddAction exposes [Transitions] GetPossibleActions
-func (s *NewPlayerColorStep) GetPossibleActions() []string {
-	return s.base.GetPossibleActions()
-}
-
-// AddAction exposes [Transitions] HandleMessage
-func (s *NewPlayerColorStep) HandleMessage(managers managers.GameObjectManagers, envelope dto.WebsocketMessagePublish) (nextstep gameloop.GameStepIf, success bool) {
-	return s.base.HandleMessage(managers, envelope)
 }
 
 // OnEnterStep is called by the gameloop upon entering this step

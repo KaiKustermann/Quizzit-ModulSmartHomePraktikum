@@ -13,7 +13,7 @@ import (
 
 // CategoryRollHybridDieStep prompts the user to use the hybrid-die to roll their category
 type CategoryRollHybridDieStep struct {
-	base gameloop.Transitions
+	gameloop.Transitions
 }
 
 // GetMessageBody is called upon entering this GameStep
@@ -31,7 +31,7 @@ func (s *CategoryRollHybridDieStep) AddTransitionToCategoryResult(gsCategoryResu
 		return gsCategoryResult, true
 	}
 	msgType := hybriddie.Hybrid_die_roll_result
-	s.base.AddTransition(string(msgType), action)
+	s.AddTransition(string(msgType), action)
 	gameloopprinter.Append(s, msgType, gsCategoryResult)
 }
 
@@ -43,23 +43,13 @@ func (s *CategoryRollHybridDieStep) AddTransitionToDigitalRoll(gsCategoryDigital
 		return gsCategoryDigitalRoll, true
 	}
 	msgType := messagetypes.Game_Die_HybridDieLost
-	s.base.AddTransition(string(msgType), action)
+	s.AddTransition(string(msgType), action)
 	gameloopprinter.Append(s, msgType, gsCategoryDigitalRoll)
 }
 
 // GetMessageType returns the [MessageTypeSubscribe] sent to frontend when this step is active
 func (s *CategoryRollHybridDieStep) GetMessageType() messagetypes.MessageTypeSubscribe {
 	return messagetypes.Game_Die_RollCategoryHybridDiePrompt
-}
-
-// AddAction exposes [Transitions] GetPossibleActions
-func (s *CategoryRollHybridDieStep) GetPossibleActions() []string {
-	return s.base.GetPossibleActions()
-}
-
-// AddAction exposes [Transitions] HandleMessage
-func (s *CategoryRollHybridDieStep) HandleMessage(managers managers.GameObjectManagers, envelope dto.WebsocketMessagePublish) (nextstep gameloop.GameStepIf, success bool) {
-	return s.base.HandleMessage(managers, envelope)
 }
 
 // OnEnterStep is called by the gameloop upon entering this step

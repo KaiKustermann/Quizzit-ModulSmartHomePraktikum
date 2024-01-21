@@ -14,7 +14,7 @@ import (
 
 // HybridDieSearchStep displays that the hybrid-die is being searched
 type HybridDieSearchStep struct {
-	base gameloop.Transitions
+	gameloop.Transitions
 	Send func(messageType string, body interface{})
 }
 
@@ -31,7 +31,7 @@ func (s *HybridDieSearchStep) AddTransitionToHybridDieConnected(hdConnectedStep 
 		return hdConnectedStep, true
 	}
 	msgType := messagetypes.Game_Die_HybridDieConnected
-	s.base.AddTransition(string(msgType), action)
+	s.AddTransition(string(msgType), action)
 	gameloopprinter.Append(s, msgType, hdConnectedStep)
 }
 
@@ -41,23 +41,13 @@ func (s *HybridDieSearchStep) AddTransitionToHybridDieNotFound(hdNotFoundStep *H
 		return hdNotFoundStep, true
 	}
 	msgType := messagetypes.Game_Die_HybridDieNotFound
-	s.base.AddTransition(string(msgType), action)
+	s.AddTransition(string(msgType), action)
 	gameloopprinter.Append(s, msgType, hdNotFoundStep)
 }
 
 // GetMessageType returns the [MessageTypeSubscribe] sent to frontend when this step is active
 func (s *HybridDieSearchStep) GetMessageType() messagetypes.MessageTypeSubscribe {
 	return messagetypes.Game_Die_SearchingHybridDie
-}
-
-// AddAction exposes [Transitions] GetPossibleActions
-func (s *HybridDieSearchStep) GetPossibleActions() []string {
-	return s.base.GetPossibleActions()
-}
-
-// AddAction exposes [Transitions] HandleMessage
-func (s *HybridDieSearchStep) HandleMessage(managers managers.GameObjectManagers, envelope dto.WebsocketMessagePublish) (nextstep gameloop.GameStepIf, success bool) {
-	return s.base.HandleMessage(managers, envelope)
 }
 
 // OnEnterStep is called by the gameloop upon entering this step

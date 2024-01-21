@@ -10,7 +10,7 @@ import (
 
 // CategoryRollDigitalStep prompts the user to use the 'roll digitally' button
 type CategoryRollDigitalStep struct {
-	base gameloop.Transitions
+	gameloop.Transitions
 }
 
 // GetMessageBody is called upon entering this GameStep
@@ -27,23 +27,13 @@ func (s *CategoryRollDigitalStep) AddTransitionToCategoryResult(gsCategoryResult
 		return gsCategoryResult, true
 	}
 	msgType := messagetypes.Player_Die_DigitalCategoryRollRequest
-	s.base.AddTransition(string(msgType), action)
+	s.AddTransition(string(msgType), action)
 	gameloopprinter.Append(s, msgType, gsCategoryResult)
 }
 
 // GetMessageType returns the [MessageTypeSubscribe] sent to frontend when this step is active
 func (s *CategoryRollDigitalStep) GetMessageType() messagetypes.MessageTypeSubscribe {
 	return messagetypes.Game_Die_RollCategoryDigitallyPrompt
-}
-
-// AddAction exposes [Transitions] GetPossibleActions
-func (s *CategoryRollDigitalStep) GetPossibleActions() []string {
-	return s.base.GetPossibleActions()
-}
-
-// AddAction exposes [Transitions] HandleMessage
-func (s *CategoryRollDigitalStep) HandleMessage(managers managers.GameObjectManagers, envelope dto.WebsocketMessagePublish) (nextstep gameloop.GameStepIf, success bool) {
-	return s.base.HandleMessage(managers, envelope)
 }
 
 // OnEnterStep is called by the gameloop upon entering this step

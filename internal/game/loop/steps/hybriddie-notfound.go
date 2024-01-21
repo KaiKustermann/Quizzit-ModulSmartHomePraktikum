@@ -10,7 +10,7 @@ import (
 
 // HybridDieNotFoundStep displays that the hybrid-die could not be found
 type HybridDieNotFoundStep struct {
-	base gameloop.Transitions
+	gameloop.Transitions
 }
 
 // GetMessageBody is called upon entering this GameStep
@@ -28,23 +28,13 @@ func (s *HybridDieNotFoundStep) AddTransitionToNewPlayer(gsNewPlayer *NewPlayerS
 		return gsNewPlayer, true
 	}
 	msgType := messagetypes.Player_Generic_Confirm
-	s.base.AddTransition(string(msgType), action)
+	s.AddTransition(string(msgType), action)
 	gameloopprinter.Append(s, msgType, gsNewPlayer)
 }
 
 // GetMessageType returns the [MessageTypeSubscribe] sent to frontend when this step is active
 func (s *HybridDieNotFoundStep) GetMessageType() messagetypes.MessageTypeSubscribe {
 	return messagetypes.Game_Die_HybridDieNotFound
-}
-
-// AddAction exposes [Transitions] GetPossibleActions
-func (s *HybridDieNotFoundStep) GetPossibleActions() []string {
-	return s.base.GetPossibleActions()
-}
-
-// AddAction exposes [Transitions] HandleMessage
-func (s *HybridDieNotFoundStep) HandleMessage(managers managers.GameObjectManagers, envelope dto.WebsocketMessagePublish) (nextstep gameloop.GameStepIf, success bool) {
-	return s.base.HandleMessage(managers, envelope)
 }
 
 // OnEnterStep is called by the gameloop upon entering this step

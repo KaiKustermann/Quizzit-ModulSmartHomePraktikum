@@ -14,7 +14,7 @@ import (
 //
 // Also takes care of handling a joker useage and disabling two answers if used.
 type QuestionStep struct {
-	base gameloop.Transitions
+	gameloop.Transitions
 }
 
 // GetMessageBody is called upon entering this GameStep
@@ -40,7 +40,7 @@ func (s *QuestionStep) AddSelectAnswerTransition() {
 		return s, true
 	}
 	msgType := messagetypes.Player_Question_SelectAnswer
-	s.base.AddTransition(string(msgType), action)
+	s.AddTransition(string(msgType), action)
 	gameloopprinter.Append(s, msgType, s)
 }
 
@@ -61,7 +61,7 @@ func (s *QuestionStep) AddSubmitAnswerTransition(correctnessFeedbackStep *Correc
 		return correctnessFeedbackStep, true
 	}
 	msgType := messagetypes.Player_Question_SubmitAnswer
-	s.base.AddTransition(string(msgType), action)
+	s.AddTransition(string(msgType), action)
 	gameloopprinter.Append(s, msgType, correctnessFeedbackStep)
 }
 
@@ -78,7 +78,7 @@ func (s *QuestionStep) AddUseJokerTransition() {
 		return s, true
 	}
 	msgType := messagetypes.Player_Question_UseJoker
-	s.base.AddTransition(string(msgType), action)
+	s.AddTransition(string(msgType), action)
 	gameloopprinter.Append(s, msgType, s)
 }
 
@@ -99,16 +99,6 @@ func (s *QuestionStep) selectAnswerById(managers managers.GameObjectManagers, an
 // GetMessageType returns the [MessageTypeSubscribe] sent to frontend when this step is active
 func (s *QuestionStep) GetMessageType() messagetypes.MessageTypeSubscribe {
 	return messagetypes.Game_Question_Question
-}
-
-// AddAction exposes [Transitions] GetPossibleActions
-func (s *QuestionStep) GetPossibleActions() []string {
-	return s.base.GetPossibleActions()
-}
-
-// AddAction exposes [Transitions] HandleMessage
-func (s *QuestionStep) HandleMessage(managers managers.GameObjectManagers, envelope dto.WebsocketMessagePublish) (nextstep gameloop.GameStepIf, success bool) {
-	return s.base.HandleMessage(managers, envelope)
 }
 
 // OnEnterStep is called by the gameloop upon entering this step
