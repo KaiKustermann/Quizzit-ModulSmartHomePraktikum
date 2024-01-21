@@ -9,7 +9,6 @@ import (
 
 	nested "github.com/antonfisher/nested-logrus-formatter"
 	log "github.com/sirupsen/logrus"
-	dto "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/generated-sources/dto"
 )
 
 func SetUpLogFormat() {
@@ -26,13 +25,4 @@ func SetUpLogFormat() {
 	}
 	log.SetFormatter(&formatter)
 	log.SetReportCaller(true)
-}
-
-// Enhance Log with metadata from envelope
-func EnvelopeLog(envelope dto.WebsocketMessagePublish) *log.Entry {
-	return log.WithFields(log.Fields{
-		// "body":          envelope.Body,
-		"correlationId": envelope.CorrelationId,
-		"messageType":   envelope.MessageType,
-	})
 }

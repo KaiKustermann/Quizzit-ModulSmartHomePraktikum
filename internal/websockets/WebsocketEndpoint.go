@@ -9,7 +9,6 @@ import (
 	dto "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/generated-sources/dto"
 	"gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/health"
 	helpers "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/helper-functions"
-	"gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/logging"
 )
 
 // Keeping track of connected clients
@@ -123,13 +122,21 @@ func listen(conn *websocket.Conn) {
 // Expects messageType to be SET
 // Return 'message was handled'
 func routeByMessageType(conn *websocket.Conn, envelope dto.WebsocketMessagePublish) (handled bool) {
+	cLog := log.WithFields(log.Fields{
+		// "body":          envelope.Body,
+		"correlationId": envelope.CorrelationId,
+		"messageType":   envelope.MessageType,
+	})
+	cLog.Trace("Attempting to route by message type ")
 	handled = false
 	knownMsgType := false
 	for _, v := range routes {
 		if v.messageType == envelope.MessageType {
+			cLog.Trace("Found handler for messageType ")
 			knownMsgType = true
 			handled = v.handle(conn, envelope, true)
 			if handled {
+				cLog.Trace("Message successfully handled ")
 				return
 			}
 		}
@@ -137,9 +144,9 @@ func routeByMessageType(conn *websocket.Conn, envelope dto.WebsocketMessagePubli
 	if !knownMsgType {
 		feedback := dto.ErrorFeedback{
 			ReceivedMessage: &envelope,
-			ErrorMessage:    "MessageType unknown",
+			ErrorMessage:    "Sorry, no handler for this messageType ",
 		}
-		logging.EnvelopeLog(envelope).Warn(feedback.ErrorMessage + " ")
+		cLog.Warn(feedback.ErrorMessage + " ")
 		helpers.WriteWebsocketMessage(conn, helpers.ErrorFeedbackToWebsocketMessageSubscribe(feedback))
 	}
 	return
