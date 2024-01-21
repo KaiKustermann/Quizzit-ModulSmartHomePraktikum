@@ -11,7 +11,7 @@ import (
 
 // SpecificPlayerStep requests the tablet be passed to a specific player (by color)
 type SpecificPlayerStep struct {
-	gameloop.Transitions
+	gameloop.BaseGameStep
 }
 
 // GetMessageBody is called upon entering this GameStep

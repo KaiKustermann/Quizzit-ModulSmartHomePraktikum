@@ -10,7 +10,7 @@ import (
 
 // CategoryResultStep displays the rolled category
 type CategoryResultStep struct {
-	gameloop.Transitions
+	gameloop.BaseGameStep
 }
 
 // GetMessageBody is called upon entering this GameStep

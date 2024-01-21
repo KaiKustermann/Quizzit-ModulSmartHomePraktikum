@@ -10,7 +10,7 @@ import (
 
 // WelcomeStep shows the Quizzit Logo with the Option to start a new game
 type WelcomeStep struct {
-	gameloop.Transitions
+	gameloop.BaseGameStep
 }
 
 // AddSetupTransition adds the transition to the [SetupStep]

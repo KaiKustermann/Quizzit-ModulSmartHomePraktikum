@@ -14,7 +14,7 @@ import (
 //
 // Also takes care of handling a joker useage and disabling two answers if used.
 type QuestionStep struct {
-	gameloop.Transitions
+	gameloop.BaseGameStep
 }
 
 // GetMessageBody is called upon entering this GameStep

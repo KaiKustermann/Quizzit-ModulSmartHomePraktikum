@@ -10,7 +10,7 @@ import (
 
 // RemindPlayerColorStep shows the player their color again
 type RemindPlayerColorStep struct {
-	gameloop.Transitions
+	gameloop.BaseGameStep
 }
 
 // GetMessageBody is called upon entering this GameStep

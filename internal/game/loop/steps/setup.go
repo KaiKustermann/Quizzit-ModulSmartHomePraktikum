@@ -11,7 +11,7 @@ import (
 
 // SetupStep prompts the player to chose the amount of players for the game
 type SetupStep struct {
-	gameloop.Transitions
+	gameloop.BaseGameStep
 }
 
 // AddTransitions adds the transition to [NewPlayerStep] or [HybridDieSearchStep]

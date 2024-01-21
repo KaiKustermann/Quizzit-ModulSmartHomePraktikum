@@ -10,7 +10,7 @@ import (
 
 // CategoryRollDigitalStep prompts the user to use the 'roll digitally' button
 type CategoryRollDigitalStep struct {
-	gameloop.Transitions
+	gameloop.BaseGameStep
 }
 
 // AddTransitionToCategoryResult adds transition to [CategoryResultStep]

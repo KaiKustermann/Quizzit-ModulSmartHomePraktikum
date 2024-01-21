@@ -13,7 +13,7 @@ import (
 
 // CategoryRollHybridDieStep prompts the user to use the hybrid-die to roll their category
 type CategoryRollHybridDieStep struct {
-	gameloop.Transitions
+	gameloop.BaseGameStep
 }
 
 // AddTransitionToCategoryResult adds transition to [CategoryResultStep]

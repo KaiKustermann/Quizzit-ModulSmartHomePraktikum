@@ -10,7 +10,7 @@ import (
 
 // HybridDieNotFoundStep displays that the hybrid-die could not be found
 type HybridDieNotFoundStep struct {
-	gameloop.Transitions
+	gameloop.BaseGameStep
 }
 
 // AddTransitionToNewPlayer adds the transition to [NewPlayerStep]

@@ -14,7 +14,7 @@ import (
 
 // HybridDieSearchStep displays that the hybrid-die is being searched
 type HybridDieSearchStep struct {
-	gameloop.Transitions
+	gameloop.BaseGameStep
 	Send func(messageType string, body interface{})
 }
 

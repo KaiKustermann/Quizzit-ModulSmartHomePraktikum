@@ -12,7 +12,7 @@ import (
 //
 // If incorrect, also shows the correct answer
 type CorrectnessFeedbackStep struct {
-	gameloop.Transitions
+	gameloop.BaseGameStep
 }
 
 // GetMessageBody is called upon entering this GameStep

@@ -10,7 +10,7 @@ import (
 
 // PlayerWonStep displays the winner of the game
 type PlayerWonStep struct {
-	gameloop.Transitions
+	gameloop.BaseGameStep
 }
 
 // GetMessageBody is called upon entering this GameStep

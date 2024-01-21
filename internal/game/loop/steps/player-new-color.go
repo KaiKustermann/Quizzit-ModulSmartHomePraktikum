@@ -11,7 +11,7 @@ import (
 
 // NewPlayerColorStep informs the new player of their color
 type NewPlayerColorStep struct {
-	gameloop.Transitions
+	gameloop.BaseGameStep
 }
 
 // GetMessageBody is called upon entering this GameStep

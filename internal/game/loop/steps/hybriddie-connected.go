@@ -10,7 +10,7 @@ import (
 
 // HybridDieConnectedStep displays that the hybrid-die has been connected
 type HybridDieConnectedStep struct {
-	gameloop.Transitions
+	gameloop.BaseGameStep
 }
 
 // AddTransitionToNewPlayer adds the transition to [NewPlayerStep]

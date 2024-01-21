@@ -10,7 +10,7 @@ import (
 
 // NewPlayerColorStep requests the tablet be passed to a new player
 type NewPlayerStep struct {
-	gameloop.Transitions
+	gameloop.BaseGameStep
 }
 
 // AddTransitionToNewPlayerColor adds the transition to [NewPlayerColorStep]
