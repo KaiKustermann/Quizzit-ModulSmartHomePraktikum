@@ -37,11 +37,6 @@ func (s *HybridDieConnectedStep) GetMessageType() messagetypes.MessageTypeSubscr
 	return messagetypes.Game_Die_HybridDieConnected
 }
 
-// GetName returns a human-friendly name for this step
-func (s *HybridDieConnectedStep) GetName() string {
-	return "Hybrid Die - Connected"
-}
-
 // AddAction exposes [Transitions] GetPossibleActions
 func (s *HybridDieConnectedStep) GetPossibleActions() []string {
 	return s.base.GetPossibleActions()

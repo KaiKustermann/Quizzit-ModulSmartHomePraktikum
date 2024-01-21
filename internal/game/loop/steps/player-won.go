@@ -35,11 +35,6 @@ func (s *PlayerWonStep) GetMessageType() messagetypes.MessageTypeSubscribe {
 	return messagetypes.Game_Generic_PlayerWonPrompt
 }
 
-// GetName returns a human-friendly name for this step
-func (s *PlayerWonStep) GetName() string {
-	return "Player Won"
-}
-
 // AddAction exposes [Transitions] GetPossibleActions
 func (s *PlayerWonStep) GetPossibleActions() []string {
 	return s.base.GetPossibleActions()

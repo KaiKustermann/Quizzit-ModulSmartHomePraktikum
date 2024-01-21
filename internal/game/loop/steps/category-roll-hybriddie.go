@@ -52,11 +52,6 @@ func (s *CategoryRollHybridDieStep) GetMessageType() messagetypes.MessageTypeSub
 	return messagetypes.Game_Die_RollCategoryHybridDiePrompt
 }
 
-// GetName returns a human-friendly name for this step
-func (s *CategoryRollHybridDieStep) GetName() string {
-	return "Category - Roll (hybrid-die)"
-}
-
 // AddAction exposes [Transitions] GetPossibleActions
 func (s *CategoryRollHybridDieStep) GetPossibleActions() []string {
 	return s.base.GetPossibleActions()

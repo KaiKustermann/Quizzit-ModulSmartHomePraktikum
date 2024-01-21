@@ -37,11 +37,6 @@ func (s *HybridDieNotFoundStep) GetMessageType() messagetypes.MessageTypeSubscri
 	return messagetypes.Game_Die_HybridDieNotFound
 }
 
-// GetName returns a human-friendly name for this step
-func (s *HybridDieNotFoundStep) GetName() string {
-	return "Hybrid Die - Not Found"
-}
-
 // AddAction exposes [Transitions] GetPossibleActions
 func (s *HybridDieNotFoundStep) GetPossibleActions() []string {
 	return s.base.GetPossibleActions()

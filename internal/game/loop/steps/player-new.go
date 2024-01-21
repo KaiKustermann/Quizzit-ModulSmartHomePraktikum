@@ -35,11 +35,6 @@ func (s *NewPlayerStep) GetMessageType() messagetypes.MessageTypeSubscribe {
 	return messagetypes.Game_Turn_PassToNewPlayer
 }
 
-// GetName returns a human-friendly name for this step
-func (s *NewPlayerStep) GetName() string {
-	return "Turn 1 - Player transition - Pass to new player"
-}
-
 // AddAction exposes [Transitions] GetPossibleActions
 func (s *NewPlayerStep) GetPossibleActions() []string {
 	return s.base.GetPossibleActions()

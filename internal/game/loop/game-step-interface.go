@@ -12,8 +12,6 @@ type GameStepIf interface {
 	GetMessageType() messagetypes.MessageTypeSubscribe
 	// AddAction exposes [Transitions] GetPossibleActions
 	GetPossibleActions() []string
-	// GetName returns a human-friendly name for this step
-	GetName() string
 	// GetMessageBody is called upon entering this GameStep
 	//
 	// Must return the body for the stateMessage that is send to clients

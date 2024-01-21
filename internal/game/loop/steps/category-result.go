@@ -39,11 +39,6 @@ func (s *CategoryResultStep) GetMessageType() messagetypes.MessageTypeSubscribe 
 	return messagetypes.Game_Die_CategoryResult
 }
 
-// GetName returns a human-friendly name for this step
-func (s *CategoryResultStep) GetName() string {
-	return "Category - Result"
-}
-
 // AddAction exposes [Transitions] GetPossibleActions
 func (s *CategoryResultStep) GetPossibleActions() []string {
 	return s.base.GetPossibleActions()

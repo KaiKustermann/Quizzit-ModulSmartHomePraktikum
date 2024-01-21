@@ -49,11 +49,6 @@ func (s *SetupStep) GetMessageType() messagetypes.MessageTypeSubscribe {
 	return messagetypes.Game_Setup_SelectPlayerCount
 }
 
-// GetName returns a human-friendly name for this step
-func (s *SetupStep) GetName() string {
-	return "Setup - Select Player Count"
-}
-
 // AddAction exposes [Transitions] GetPossibleActions
 func (s *SetupStep) GetPossibleActions() []string {
 	return s.base.GetPossibleActions()

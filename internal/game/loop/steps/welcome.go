@@ -35,11 +35,6 @@ func (s *WelcomeStep) GetMessageType() messagetypes.MessageTypeSubscribe {
 	return messagetypes.Game_Setup_Welcome
 }
 
-// GetName returns a human-friendly name for this step
-func (s *WelcomeStep) GetName() string {
-	return "Welcome"
-}
-
 // AddAction exposes [Transitions] GetPossibleActions
 func (s *WelcomeStep) GetPossibleActions() []string {
 	return s.base.GetPossibleActions()

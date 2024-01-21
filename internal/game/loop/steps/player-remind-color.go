@@ -40,11 +40,6 @@ func (s *RemindPlayerColorStep) GetMessageType() messagetypes.MessageTypeSubscri
 	return messagetypes.Game_Turn_RemindPlayerColorPrompt
 }
 
-// GetName returns a human-friendly name for this step
-func (s *RemindPlayerColorStep) GetName() string {
-	return "Turn 1 - Player transition - New Player color Prompt"
-}
-
 // AddAction exposes [Transitions] GetPossibleActions
 func (s *RemindPlayerColorStep) GetPossibleActions() []string {
 	return s.base.GetPossibleActions()

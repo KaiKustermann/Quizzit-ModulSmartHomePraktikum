@@ -64,7 +64,7 @@ func (game *Game) TransitionToGameStep(next gameloop.GameStepIf) {
 	playerState := game.managers.PlayerManager.GetPlayerState()
 	nextState.PlayerState = &playerState
 	log.WithFields(log.Fields{
-		"name":         next.GetName(),
+		"name":         next.GetMessageType(),
 		"stateMessage": nextState,
 	}).Debug("Switching Gamestep ")
 	game.currentStep = next

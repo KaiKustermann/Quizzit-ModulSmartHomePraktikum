@@ -36,11 +36,6 @@ func (s *CategoryRollDigitalStep) GetMessageType() messagetypes.MessageTypeSubsc
 	return messagetypes.Game_Die_RollCategoryDigitallyPrompt
 }
 
-// GetName returns a human-friendly name for this step
-func (s *CategoryRollDigitalStep) GetName() string {
-	return "Category - Roll (digital)"
-}
-
 // AddAction exposes [Transitions] GetPossibleActions
 func (s *CategoryRollDigitalStep) GetPossibleActions() []string {
 	return s.base.GetPossibleActions()

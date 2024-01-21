@@ -42,11 +42,6 @@ func (s *SpecificPlayerStep) GetMessageType() messagetypes.MessageTypeSubscribe 
 	return messagetypes.Game_Turn_PassToSpecificPlayer
 }
 
-// GetName returns a human-friendly name for this step
-func (s *SpecificPlayerStep) GetName() string {
-	return "Transition to specific player"
-}
-
 // AddAction exposes [Transitions] GetPossibleActions
 func (s *SpecificPlayerStep) GetPossibleActions() []string {
 	return s.base.GetPossibleActions()

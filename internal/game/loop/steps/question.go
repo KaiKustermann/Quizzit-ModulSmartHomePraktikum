@@ -101,11 +101,6 @@ func (s *QuestionStep) GetMessageType() messagetypes.MessageTypeSubscribe {
 	return messagetypes.Game_Question_Question
 }
 
-// GetName returns a human-friendly name for this step
-func (s *QuestionStep) GetName() string {
-	return "Question"
-}
-
 // AddAction exposes [Transitions] GetPossibleActions
 func (s *QuestionStep) GetPossibleActions() []string {
 	return s.base.GetPossibleActions()

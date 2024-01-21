@@ -50,11 +50,6 @@ func (s *HybridDieSearchStep) GetMessageType() messagetypes.MessageTypeSubscribe
 	return messagetypes.Game_Die_SearchingHybridDie
 }
 
-// GetName returns a human-friendly name for this step
-func (s *HybridDieSearchStep) GetName() string {
-	return "Hybrid Die - Searching"
-}
-
 // AddAction exposes [Transitions] GetPossibleActions
 func (s *HybridDieSearchStep) GetPossibleActions() []string {
 	return s.base.GetPossibleActions()

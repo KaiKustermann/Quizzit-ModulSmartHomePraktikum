@@ -58,11 +58,6 @@ func (s *CorrectnessFeedbackStep) GetMessageType() messagetypes.MessageTypeSubsc
 	return messagetypes.Game_Question_CorrectnessFeedback
 }
 
-// GetName returns a human-friendly name for this step
-func (s *CorrectnessFeedbackStep) GetName() string {
-	return "Correctness Feedback"
-}
-
 // AddAction exposes [Transitions] GetPossibleActions
 func (s *CorrectnessFeedbackStep) GetPossibleActions() []string {
 	return s.base.GetPossibleActions()
