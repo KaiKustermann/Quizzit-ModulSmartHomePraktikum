@@ -13,13 +13,6 @@ type WelcomeStep struct {
 	gameloop.Transitions
 }
 
-// GetMessageBody is called upon entering this GameStep
-//
-// Must return the body for the stateMessage that is send to clients
-func (s *WelcomeStep) GetMessageBody(managers managers.GameObjectManagers) interface{} {
-	return nil
-}
-
 // AddSetupTransition adds the transition to the [SetupStep]
 func (s *WelcomeStep) AddSetupTransition(setupStep *SetupStep) {
 	var action gameloop.ActionHandler = func(_ managers.GameObjectManagers, _ dto.WebsocketMessagePublish) (nextstep gameloop.GameStepIf, success bool) {
@@ -33,13 +26,4 @@ func (s *WelcomeStep) AddSetupTransition(setupStep *SetupStep) {
 // GetMessageType returns the [MessageTypeSubscribe] sent to frontend when this step is active
 func (s *WelcomeStep) GetMessageType() messagetypes.MessageTypeSubscribe {
 	return messagetypes.Game_Setup_Welcome
-}
-
-// OnEnterStep is called by the gameloop upon entering this step
-//
-// Can be used to modify state or take other actions if necessary.
-//
-// If the step possibly returns itself upon handleMessage take into account that it will invoke this function again!
-func (s *WelcomeStep) OnEnterStep(managers managers.GameObjectManagers) {
-	// Nothing
 }

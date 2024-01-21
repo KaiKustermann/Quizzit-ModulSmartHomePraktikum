@@ -41,12 +41,3 @@ func (s *SpecificPlayerStep) AddTransitionToDieRoll(gsDigitalCategoryRoll *Categ
 func (s *SpecificPlayerStep) GetMessageType() messagetypes.MessageTypeSubscribe {
 	return messagetypes.Game_Turn_PassToSpecificPlayer
 }
-
-// OnEnterStep is called by the gameloop upon entering this step
-//
-// Can be used to modify state or take other actions if necessary.
-//
-// If the step possibly returns itself upon handleMessage take into account that it will invoke this function again!
-func (s *SpecificPlayerStep) OnEnterStep(managers managers.GameObjectManagers) {
-	// Nothing
-}

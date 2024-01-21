@@ -18,13 +18,6 @@ type HybridDieSearchStep struct {
 	Send func(messageType string, body interface{})
 }
 
-// GetMessageBody is called upon entering this GameStep
-//
-// Must return the body for the stateMessage that is send to clients
-func (s *HybridDieSearchStep) GetMessageBody(managers managers.GameObjectManagers) interface{} {
-	return nil
-}
-
 // AddTransitionToHybridDieConnected adds transition to [HybridDieConnectedStep]
 func (s *HybridDieSearchStep) AddTransitionToHybridDieConnected(hdConnectedStep *HybridDieConnectedStep) {
 	var action gameloop.ActionHandler = func(managers managers.GameObjectManagers, msg dto.WebsocketMessagePublish) (nextstep gameloop.GameStepIf, success bool) {

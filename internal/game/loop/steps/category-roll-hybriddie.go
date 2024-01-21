@@ -16,13 +16,6 @@ type CategoryRollHybridDieStep struct {
 	gameloop.Transitions
 }
 
-// GetMessageBody is called upon entering this GameStep
-//
-// Must return the body for the stateMessage that is send to clients
-func (s *CategoryRollHybridDieStep) GetMessageBody(_ managers.GameObjectManagers) interface{} {
-	return nil
-}
-
 // AddTransitionToCategoryResult adds transition to [CategoryResultStep]
 func (s *CategoryRollHybridDieStep) AddTransitionToCategoryResult(gsCategoryResult *CategoryResultStep) {
 	var action gameloop.ActionHandler = func(managers managers.GameObjectManagers, msg dto.WebsocketMessagePublish) (nextstep gameloop.GameStepIf, success bool) {
@@ -50,13 +43,4 @@ func (s *CategoryRollHybridDieStep) AddTransitionToDigitalRoll(gsCategoryDigital
 // GetMessageType returns the [MessageTypeSubscribe] sent to frontend when this step is active
 func (s *CategoryRollHybridDieStep) GetMessageType() messagetypes.MessageTypeSubscribe {
 	return messagetypes.Game_Die_RollCategoryHybridDiePrompt
-}
-
-// OnEnterStep is called by the gameloop upon entering this step
-//
-// Can be used to modify state or take other actions if necessary.
-//
-// If the step possibly returns itself upon handleMessage take into account that it will invoke this function again!
-func (s *CategoryRollHybridDieStep) OnEnterStep(managers managers.GameObjectManagers) {
-	// Nothing
 }

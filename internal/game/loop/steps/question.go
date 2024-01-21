@@ -100,12 +100,3 @@ func (s *QuestionStep) selectAnswerById(managers managers.GameObjectManagers, an
 func (s *QuestionStep) GetMessageType() messagetypes.MessageTypeSubscribe {
 	return messagetypes.Game_Question_Question
 }
-
-// OnEnterStep is called by the gameloop upon entering this step
-//
-// Can be used to modify state or take other actions if necessary.
-//
-// If the step possibly returns itself upon handleMessage take into account that it will invoke this function again!
-func (s *QuestionStep) OnEnterStep(managers managers.GameObjectManagers) {
-	// Nothing
-}

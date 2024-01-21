@@ -57,12 +57,3 @@ func (s *CorrectnessFeedbackStep) AddTransitions(playerWonStep *PlayerWonStep, r
 func (s *CorrectnessFeedbackStep) GetMessageType() messagetypes.MessageTypeSubscribe {
 	return messagetypes.Game_Question_CorrectnessFeedback
 }
-
-// OnEnterStep is called by the gameloop upon entering this step
-//
-// Can be used to modify state or take other actions if necessary.
-//
-// If the step possibly returns itself upon handleMessage take into account that it will invoke this function again!
-func (s *CorrectnessFeedbackStep) OnEnterStep(managers managers.GameObjectManagers) {
-	// Nothing
-}

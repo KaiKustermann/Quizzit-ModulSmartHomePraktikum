@@ -43,3 +43,19 @@ func (gs *Transitions) HandleMessage(managers managers.GameObjectManagers, envel
 	}
 	return
 }
+
+// OnEnterStep is called by the gameloop upon entering this step
+//
+// Can be used to modify state or take other actions if necessary.
+//
+// If the step possibly returns itself upon handleMessage take into account that it will invoke this function again!
+func (s *Transitions) OnEnterStep(managers managers.GameObjectManagers) {
+	// Nothing
+}
+
+// GetMessageBody is called upon entering this GameStep
+//
+// Must return the body for the stateMessage that is send to clients
+func (s *Transitions) GetMessageBody(managers managers.GameObjectManagers) interface{} {
+	return nil
+}

@@ -38,12 +38,3 @@ func (s *CategoryResultStep) AddTransitionToQuestion(gsQuestion *QuestionStep) {
 func (s *CategoryResultStep) GetMessageType() messagetypes.MessageTypeSubscribe {
 	return messagetypes.Game_Die_CategoryResult
 }
-
-// OnEnterStep is called by the gameloop upon entering this step
-//
-// Can be used to modify state or take other actions if necessary.
-//
-// If the step possibly returns itself upon handleMessage take into account that it will invoke this function again!
-func (s *CategoryResultStep) OnEnterStep(managers managers.GameObjectManagers) {
-	// Nothing
-}
