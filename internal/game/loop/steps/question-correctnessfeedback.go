@@ -19,12 +19,7 @@ type CorrectnessFeedbackStep struct {
 //
 // Must return the body for the stateMessage that is send to clients
 func (s *CorrectnessFeedbackStep) GetMessageBody(managers managers.GameObjectManagers) interface{} {
-	feedback := managers.QuestionManager.GetCorrectnessFeedback()
-	if feedback.SelectedAnswerIsCorrect {
-		managers.PlayerManager.IncreaseScoreOfActivePlayer()
-	}
-	managers.QuestionManager.ResetActiveQuestion()
-	return feedback
+	return managers.QuestionManager.GetCorrectnessFeedback()
 }
 
 // AddTransitions adds stransition to [PlayerWonStep], [RemindPlayerColorStep], [SpecificPlayerStep], [NewPlayerStep]
@@ -56,4 +51,16 @@ func (s *CorrectnessFeedbackStep) AddTransitions(playerWonStep *PlayerWonStep, r
 // GetMessageType returns the [MessageTypeSubscribe] sent to frontend when this step is active
 func (s *CorrectnessFeedbackStep) GetMessageType() messagetypes.MessageTypeSubscribe {
 	return messagetypes.Game_Question_CorrectnessFeedback
+}
+
+// OnEnterStep is called by the gameloop upon entering this step
+//
+// Can be used to modify state or take other actions if necessary.
+//
+// If the step possibly returns itself upon handleMessage take into account that it will invoke this function again!
+func (s *CorrectnessFeedbackStep) OnEnterStep(managers managers.GameObjectManagers) {
+	feedback := managers.QuestionManager.GetCorrectnessFeedback()
+	if feedback.SelectedAnswerIsCorrect {
+		managers.PlayerManager.IncreaseScoreOfActivePlayer()
+	}
 }
