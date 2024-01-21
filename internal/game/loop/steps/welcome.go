@@ -26,3 +26,10 @@ func (s *WelcomeStep) AddSetupTransition(setupStep *SetupStep) {
 func (s *WelcomeStep) GetMessageType() string {
 	return string(messagetypes.Game_Setup_Welcome)
 }
+
+// OnEnterStep refreshes all Questions
+//
+// This way a new game can draw from all questions again
+func (s *WelcomeStep) OnEnterStep(managers *managers.GameObjectManagers) {
+	managers.QuestionManager.RefreshAllQuestions()
+}

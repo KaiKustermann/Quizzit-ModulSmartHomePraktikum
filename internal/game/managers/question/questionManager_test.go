@@ -23,7 +23,7 @@ func TestSetActiveQuestion(t *testing.T) {
 	category := "Geschichte"
 	qA := makeQuestion("question A", category)
 	qm := QuestionManager{}
-	qm.SetActiveQuestion(&qA)
+	qm.setActiveQuestion(&qA)
 	if !reflect.DeepEqual(qm.GetActiveQuestion(), qA) {
 		t.Error("active Question should now be our question!")
 	}
