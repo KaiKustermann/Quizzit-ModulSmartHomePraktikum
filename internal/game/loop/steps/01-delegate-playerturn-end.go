@@ -20,7 +20,7 @@ func (s *PlayerTurnEndDelegate) AddTransitions(playerWonStep *PlayerWonStep, rem
 	s.playerWonStep = playerWonStep
 	s.remindColorStep = remindColorStep
 	s.playerTurnStartDelegate = playerTurnStartDelegate
-	msgType := messagetypes.Player_Generic_Confirm
+	msgType := messagetypes.Delegate_Action
 	gameloopprinter.Append(s, msgType, playerWonStep)
 	gameloopprinter.Append(s, msgType, remindColorStep)
 	gameloopprinter.Append(s, msgType, playerTurnStartDelegate)
@@ -42,7 +42,7 @@ func (s *PlayerTurnEndDelegate) DelegateStep(managers *managers.GameObjectManage
 		return s.playerWonStep, true
 	}
 	activeplayerTurn := managers.PlayerManager.GetTurnOfActivePlayer()
-	if activeplayerTurn == 1 {
+	if activeplayerTurn == 1 && managers.PlayerManager.GetPlayerCount() > 1 {
 		return s.remindColorStep, true
 	}
 	return s.playerTurnStartDelegate, true

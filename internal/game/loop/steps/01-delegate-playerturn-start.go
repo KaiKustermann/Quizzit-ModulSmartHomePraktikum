@@ -1,6 +1,9 @@
 package steps
 
 import (
+	"fmt"
+
+	log "github.com/sirupsen/logrus"
 	gameloop "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/game/loop"
 	gameloopprinter "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/game/loop/printer"
 	"gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/game/managers"
@@ -12,15 +15,18 @@ type PlayerTurnStartDelegate struct {
 	BaseGameStep
 	passToSpecificPlayer *SpecificPlayerStep
 	passToNewPlayer      *NewPlayerStep
+	rollCategory         *CategoryRollDelegate
 }
 
-// AddTransitions adds stransition to [NewPlayerStep], [SpecificPlayerStep]
-func (s *PlayerTurnStartDelegate) AddTransitions(passToNewPlayer *NewPlayerStep, passToSpecificPlayer *SpecificPlayerStep) {
+// AddTransitions adds stransition to [NewPlayerStep], [SpecificPlayerStep], [CategoryRollDelegate]
+func (s *PlayerTurnStartDelegate) AddTransitions(passToNewPlayer *NewPlayerStep, passToSpecificPlayer *SpecificPlayerStep, rollCategory *CategoryRollDelegate) {
 	s.passToNewPlayer = passToNewPlayer
 	s.passToSpecificPlayer = passToSpecificPlayer
-	msgType := messagetypes.Player_Generic_Confirm
+	s.rollCategory = rollCategory
+	msgType := messagetypes.Delegate_Action
 	gameloopprinter.Append(s, msgType, passToNewPlayer)
 	gameloopprinter.Append(s, msgType, passToSpecificPlayer)
+	gameloopprinter.Append(s, fmt.Sprintf("%v [SOLO PLAY]", msgType), rollCategory)
 }
 
 func (s *PlayerTurnStartDelegate) GetMessageType() string {
@@ -37,6 +43,10 @@ func (s *PlayerTurnStartDelegate) DelegateStep(managers *managers.GameObjectMana
 	managers.PlayerManager.MoveToNextPlayer()
 	playerTurn := managers.PlayerManager.GetTurnOfActivePlayer()
 	managers.PlayerManager.IncreasePlayerTurnOfActivePlayer()
+	if managers.PlayerManager.GetPlayerCount() < 2 {
+		log.Debug("Solo play - Skip ahead to rolling category")
+		return s.rollCategory, true
+	}
 	if playerTurn == 0 {
 		return s.passToNewPlayer, true
 	}

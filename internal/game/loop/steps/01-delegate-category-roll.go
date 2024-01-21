@@ -19,7 +19,7 @@ type CategoryRollDelegate struct {
 func (s *CategoryRollDelegate) AddTransitions(gsDigitalCategoryRoll *CategoryRollDigitalStep, gsHybridDieCategoryRoll *CategoryRollHybridDieStep) {
 	s.gsDigitalCategoryRoll = gsDigitalCategoryRoll
 	s.gsHybridDieCategoryRoll = gsHybridDieCategoryRoll
-	msgType := messagetypes.Player_Generic_Confirm
+	msgType := messagetypes.Delegate_Action
 	gameloopprinter.Append(s, msgType, gsDigitalCategoryRoll)
 	gameloopprinter.Append(s, msgType, gsHybridDieCategoryRoll)
 }

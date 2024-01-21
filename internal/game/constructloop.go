@@ -39,7 +39,7 @@ func (game *Game) constructLoop() *Game {
 	gsSearchHybridDie.AddTransitionToHybridDieNotFound(gsHybridDieNotFound)
 	gsHybridDieConnected.AddTransitionToNextPlayer(gsPlayerTurnStart)
 	gsHybridDieNotFound.AddTransitionToNextPlayer(gsPlayerTurnStart)
-	gsPlayerTurnStart.AddTransitions(gsTransitionToNewPlayer, gsTransitionToSpecificPlayer)
+	gsPlayerTurnStart.AddTransitions(gsTransitionToNewPlayer, gsTransitionToSpecificPlayer, gsCategoryRollDelegate)
 	gsTransitionToNewPlayer.AddTransitionToNewPlayerColor(gsNewPlayerColor)
 	gsCategoryRollDelegate.AddTransitions(gsDigitalCategoryRoll, gsHybridDieCategoryRoll)
 	gsNewPlayerColor.AddTransitionToDieRoll(gsCategoryRollDelegate)
