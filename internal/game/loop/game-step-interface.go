@@ -6,11 +6,13 @@ import (
 )
 
 // GameStepIf defines the interface for a GameStep
+//
+// See also: [Game].TransitionToGameStep
 type GameStepIf interface {
 	// GetMessageType returns the [MessageTypeSubscribe] sent to frontend when this step is active
 	GetMessageType() string
 
-	// AddAction exposes [Transitions] GetPossibleActions
+	// GetPossibleActions exposes [BaseGameStep] GetPossibleActions
 	GetPossibleActions() []string
 
 	// GetMessageBody is called upon entering this GameStep
@@ -18,7 +20,7 @@ type GameStepIf interface {
 	// Must return the body for the stateMessage that is send to clients
 	GetMessageBody(managers *managers.GameObjectManagers) (wsMessageBody interface{})
 
-	// AddAction exposes [Transitions] HandleMessage
+	// HandleMessage exposes [BaseGameStep] HandleMessage
 	//
 	// See also [ActionHandler]
 	HandleMessage(managers *managers.GameObjectManagers, envelope dto.WebsocketMessagePublish) (nextstep GameStepIf, success bool)

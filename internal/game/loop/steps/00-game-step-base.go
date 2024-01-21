@@ -7,40 +7,46 @@ import (
 	dto "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/generated-sources/dto"
 )
 
+// ActionHandler defines the functional interface used for and by [HandleMessage]
 type ActionHandler func(*managers.GameObjectManagers, dto.WebsocketMessagePublish) (nextstep gameloop.GameStepIf, success bool)
 
-// Defines a handling function for a given messageType
+// Transition defines an [ActionHandler] for a given messageType
 type Transition struct {
-	action  string
+	// MessageType for this transition
+	messageType string
+	// ActionHandler for this transition
 	handler ActionHandler
 }
 
-// BaseGameStep provides a common base for action handling to all [GameStepIf] structs
+// BaseGameStep provides a common base for handling messages to all [GameStepIf] structs
 type BaseGameStep struct {
-	// Possible input actions via gameloop.handle
+	// A list of possible transitions
 	transitions []Transition
 }
 
 // addTransition adds a [Transition] to this [BaseGameStep]
-func (gs *BaseGameStep) addTransition(action string, handler ActionHandler) {
-	gs.transitions = append(gs.transitions, Transition{action: action, handler: handler})
+func (gs *BaseGameStep) addTransition(messageType string, handler ActionHandler) {
+	gs.transitions = append(gs.transitions, Transition{messageType: messageType, handler: handler})
 }
 
+// GetPossibleActions returns a list of messageTypes that can be handled by this object
 func (gs *BaseGameStep) GetPossibleActions() []string {
 	allowedMessageTypes := make([]string, 0, len(gs.transitions))
 	for i := 0; i < len(gs.transitions); i++ {
-		allowedMessageTypes = append(allowedMessageTypes, gs.transitions[i].action)
+		allowedMessageTypes = append(allowedMessageTypes, gs.transitions[i].messageType)
 	}
 	return allowedMessageTypes
 }
 
+// HandleMessage iterates over the known [Transition]s and calls the first matching handler
+//
+// Returns whether or not the message was handled and also the next [GameStateIf] for the [Game]
 func (gs *BaseGameStep) HandleMessage(managers *managers.GameObjectManagers, envelope dto.WebsocketMessagePublish) (nextstep gameloop.GameStepIf, success bool) {
 	success = false
-	pActions := gs.transitions
-	for i := 0; i < len(pActions); i++ {
-		action := pActions[i]
-		if action.action == envelope.MessageType {
-			return action.handler(managers, envelope)
+	for i := 0; i < len(gs.transitions); i++ {
+		transition := gs.transitions[i]
+		if transition.messageType == envelope.MessageType {
+			return transition.handler(managers, envelope)
 		}
 	}
 	return
