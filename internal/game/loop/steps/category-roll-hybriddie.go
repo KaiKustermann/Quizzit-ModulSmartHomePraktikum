@@ -41,6 +41,6 @@ func (s *CategoryRollHybridDieStep) AddTransitionToDigitalRoll(gsCategoryDigital
 }
 
 // GetMessageType returns the [MessageTypeSubscribe] sent to frontend when this step is active
-func (s *CategoryRollHybridDieStep) GetMessageType() messagetypes.MessageTypeSubscribe {
-	return messagetypes.Game_Die_RollCategoryHybridDiePrompt
+func (s *CategoryRollHybridDieStep) GetMessageType() string {
+	return string(messagetypes.Game_Die_RollCategoryHybridDiePrompt)
 }

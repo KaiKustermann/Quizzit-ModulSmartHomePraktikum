@@ -4,7 +4,6 @@ import (
 	"fmt"
 
 	log "github.com/sirupsen/logrus"
-	messagetypes "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/message-types"
 )
 
 var printerInstance *GameLoopPrinter
@@ -16,7 +15,7 @@ type GameLoopPrinter struct {
 
 // LoopPrintableIf defines the interface for printable structs
 type LoopPrintableIf interface {
-	GetMessageType() messagetypes.MessageTypeSubscribe
+	GetMessageType() string
 }
 
 // NewGameLoopPrinter creates a new Instance of [GameLoopPrinter]

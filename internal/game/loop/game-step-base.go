@@ -45,6 +45,16 @@ func (s *BaseGameStep) OnEnterStep(managers *managers.GameObjectManagers) {
 	// Nothing
 }
 
+// DelegateStep is called right after 'OnEnterStep' and allows to return a different step that should be used instead.
+//
+// Use this to implement shadow/transition steps for simplicity.
+//
+// Returns the desired [GameStepIf] and must set 'switchStep' to TRUE in order to apply the change.
+func (s *BaseGameStep) DelegateStep(managers *managers.GameObjectManagers) (nextstep GameStepIf, switchStep bool) {
+	switchStep = false
+	return
+}
+
 // GetMessageBody is called upon entering this GameStep
 //
 // Must return the body for the stateMessage that is send to clients

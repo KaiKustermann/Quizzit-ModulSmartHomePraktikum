@@ -31,6 +31,6 @@ func (s *PlayerWonStep) AddWelcomeTransition(welcomeStep *WelcomeStep) {
 }
 
 // GetMessageType returns the [MessageTypeSubscribe] sent to frontend when this step is active
-func (s *PlayerWonStep) GetMessageType() messagetypes.MessageTypeSubscribe {
-	return messagetypes.Game_Generic_PlayerWonPrompt
+func (s *PlayerWonStep) GetMessageType() string {
+	return string(messagetypes.Game_Generic_PlayerWonPrompt)
 }

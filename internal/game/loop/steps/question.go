@@ -97,6 +97,6 @@ func (s *QuestionStep) selectAnswerById(managers *managers.GameObjectManagers, a
 }
 
 // GetMessageType returns the [MessageTypeSubscribe] sent to frontend when this step is active
-func (s *QuestionStep) GetMessageType() messagetypes.MessageTypeSubscribe {
-	return messagetypes.Game_Question_Question
+func (s *QuestionStep) GetMessageType() string {
+	return string(messagetypes.Game_Question_Question)
 }

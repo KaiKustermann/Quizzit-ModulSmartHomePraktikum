@@ -26,6 +26,6 @@ func (s *HybridDieNotFoundStep) AddTransitionToNewPlayer(gsNewPlayer *NewPlayerS
 }
 
 // GetMessageType returns the [MessageTypeSubscribe] sent to frontend when this step is active
-func (s *HybridDieNotFoundStep) GetMessageType() messagetypes.MessageTypeSubscribe {
-	return messagetypes.Game_Die_HybridDieNotFound
+func (s *HybridDieNotFoundStep) GetMessageType() string {
+	return string(messagetypes.Game_Die_HybridDieNotFound)
 }

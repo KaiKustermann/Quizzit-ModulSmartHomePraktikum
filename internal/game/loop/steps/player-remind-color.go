@@ -38,6 +38,6 @@ func (s *RemindPlayerColorStep) AddTransitionToNextPlayer(gsNewPlayer *NewPlayer
 }
 
 // GetMessageType returns the [MessageTypeSubscribe] sent to frontend when this step is active
-func (s *RemindPlayerColorStep) GetMessageType() messagetypes.MessageTypeSubscribe {
-	return messagetypes.Game_Turn_RemindPlayerColorPrompt
+func (s *RemindPlayerColorStep) GetMessageType() string {
+	return string(messagetypes.Game_Turn_RemindPlayerColorPrompt)
 }

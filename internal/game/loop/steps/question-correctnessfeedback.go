@@ -22,35 +22,19 @@ func (s *CorrectnessFeedbackStep) GetMessageBody(managers *managers.GameObjectMa
 	return managers.QuestionManager.GetCorrectnessFeedback()
 }
 
-// AddTransitions adds stransition to [PlayerWonStep], [RemindPlayerColorStep], [SpecificPlayerStep], [NewPlayerStep]
-func (s *CorrectnessFeedbackStep) AddTransitions(playerWonStep *PlayerWonStep, remindColorStep *RemindPlayerColorStep, passToSpecificPlayer *SpecificPlayerStep, passToNewPlayer *NewPlayerStep) {
+// AddTransitions adds stransition to [PlayerTurnEndDelegate]
+func (s *CorrectnessFeedbackStep) AddPlayerTurnEnd(playerTurnEnd *PlayerTurnEndDelegate) {
 	var action gameloop.ActionHandler = func(managers *managers.GameObjectManagers, msg dto.WebsocketMessagePublish) (nextstep gameloop.GameStepIf, success bool) {
-		if managers.PlayerManager.HasActivePlayerReachedWinningScore() {
-			return playerWonStep, true
-		}
-		activeplayerTurn := managers.PlayerManager.GetTurnOfActivePlayer()
-		if activeplayerTurn == 1 {
-			return remindColorStep, true
-		}
-		managers.PlayerManager.MoveToNextPlayer()
-		playerTurn := managers.PlayerManager.GetTurnOfActivePlayer()
-		managers.PlayerManager.IncreasePlayerTurnOfActivePlayer()
-		if playerTurn == 0 {
-			return passToNewPlayer, true
-		}
-		return passToSpecificPlayer, true
+		return playerTurnEnd, true
 	}
 	msgType := messagetypes.Player_Generic_Confirm
 	s.AddTransition(string(msgType), action)
-	gameloopprinter.Append(s, msgType, playerWonStep)
-	gameloopprinter.Append(s, msgType, remindColorStep)
-	gameloopprinter.Append(s, msgType, passToSpecificPlayer)
-	gameloopprinter.Append(s, msgType, passToNewPlayer)
+	gameloopprinter.Append(s, msgType, playerTurnEnd)
 }
 
 // GetMessageType returns the [MessageTypeSubscribe] sent to frontend when this step is active
-func (s *CorrectnessFeedbackStep) GetMessageType() messagetypes.MessageTypeSubscribe {
-	return messagetypes.Game_Question_CorrectnessFeedback
+func (s *CorrectnessFeedbackStep) GetMessageType() string {
+	return string(messagetypes.Game_Question_CorrectnessFeedback)
 }
 
 // OnEnterStep is called by the gameloop upon entering this step

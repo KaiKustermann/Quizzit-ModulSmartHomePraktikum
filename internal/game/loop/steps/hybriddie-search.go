@@ -39,8 +39,8 @@ func (s *HybridDieSearchStep) AddTransitionToHybridDieNotFound(hdNotFoundStep *H
 }
 
 // GetMessageType returns the [MessageTypeSubscribe] sent to frontend when this step is active
-func (s *HybridDieSearchStep) GetMessageType() messagetypes.MessageTypeSubscribe {
-	return messagetypes.Game_Die_SearchingHybridDie
+func (s *HybridDieSearchStep) GetMessageType() string {
+	return string(messagetypes.Game_Die_SearchingHybridDie)
 }
 
 // OnEnterStep is called by the gameloop upon entering this step

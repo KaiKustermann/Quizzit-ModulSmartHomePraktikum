@@ -38,6 +38,6 @@ func (s *SpecificPlayerStep) AddTransitionToDieRoll(gsDigitalCategoryRoll *Categ
 }
 
 // GetMessageType returns the [MessageTypeSubscribe] sent to frontend when this step is active
-func (s *SpecificPlayerStep) GetMessageType() messagetypes.MessageTypeSubscribe {
-	return messagetypes.Game_Turn_PassToSpecificPlayer
+func (s *SpecificPlayerStep) GetMessageType() string {
+	return string(messagetypes.Game_Turn_PassToSpecificPlayer)
 }

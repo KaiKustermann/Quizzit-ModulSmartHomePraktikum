@@ -59,18 +59,28 @@ func (game *Game) forwardToGameLoop(messageType string, body interface{}) {
 //
 // Then retrieves the player state and updates self as well as clients
 func (game *Game) TransitionToGameStep(next gameloop.GameStepIf) {
+	cLog := log.WithFields(log.Fields{
+		"name": next.GetMessageType(),
+	})
+	cLog.Tracef("Switching Gamestep")
 	next.OnEnterStep(game.managers)
+	delegate, switchStep := next.DelegateStep(game.managers)
+	if switchStep {
+		cLog.Trace("Delegating Gamestep")
+		game.TransitionToGameStep(delegate)
+		cLog.Trace("Gamestep delegated.")
+		return
+	} else {
+		cLog.Trace("Not delegating Gamestep")
+	}
 	nextState := dto.WebsocketMessageSubscribe{}
 	nextState.Body = next.GetMessageBody(game.managers)
-	nextState.MessageType = string(next.GetMessageType())
+	nextState.MessageType = next.GetMessageType()
 	playerState := game.managers.PlayerManager.GetPlayerState()
 	nextState.PlayerState = &playerState
-	log.WithFields(log.Fields{
-		"name":         next.GetMessageType(),
-		"stateMessage": nextState,
-	}).Debug("Switching Gamestep ")
 	game.currentStep = next
 	game.stateMessage = nextState
+	cLog.Debugf("Next gameState: %v ", nextState)
 	ws.BroadCast(nextState)
 }
 

@@ -24,6 +24,6 @@ func (s *WelcomeStep) AddSetupTransition(setupStep *SetupStep) {
 }
 
 // GetMessageType returns the [MessageTypeSubscribe] sent to frontend when this step is active
-func (s *WelcomeStep) GetMessageType() messagetypes.MessageTypeSubscribe {
-	return messagetypes.Game_Setup_Welcome
+func (s *WelcomeStep) GetMessageType() string {
+	return string(messagetypes.Game_Setup_Welcome)
 }

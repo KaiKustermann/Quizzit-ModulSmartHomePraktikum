@@ -26,6 +26,7 @@ func (game *Game) constructLoop() *Game {
 	gsCategoryResult := &steps.CategoryResultStep{}
 	gsQuestion := &steps.QuestionStep{}
 	gsCorrectnessFeedback := &steps.CorrectnessFeedbackStep{}
+	gsPlayerTurnEnd := &steps.PlayerTurnEndDelegate{}
 	gsPlayerWon := &steps.PlayerWonStep{}
 
 	// LINK THEM TOGETHER
@@ -46,7 +47,8 @@ func (game *Game) constructLoop() *Game {
 	gsQuestion.AddSubmitAnswerTransition(gsCorrectnessFeedback)
 	gsQuestion.AddUseJokerTransition()
 	gsQuestion.AddSelectAnswerTransition()
-	gsCorrectnessFeedback.AddTransitions(gsPlayerWon, gsRemindPlayerColor, gsTransitionToSpecificPlayer, gsTransitionToNewPlayer)
+	gsCorrectnessFeedback.AddPlayerTurnEnd(gsPlayerTurnEnd)
+	gsPlayerTurnEnd.AddTransitions(gsPlayerWon, gsRemindPlayerColor, gsTransitionToSpecificPlayer, gsTransitionToNewPlayer)
 	gsRemindPlayerColor.AddTransitionToNextPlayer(gsTransitionToNewPlayer, gsTransitionToSpecificPlayer)
 	gsPlayerWon.AddWelcomeTransition(gsWelcome)
 

@@ -38,6 +38,6 @@ func (s *NewPlayerColorStep) AddTransitionToDieRoll(gsDigitalCategoryRoll *Categ
 }
 
 // GetMessageType returns the [MessageTypeSubscribe] sent to frontend when this step is active
-func (s *NewPlayerColorStep) GetMessageType() messagetypes.MessageTypeSubscribe {
-	return messagetypes.Game_Turn_NewPlayerColorPrompt
+func (s *NewPlayerColorStep) GetMessageType() string {
+	return string(messagetypes.Game_Turn_NewPlayerColorPrompt)
 }

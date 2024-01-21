@@ -35,6 +35,6 @@ func (s *CategoryResultStep) AddTransitionToQuestion(gsQuestion *QuestionStep) {
 }
 
 // GetMessageType returns the [MessageTypeSubscribe] sent to frontend when this step is active
-func (s *CategoryResultStep) GetMessageType() messagetypes.MessageTypeSubscribe {
-	return messagetypes.Game_Die_CategoryResult
+func (s *CategoryResultStep) GetMessageType() string {
+	return string(messagetypes.Game_Die_CategoryResult)
 }

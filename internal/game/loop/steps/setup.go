@@ -38,6 +38,6 @@ func (s *SetupStep) AddTransitions(gsNewPlayer *NewPlayerStep, gsSearchHybridDie
 }
 
 // GetMessageType returns the [MessageTypeSubscribe] sent to frontend when this step is active
-func (s *SetupStep) GetMessageType() messagetypes.MessageTypeSubscribe {
-	return messagetypes.Game_Setup_SelectPlayerCount
+func (s *SetupStep) GetMessageType() string {
+	return string(messagetypes.Game_Setup_SelectPlayerCount)
 }
