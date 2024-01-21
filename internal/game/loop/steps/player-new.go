@@ -10,16 +10,16 @@ import (
 
 // NewPlayerColorStep requests the tablet be passed to a new player
 type NewPlayerStep struct {
-	gameloop.BaseGameStep
+	BaseGameStep
 }
 
 // AddTransitionToNewPlayerColor adds the transition to [NewPlayerColorStep]
 func (s *NewPlayerStep) AddTransitionToNewPlayerColor(gsNewPlayerColor *NewPlayerColorStep) {
-	var action gameloop.ActionHandler = func(_ *managers.GameObjectManagers, _ dto.WebsocketMessagePublish) (nextstep gameloop.GameStepIf, success bool) {
+	var action ActionHandler = func(_ *managers.GameObjectManagers, _ dto.WebsocketMessagePublish) (nextstep gameloop.GameStepIf, success bool) {
 		return gsNewPlayerColor, true
 	}
 	msgType := messagetypes.Player_Generic_Confirm
-	s.AddTransition(string(msgType), action)
+	s.addTransition(string(msgType), action)
 	gameloopprinter.Append(s, msgType, gsNewPlayerColor)
 }
 

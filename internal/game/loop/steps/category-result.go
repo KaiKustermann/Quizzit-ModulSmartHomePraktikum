@@ -10,7 +10,7 @@ import (
 
 // CategoryResultStep displays the rolled category
 type CategoryResultStep struct {
-	gameloop.BaseGameStep
+	BaseGameStep
 }
 
 func (s *CategoryResultStep) GetMessageBody(managers *managers.GameObjectManagers) interface{} {
@@ -20,14 +20,16 @@ func (s *CategoryResultStep) GetMessageBody(managers *managers.GameObjectManager
 }
 
 // AddTransitionToQuestion adds transition to [QuestionStep]
+//
+// The transition moves to the next question and makes sure it is reset to a clean state.
 func (s *CategoryResultStep) AddTransitionToQuestion(gsQuestion *QuestionStep) {
-	var action gameloop.ActionHandler = func(managers *managers.GameObjectManagers, _ dto.WebsocketMessagePublish) (nextstep gameloop.GameStepIf, success bool) {
+	var action ActionHandler = func(managers *managers.GameObjectManagers, _ dto.WebsocketMessagePublish) (nextstep gameloop.GameStepIf, success bool) {
 		managers.QuestionManager.MoveToNextQuestion()
 		managers.QuestionManager.ResetActiveQuestion()
 		return gsQuestion, true
 	}
 	msgType := messagetypes.Player_Generic_Confirm
-	s.AddTransition(string(msgType), action)
+	s.addTransition(string(msgType), action)
 	gameloopprinter.Append(s, msgType, gsQuestion)
 }
 

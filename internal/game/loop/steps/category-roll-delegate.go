@@ -10,7 +10,7 @@ import (
 
 // CategoryRollDelegate informs the new player of their color
 type CategoryRollDelegate struct {
-	gameloop.BaseGameStep
+	BaseGameStep
 	gsDigitalCategoryRoll   *CategoryRollDigitalStep
 	gsHybridDieCategoryRoll *CategoryRollHybridDieStep
 }
@@ -28,6 +28,11 @@ func (s *CategoryRollDelegate) GetMessageType() string {
 	return string(messagetypes.Delegate_Roll_Category)
 }
 
+// DelegateStep checks if a HybridDie is ready and delegates to the appropriate gameStep
+//
+// * If no HybridDie is present moves to [CategoryRollDigitalStep]
+//
+// * If HybridDie is connected moves to [CategoryRollHybridDieStep]
 func (s *CategoryRollDelegate) DelegateStep(managers *managers.GameObjectManagers) (nextstep gameloop.GameStepIf, switchStep bool) {
 	if managers.HybridDieManager.IsConnected() {
 		log.Debug("Hybrid die is ready, using HYBRIDDIE ")

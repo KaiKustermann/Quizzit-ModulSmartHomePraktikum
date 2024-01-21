@@ -12,7 +12,7 @@ import (
 //
 // If incorrect, also shows the correct answer
 type CorrectnessFeedbackStep struct {
-	gameloop.BaseGameStep
+	BaseGameStep
 }
 
 func (s *CorrectnessFeedbackStep) GetMessageBody(managers *managers.GameObjectManagers) interface{} {
@@ -21,11 +21,11 @@ func (s *CorrectnessFeedbackStep) GetMessageBody(managers *managers.GameObjectMa
 
 // AddTransitions adds stransition to [PlayerTurnEndDelegate]
 func (s *CorrectnessFeedbackStep) AddPlayerTurnEnd(playerTurnEnd *PlayerTurnEndDelegate) {
-	var action gameloop.ActionHandler = func(managers *managers.GameObjectManagers, msg dto.WebsocketMessagePublish) (nextstep gameloop.GameStepIf, success bool) {
+	var action ActionHandler = func(managers *managers.GameObjectManagers, msg dto.WebsocketMessagePublish) (nextstep gameloop.GameStepIf, success bool) {
 		return playerTurnEnd, true
 	}
 	msgType := messagetypes.Player_Generic_Confirm
-	s.AddTransition(string(msgType), action)
+	s.addTransition(string(msgType), action)
 	gameloopprinter.Append(s, msgType, playerTurnEnd)
 }
 

@@ -11,12 +11,18 @@ import (
 
 // SetupStep prompts the player to chose the amount of players for the game
 type SetupStep struct {
-	gameloop.BaseGameStep
+	BaseGameStep
 }
 
-// AddTransitions adds the transition to [NewPlayerStep] or [HybridDieSearchStep]
+// AddTransitions adds the transition to [PlayerTurnStartDelegate] or [HybridDieSearchStep]
+//
+// The transition checks if a HybridDie is already connected.
+//
+// 1. If true, it will move to [PlayerTurnStartDelegate]
+//
+// 2. Else moves to [HybridDieSearchStep]
 func (s *SetupStep) AddTransitions(gsPlayerTurnStart *PlayerTurnStartDelegate, gsSearchHybridDie *HybridDieSearchStep) {
-	var action gameloop.ActionHandler = func(managers *managers.GameObjectManagers, msg dto.WebsocketMessagePublish) (nextstep gameloop.GameStepIf, success bool) {
+	var action ActionHandler = func(managers *managers.GameObjectManagers, msg dto.WebsocketMessagePublish) (nextstep gameloop.GameStepIf, success bool) {
 		pCasFloat, ok := msg.Body.(float64)
 		if !ok {
 			log.Warn("Received bad message body for this messageType")
@@ -30,7 +36,7 @@ func (s *SetupStep) AddTransitions(gsPlayerTurnStart *PlayerTurnStartDelegate, g
 		return gsSearchHybridDie, true
 	}
 	msgType := messagetypes.Player_Setup_SubmitPlayerCount
-	s.AddTransition(string(msgType), action)
+	s.addTransition(string(msgType), action)
 	gameloopprinter.Append(s, msgType, gsPlayerTurnStart)
 	gameloopprinter.Append(s, msgType, gsSearchHybridDie)
 }

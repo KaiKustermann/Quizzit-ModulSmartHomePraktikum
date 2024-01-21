@@ -10,19 +10,20 @@ import (
 
 // SpecificPlayerStep requests the tablet be passed to a specific player (by color)
 type SpecificPlayerStep struct {
-	gameloop.BaseGameStep
+	BaseGameStep
 }
 
 func (s *SpecificPlayerStep) GetMessageBody(managers *managers.GameObjectManagers) interface{} {
 	return dto.NewPlayerColorPrompt{TargetPlayerId: managers.PlayerManager.GetActivePlayerId()}
 }
 
+// AddTransitionToDieRoll adds the transition to the [CategoryRollDelegate]
 func (s *SpecificPlayerStep) AddTransitionToDieRoll(gsCategoryRollDelegate *CategoryRollDelegate) {
-	var action gameloop.ActionHandler = func(_ *managers.GameObjectManagers, _ dto.WebsocketMessagePublish) (nextstep gameloop.GameStepIf, success bool) {
+	var action ActionHandler = func(_ *managers.GameObjectManagers, _ dto.WebsocketMessagePublish) (nextstep gameloop.GameStepIf, success bool) {
 		return gsCategoryRollDelegate, true
 	}
 	msgType := messagetypes.Player_Generic_Confirm
-	s.AddTransition(string(msgType), action)
+	s.addTransition(string(msgType), action)
 	gameloopprinter.Append(s, msgType, gsCategoryRollDelegate)
 }
 

@@ -10,7 +10,7 @@ import (
 
 // RemindPlayerColorStep shows the player their color again
 type RemindPlayerColorStep struct {
-	gameloop.BaseGameStep
+	BaseGameStep
 }
 
 func (s *RemindPlayerColorStep) GetMessageBody(managers *managers.GameObjectManagers) interface{} {
@@ -19,11 +19,11 @@ func (s *RemindPlayerColorStep) GetMessageBody(managers *managers.GameObjectMana
 
 // AddTransitionToNextPlayer adds the transition to the [PlayerTurnStartDelegate]
 func (s *RemindPlayerColorStep) AddTransitionToNextPlayer(gsNextPlayer *PlayerTurnStartDelegate) {
-	var action gameloop.ActionHandler = func(managers *managers.GameObjectManagers, _ dto.WebsocketMessagePublish) (nextstep gameloop.GameStepIf, success bool) {
+	var action ActionHandler = func(managers *managers.GameObjectManagers, _ dto.WebsocketMessagePublish) (nextstep gameloop.GameStepIf, success bool) {
 		return gsNextPlayer, true
 	}
 	msgType := messagetypes.Player_Generic_Confirm
-	s.AddTransition(string(msgType), action)
+	s.addTransition(string(msgType), action)
 	gameloopprinter.Append(s, msgType, gsNextPlayer)
 }
 

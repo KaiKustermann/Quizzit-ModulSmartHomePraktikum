@@ -10,16 +10,16 @@ import (
 
 // HybridDieConnectedStep displays that the hybrid-die has been connected
 type HybridDieConnectedStep struct {
-	gameloop.BaseGameStep
+	BaseGameStep
 }
 
 // AddTransitionToNextPlayer adds the transition to the [PlayerTurnStartDelegate]
 func (s *HybridDieConnectedStep) AddTransitionToNextPlayer(gsNextPlayer *PlayerTurnStartDelegate) {
-	var action gameloop.ActionHandler = func(managers *managers.GameObjectManagers, _ dto.WebsocketMessagePublish) (nextstep gameloop.GameStepIf, success bool) {
+	var action ActionHandler = func(managers *managers.GameObjectManagers, _ dto.WebsocketMessagePublish) (nextstep gameloop.GameStepIf, success bool) {
 		return gsNextPlayer, true
 	}
 	msgType := messagetypes.Player_Generic_Confirm
-	s.AddTransition(string(msgType), action)
+	s.addTransition(string(msgType), action)
 	gameloopprinter.Append(s, msgType, gsNextPlayer)
 }
 

@@ -10,17 +10,19 @@ import (
 
 // CategoryRollDigitalStep prompts the user to use the 'roll digitally' button
 type CategoryRollDigitalStep struct {
-	gameloop.BaseGameStep
+	BaseGameStep
 }
 
 // AddTransitionToCategoryResult adds transition to [CategoryResultStep]
+//
+// The transition sets a random category, before moving to [CategoryResultStep]
 func (s *CategoryRollDigitalStep) AddTransitionToCategoryResult(gsCategoryResult *CategoryResultStep) {
-	var action gameloop.ActionHandler = func(managers *managers.GameObjectManagers, _ dto.WebsocketMessagePublish) (nextstep gameloop.GameStepIf, success bool) {
+	var action ActionHandler = func(managers *managers.GameObjectManagers, _ dto.WebsocketMessagePublish) (nextstep gameloop.GameStepIf, success bool) {
 		managers.QuestionManager.SetRandomCategory()
 		return gsCategoryResult, true
 	}
 	msgType := messagetypes.Player_Die_DigitalCategoryRollRequest
-	s.AddTransition(string(msgType), action)
+	s.addTransition(string(msgType), action)
 	gameloopprinter.Append(s, msgType, gsCategoryResult)
 }
 

@@ -9,7 +9,7 @@ import (
 
 // PlayerTurnStartDelegate functions as intermediate step to handle step routing at the end of the playerturn
 type PlayerTurnStartDelegate struct {
-	gameloop.BaseGameStep
+	BaseGameStep
 	passToSpecificPlayer *SpecificPlayerStep
 	passToNewPlayer      *NewPlayerStep
 }
@@ -27,6 +27,12 @@ func (s *PlayerTurnStartDelegate) GetMessageType() string {
 	return string(messagetypes.Delegate_PlayerTurn_Start)
 }
 
+// DelegateStep moves to the next player and increases their turn.
+// Then it routes between [NewPlayerStep], [SpecificPlayerStep]
+//
+// 1. If the active player is in their first turn, we move to [NewPlayerStep]
+//
+// 2. Else we move to [SpecificPlayerStep]
 func (s *PlayerTurnStartDelegate) DelegateStep(managers *managers.GameObjectManagers) (nextstep gameloop.GameStepIf, switchStep bool) {
 	managers.PlayerManager.MoveToNextPlayer()
 	playerTurn := managers.PlayerManager.GetTurnOfActivePlayer()

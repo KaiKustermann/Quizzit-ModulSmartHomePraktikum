@@ -10,7 +10,7 @@ import (
 
 // NewPlayerColorStep informs the new player of their color
 type NewPlayerColorStep struct {
-	gameloop.BaseGameStep
+	BaseGameStep
 }
 
 func (s *NewPlayerColorStep) GetMessageBody(managers *managers.GameObjectManagers) interface{} {
@@ -19,11 +19,11 @@ func (s *NewPlayerColorStep) GetMessageBody(managers *managers.GameObjectManager
 
 // AddTransitionToDieRoll adds the transition to [CategoryRollDelegate]
 func (s *NewPlayerColorStep) AddTransitionToDieRoll(gsCategoryRollDelegate *CategoryRollDelegate) {
-	var action gameloop.ActionHandler = func(_ *managers.GameObjectManagers, _ dto.WebsocketMessagePublish) (nextstep gameloop.GameStepIf, success bool) {
+	var action ActionHandler = func(_ *managers.GameObjectManagers, _ dto.WebsocketMessagePublish) (nextstep gameloop.GameStepIf, success bool) {
 		return gsCategoryRollDelegate, true
 	}
 	msgType := messagetypes.Player_Generic_Confirm
-	s.AddTransition(string(msgType), action)
+	s.addTransition(string(msgType), action)
 	gameloopprinter.Append(s, msgType, gsCategoryRollDelegate)
 }
 

@@ -13,30 +13,33 @@ import (
 
 // CategoryRollHybridDieStep prompts the user to use the hybrid-die to roll their category
 type CategoryRollHybridDieStep struct {
-	gameloop.BaseGameStep
+	BaseGameStep
 }
 
 // AddTransitionToCategoryResult adds transition to [CategoryResultStep]
+//
+// The transition parses the message input and sets the category accordingly, before moving to [CategoryResultStep]
 func (s *CategoryRollHybridDieStep) AddTransitionToCategoryResult(gsCategoryResult *CategoryResultStep) {
-	var action gameloop.ActionHandler = func(managers *managers.GameObjectManagers, msg dto.WebsocketMessagePublish) (nextstep gameloop.GameStepIf, success bool) {
+	var action ActionHandler = func(managers *managers.GameObjectManagers, msg dto.WebsocketMessagePublish) (nextstep gameloop.GameStepIf, success bool) {
 		category := fmt.Sprintf("%v", msg.Body)
 		managers.QuestionManager.SetActiveCategory(category)
 		return gsCategoryResult, true
 	}
 	msgType := hybriddie.Hybrid_die_roll_result
-	s.AddTransition(string(msgType), action)
+	s.addTransition(string(msgType), action)
 	gameloopprinter.Append(s, msgType, gsCategoryResult)
 }
 
 // AddTransitionToDigitalRoll adds transition to [CategoryDigitalRollStep]
 //
 // This transition is used if we lose hybrid-die connection during the roll step.
+// In that case we switch to [CategoryDigitalRollStep] to enable the players to keep going.
 func (s *CategoryRollHybridDieStep) AddTransitionToDigitalRoll(gsCategoryDigitalRoll *CategoryRollDigitalStep) {
-	var action gameloop.ActionHandler = func(managers *managers.GameObjectManagers, msg dto.WebsocketMessagePublish) (nextstep gameloop.GameStepIf, success bool) {
+	var action ActionHandler = func(managers *managers.GameObjectManagers, msg dto.WebsocketMessagePublish) (nextstep gameloop.GameStepIf, success bool) {
 		return gsCategoryDigitalRoll, true
 	}
 	msgType := messagetypes.Game_Die_HybridDieLost
-	s.AddTransition(string(msgType), action)
+	s.addTransition(string(msgType), action)
 	gameloopprinter.Append(s, msgType, gsCategoryDigitalRoll)
 }
 

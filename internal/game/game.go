@@ -53,11 +53,23 @@ func (game *Game) forwardToGameLoop(messageType string, body interface{}) {
 		}, false)
 }
 
-// TransitionToGameStep moves the GameLoop forward to the next Step.
+// TransitionToGameStep moves the GameLoop forward to the next Step and updates connected clients.
 //
-// Calls 'OnEnterStep' on the next step prior to receiving message body and type
+// 1. Calls 'OnEnterStep' on the next GameStep
 //
-// Then retrieves the player state and updates self as well as clients
+// 2. Calls 'DelegateStep' on the next GameStep
+//
+// 3. If 'DelegateStep' returns 'switch'=TRUE, calls self with the new delegateStep and stops this execution.
+//
+// 4. Calls 'GetMessageBody' on the next GameStep
+//
+// 5. Calls 'GetMessageType' on the next GameStep
+//
+// 6. Retrieves the player state
+//
+// 7. Build next GameState from retrieved information
+//
+// 8. Updates self as well as clients with the new GameState and Step
 func (game *Game) TransitionToGameStep(next gameloop.GameStepIf) {
 	cLog := log.WithFields(log.Fields{
 		"name": next.GetMessageType(),

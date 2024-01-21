@@ -10,16 +10,16 @@ import (
 
 // WelcomeStep shows the Quizzit Logo with the Option to start a new game
 type WelcomeStep struct {
-	gameloop.BaseGameStep
+	BaseGameStep
 }
 
 // AddSetupTransition adds the transition to the [SetupStep]
 func (s *WelcomeStep) AddSetupTransition(setupStep *SetupStep) {
-	var action gameloop.ActionHandler = func(_ *managers.GameObjectManagers, _ dto.WebsocketMessagePublish) (nextstep gameloop.GameStepIf, success bool) {
+	var action ActionHandler = func(_ *managers.GameObjectManagers, _ dto.WebsocketMessagePublish) (nextstep gameloop.GameStepIf, success bool) {
 		return setupStep, true
 	}
 	msgType := messagetypes.Player_Generic_Confirm
-	s.AddTransition(string(msgType), action)
+	s.addTransition(string(msgType), action)
 	gameloopprinter.Append(s, msgType, setupStep)
 }
 

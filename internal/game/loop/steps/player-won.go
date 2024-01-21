@@ -10,7 +10,7 @@ import (
 
 // PlayerWonStep displays the winner of the game
 type PlayerWonStep struct {
-	gameloop.BaseGameStep
+	BaseGameStep
 }
 
 func (s *PlayerWonStep) GetMessageBody(managers *managers.GameObjectManagers) interface{} {
@@ -18,12 +18,14 @@ func (s *PlayerWonStep) GetMessageBody(managers *managers.GameObjectManagers) in
 }
 
 // AddWelcomeTransition adds the transition to the [WelcomeStep]
+//
+// This transition allows to play another round of Quizzit after someone had won.
 func (s *PlayerWonStep) AddWelcomeTransition(welcomeStep *WelcomeStep) {
-	var action gameloop.ActionHandler = func(managers *managers.GameObjectManagers, msg dto.WebsocketMessagePublish) (nextstep gameloop.GameStepIf, success bool) {
+	var action ActionHandler = func(managers *managers.GameObjectManagers, msg dto.WebsocketMessagePublish) (nextstep gameloop.GameStepIf, success bool) {
 		return welcomeStep, true
 	}
 	msgType := messagetypes.Player_Generic_Confirm
-	s.AddTransition(string(msgType), action)
+	s.addTransition(string(msgType), action)
 	gameloopprinter.Append(s, msgType, welcomeStep)
 }
 
