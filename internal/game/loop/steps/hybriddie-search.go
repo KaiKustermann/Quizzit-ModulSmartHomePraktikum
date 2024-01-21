@@ -38,27 +38,20 @@ func (s *HybridDieSearchStep) AddTransitionToHybridDieNotFound(hdNotFoundStep *H
 	gameloopprinter.Append(s, msgType, hdNotFoundStep)
 }
 
-// GetMessageType returns the [MessageTypeSubscribe] sent to frontend when this step is active
 func (s *HybridDieSearchStep) GetMessageType() string {
 	return string(messagetypes.Game_Die_SearchingHybridDie)
 }
 
-// OnEnterStep is called by the gameloop upon entering this step
-//
-// Can be used to modify state or take other actions if necessary.
-//
-// If the step possibly returns itself upon handleMessage take into account that it will invoke this function again!
+// OnEnterStep creates a timeout to limit the duration of the hybrid die search
 func (s *HybridDieSearchStep) OnEnterStep(managers *managers.GameObjectManagers) {
-	go s.setTimeout(managers)
-}
-
-func (s *HybridDieSearchStep) setTimeout(managers *managers.GameObjectManagers) {
-	timeout := configuration.GetQuizzitConfig().HybridDie.Search.Timeout
-	log.Debugf("Granting %v to find a hybrid die", timeout)
-	time.Sleep(timeout)
-	if managers.HybridDieManager.IsConnected() {
-		return
-	}
-	log.Warnf("Could not find a hybriddie within %v, canceling", timeout)
-	s.Send(string(messagetypes.Game_Die_HybridDieNotFound), nil)
+	go func() {
+		timeout := configuration.GetQuizzitConfig().HybridDie.Search.Timeout
+		log.Debugf("Granting %v to find a hybrid die", timeout)
+		time.Sleep(timeout)
+		if managers.HybridDieManager.IsConnected() {
+			return
+		}
+		log.Warnf("Could not find a hybriddie within %v, canceling", timeout)
+		s.Send(string(messagetypes.Game_Die_HybridDieNotFound), nil)
+	}()
 }
