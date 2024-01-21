@@ -1,5 +1,6 @@
 package messagetypes
 
+// MessageTypeSubscribe holds the message types that are sent to the frontend
 type MessageTypeSubscribe string
 
 const (

@@ -1,5 +1,6 @@
 package messagetypes
 
+// MessageTypePublish holds the message types that are received by the backend
 type MessageTypePublish string
 
 const (
