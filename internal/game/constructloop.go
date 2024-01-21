@@ -22,6 +22,7 @@ func (game *Game) constructLoop() *Game {
 	gsNewPlayerColor := &steps.NewPlayerColorStep{}
 	gsRemindPlayerColor := &steps.RemindPlayerColorStep{}
 	gsTransitionToSpecificPlayer := &steps.SpecificPlayerStep{}
+	gsCategoryRollDelegate := &steps.CategoryRollDelegate{}
 	gsDigitalCategoryRoll := &steps.CategoryRollDigitalStep{}
 	gsHybridDieCategoryRoll := &steps.CategoryRollHybridDieStep{}
 	gsCategoryResult := &steps.CategoryResultStep{}
@@ -40,8 +41,9 @@ func (game *Game) constructLoop() *Game {
 	gsHybridDieNotFound.AddTransitionToNextPlayer(gsPlayerTurnStart)
 	gsPlayerTurnStart.AddTransitions(gsTransitionToNewPlayer, gsTransitionToSpecificPlayer)
 	gsTransitionToNewPlayer.AddTransitionToNewPlayerColor(gsNewPlayerColor)
-	gsNewPlayerColor.AddTransitionToDieRoll(gsDigitalCategoryRoll, gsHybridDieCategoryRoll)
-	gsTransitionToSpecificPlayer.AddTransitionToDieRoll(gsDigitalCategoryRoll, gsHybridDieCategoryRoll)
+	gsCategoryRollDelegate.AddTransitions(gsDigitalCategoryRoll, gsHybridDieCategoryRoll)
+	gsNewPlayerColor.AddTransitionToDieRoll(gsCategoryRollDelegate)
+	gsTransitionToSpecificPlayer.AddTransitionToDieRoll(gsCategoryRollDelegate)
 	gsHybridDieCategoryRoll.AddTransitionToCategoryResult(gsCategoryResult)
 	gsHybridDieCategoryRoll.AddTransitionToDigitalRoll(gsDigitalCategoryRoll)
 	gsDigitalCategoryRoll.AddTransitionToCategoryResult(gsCategoryResult)

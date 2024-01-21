@@ -1,7 +1,6 @@
 package steps
 
 import (
-	log "github.com/sirupsen/logrus"
 	gameloop "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/game/loop"
 	gameloopprinter "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/game/loop/printer"
 	"gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/game/managers"
@@ -14,30 +13,20 @@ type NewPlayerColorStep struct {
 	gameloop.BaseGameStep
 }
 
-// GetMessageBody is called upon entering this GameStep
-//
-// Must return the body for the stateMessage that is send to clients
 func (s *NewPlayerColorStep) GetMessageBody(managers *managers.GameObjectManagers) interface{} {
 	return dto.NewPlayerColorPrompt{TargetPlayerId: managers.PlayerManager.GetActivePlayerId()}
 }
 
-// AddTransitionToDieRoll adds the transition to [CategoryDigitalRollStep] or [CategoryHybridDieRollStep]
-func (s *NewPlayerColorStep) AddTransitionToDieRoll(gsDigitalCategoryRoll *CategoryRollDigitalStep, gsHybridDieCategoryRoll *CategoryRollHybridDieStep) {
-	var action gameloop.ActionHandler = func(managers *managers.GameObjectManagers, _ dto.WebsocketMessagePublish) (nextstep gameloop.GameStepIf, success bool) {
-		if managers.HybridDieManager.IsConnected() {
-			log.Debug("Hybrid die is ready, using HYBRIDDIE ")
-			return gsHybridDieCategoryRoll, true
-		}
-		log.Debug("Hybrid die is not ready, going DIGITAL ")
-		return gsDigitalCategoryRoll, true
+// AddTransitionToDieRoll adds the transition to [CategoryRollDelegate]
+func (s *NewPlayerColorStep) AddTransitionToDieRoll(gsCategoryRollDelegate *CategoryRollDelegate) {
+	var action gameloop.ActionHandler = func(_ *managers.GameObjectManagers, _ dto.WebsocketMessagePublish) (nextstep gameloop.GameStepIf, success bool) {
+		return gsCategoryRollDelegate, true
 	}
 	msgType := messagetypes.Player_Generic_Confirm
 	s.AddTransition(string(msgType), action)
-	gameloopprinter.Append(s, msgType, gsDigitalCategoryRoll)
-	gameloopprinter.Append(s, msgType, gsHybridDieCategoryRoll)
+	gameloopprinter.Append(s, msgType, gsCategoryRollDelegate)
 }
 
-// GetMessageType returns the [MessageTypeSubscribe] sent to frontend when this step is active
 func (s *NewPlayerColorStep) GetMessageType() string {
 	return string(messagetypes.Game_Turn_NewPlayerColorPrompt)
 }
