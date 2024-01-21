@@ -13,16 +13,14 @@ type HybridDieConnectedStep struct {
 	gameloop.BaseGameStep
 }
 
-// AddTransitionToNewPlayer adds the transition to [NewPlayerStep]
-func (s *HybridDieConnectedStep) AddTransitionToNewPlayer(gsNewPlayer *NewPlayerStep) {
+// AddTransitionToNextPlayer adds the transition to the [PlayerTurnStartDelegate]
+func (s *HybridDieConnectedStep) AddTransitionToNextPlayer(gsNextPlayer *PlayerTurnStartDelegate) {
 	var action gameloop.ActionHandler = func(managers *managers.GameObjectManagers, _ dto.WebsocketMessagePublish) (nextstep gameloop.GameStepIf, success bool) {
-		managers.PlayerManager.MoveToNextPlayer()
-		managers.PlayerManager.IncreasePlayerTurnOfActivePlayer()
-		return gsNewPlayer, true
+		return gsNextPlayer, true
 	}
 	msgType := messagetypes.Player_Generic_Confirm
 	s.AddTransition(string(msgType), action)
-	gameloopprinter.Append(s, msgType, gsNewPlayer)
+	gameloopprinter.Append(s, msgType, gsNextPlayer)
 }
 
 // GetMessageType returns the [MessageTypeSubscribe] sent to frontend when this step is active

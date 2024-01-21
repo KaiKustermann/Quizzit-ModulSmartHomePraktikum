@@ -17,6 +17,7 @@ func (game *Game) constructLoop() *Game {
 	gsSearchHybridDie := &steps.HybridDieSearchStep{Send: game.forwardToGameLoop}
 	gsHybridDieConnected := &steps.HybridDieConnectedStep{}
 	gsHybridDieNotFound := &steps.HybridDieNotFoundStep{}
+	gsPlayerTurnStart := &steps.PlayerTurnStartDelegate{}
 	gsTransitionToNewPlayer := &steps.NewPlayerStep{}
 	gsNewPlayerColor := &steps.NewPlayerColorStep{}
 	gsRemindPlayerColor := &steps.RemindPlayerColorStep{}
@@ -32,11 +33,12 @@ func (game *Game) constructLoop() *Game {
 	// LINK THEM TOGETHER
 
 	gsWelcome.AddSetupTransition(gsSetup)
-	gsSetup.AddTransitions(gsTransitionToNewPlayer, gsSearchHybridDie)
+	gsSetup.AddTransitions(gsPlayerTurnStart, gsSearchHybridDie)
 	gsSearchHybridDie.AddTransitionToHybridDieConnected(gsHybridDieConnected)
 	gsSearchHybridDie.AddTransitionToHybridDieNotFound(gsHybridDieNotFound)
-	gsHybridDieConnected.AddTransitionToNewPlayer(gsTransitionToNewPlayer)
-	gsHybridDieNotFound.AddTransitionToNewPlayer(gsTransitionToNewPlayer)
+	gsHybridDieConnected.AddTransitionToNextPlayer(gsPlayerTurnStart)
+	gsHybridDieNotFound.AddTransitionToNextPlayer(gsPlayerTurnStart)
+	gsPlayerTurnStart.AddTransitions(gsTransitionToNewPlayer, gsTransitionToSpecificPlayer)
 	gsTransitionToNewPlayer.AddTransitionToNewPlayerColor(gsNewPlayerColor)
 	gsNewPlayerColor.AddTransitionToDieRoll(gsDigitalCategoryRoll, gsHybridDieCategoryRoll)
 	gsTransitionToSpecificPlayer.AddTransitionToDieRoll(gsDigitalCategoryRoll, gsHybridDieCategoryRoll)
@@ -48,8 +50,8 @@ func (game *Game) constructLoop() *Game {
 	gsQuestion.AddUseJokerTransition()
 	gsQuestion.AddSelectAnswerTransition()
 	gsCorrectnessFeedback.AddPlayerTurnEnd(gsPlayerTurnEnd)
-	gsPlayerTurnEnd.AddTransitions(gsPlayerWon, gsRemindPlayerColor, gsTransitionToSpecificPlayer, gsTransitionToNewPlayer)
-	gsRemindPlayerColor.AddTransitionToNextPlayer(gsTransitionToNewPlayer, gsTransitionToSpecificPlayer)
+	gsPlayerTurnEnd.AddTransitions(gsPlayerWon, gsRemindPlayerColor, gsPlayerTurnStart)
+	gsRemindPlayerColor.AddTransitionToNextPlayer(gsPlayerTurnStart)
 	gsPlayerWon.AddWelcomeTransition(gsWelcome)
 
 	// Set an initial GameStep

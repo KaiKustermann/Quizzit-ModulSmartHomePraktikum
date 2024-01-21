@@ -10,23 +10,20 @@ import (
 // PlayerTurnEndDelegate functions as intermediate step to handle step routing at the end of the playerturn
 type PlayerTurnEndDelegate struct {
 	gameloop.BaseGameStep
-	playerWonStep        *PlayerWonStep
-	remindColorStep      *RemindPlayerColorStep
-	passToSpecificPlayer *SpecificPlayerStep
-	passToNewPlayer      *NewPlayerStep
+	playerWonStep           *PlayerWonStep
+	remindColorStep         *RemindPlayerColorStep
+	playerTurnStartDelegate *PlayerTurnStartDelegate
 }
 
-// AddTransitions adds stransition to [PlayerWonStep], [RemindPlayerColorStep], [SpecificPlayerStep], [NewPlayerStep]
-func (s *PlayerTurnEndDelegate) AddTransitions(playerWonStep *PlayerWonStep, remindColorStep *RemindPlayerColorStep, passToSpecificPlayer *SpecificPlayerStep, passToNewPlayer *NewPlayerStep) {
+// AddTransitions adds stransition to [PlayerWonStep], [RemindPlayerColorStep], [PlayerTurnStartDelegate]
+func (s *PlayerTurnEndDelegate) AddTransitions(playerWonStep *PlayerWonStep, remindColorStep *RemindPlayerColorStep, playerTurnStartDelegate *PlayerTurnStartDelegate) {
 	s.playerWonStep = playerWonStep
 	s.remindColorStep = remindColorStep
-	s.passToSpecificPlayer = passToSpecificPlayer
-	s.passToNewPlayer = passToNewPlayer
+	s.playerTurnStartDelegate = playerTurnStartDelegate
 	msgType := messagetypes.Player_Generic_Confirm
 	gameloopprinter.Append(s, msgType, playerWonStep)
 	gameloopprinter.Append(s, msgType, remindColorStep)
-	gameloopprinter.Append(s, msgType, passToSpecificPlayer)
-	gameloopprinter.Append(s, msgType, passToNewPlayer)
+	gameloopprinter.Append(s, msgType, playerTurnStartDelegate)
 }
 
 func (s *PlayerTurnEndDelegate) GetMessageType() string {
@@ -41,11 +38,5 @@ func (s *PlayerTurnEndDelegate) DelegateStep(managers *managers.GameObjectManage
 	if activeplayerTurn == 1 {
 		return s.remindColorStep, true
 	}
-	managers.PlayerManager.MoveToNextPlayer()
-	playerTurn := managers.PlayerManager.GetTurnOfActivePlayer()
-	managers.PlayerManager.IncreasePlayerTurnOfActivePlayer()
-	if playerTurn == 0 {
-		return s.passToNewPlayer, true
-	}
-	return s.passToSpecificPlayer, true
+	return s.playerTurnStartDelegate, true
 }

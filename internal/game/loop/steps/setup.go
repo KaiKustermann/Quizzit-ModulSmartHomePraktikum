@@ -15,7 +15,7 @@ type SetupStep struct {
 }
 
 // AddTransitions adds the transition to [NewPlayerStep] or [HybridDieSearchStep]
-func (s *SetupStep) AddTransitions(gsNewPlayer *NewPlayerStep, gsSearchHybridDie *HybridDieSearchStep) {
+func (s *SetupStep) AddTransitions(gsPlayerTurnStart *PlayerTurnStartDelegate, gsSearchHybridDie *HybridDieSearchStep) {
 	var action gameloop.ActionHandler = func(managers *managers.GameObjectManagers, msg dto.WebsocketMessagePublish) (nextstep gameloop.GameStepIf, success bool) {
 		pCasFloat, ok := msg.Body.(float64)
 		if !ok {
@@ -25,15 +25,13 @@ func (s *SetupStep) AddTransitions(gsNewPlayer *NewPlayerStep, gsSearchHybridDie
 		pC := int(pCasFloat)
 		managers.PlayerManager.SetPlayercount(pC)
 		if managers.HybridDieManager.IsConnected() {
-			managers.PlayerManager.MoveToNextPlayer()
-			managers.PlayerManager.IncreasePlayerTurnOfActivePlayer()
-			return gsNewPlayer, true
+			return gsPlayerTurnStart, true
 		}
 		return gsSearchHybridDie, true
 	}
 	msgType := messagetypes.Player_Setup_SubmitPlayerCount
 	s.AddTransition(string(msgType), action)
-	gameloopprinter.Append(s, msgType, gsNewPlayer)
+	gameloopprinter.Append(s, msgType, gsPlayerTurnStart)
 	gameloopprinter.Append(s, msgType, gsSearchHybridDie)
 }
 

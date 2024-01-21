@@ -20,21 +20,14 @@ func (s *RemindPlayerColorStep) GetMessageBody(managers *managers.GameObjectMana
 	return dto.NewPlayerColorPrompt{TargetPlayerId: managers.PlayerManager.GetActivePlayerId()}
 }
 
-// AddTransitionToNextPlayer adds the transition to the [NewPlayerStep] and [SpecificPlayerStep]
-func (s *RemindPlayerColorStep) AddTransitionToNextPlayer(gsNewPlayer *NewPlayerStep, passToSpecificPlayer *SpecificPlayerStep) {
+// AddTransitionToNextPlayer adds the transition to the [PlayerTurnStartDelegate]
+func (s *RemindPlayerColorStep) AddTransitionToNextPlayer(gsNextPlayer *PlayerTurnStartDelegate) {
 	var action gameloop.ActionHandler = func(managers *managers.GameObjectManagers, _ dto.WebsocketMessagePublish) (nextstep gameloop.GameStepIf, success bool) {
-		managers.PlayerManager.MoveToNextPlayer()
-		playerTurn := managers.PlayerManager.GetTurnOfActivePlayer()
-		managers.PlayerManager.IncreasePlayerTurnOfActivePlayer()
-		if playerTurn == 0 {
-			return gsNewPlayer, true
-		}
-		return passToSpecificPlayer, true
+		return gsNextPlayer, true
 	}
 	msgType := messagetypes.Player_Generic_Confirm
 	s.AddTransition(string(msgType), action)
-	gameloopprinter.Append(s, msgType, gsNewPlayer)
-	gameloopprinter.Append(s, msgType, passToSpecificPlayer)
+	gameloopprinter.Append(s, msgType, gsNextPlayer)
 }
 
 // GetMessageType returns the [MessageTypeSubscribe] sent to frontend when this step is active
