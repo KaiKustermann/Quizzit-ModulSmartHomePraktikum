@@ -39,6 +39,7 @@ func (pm *PlayerManager) SetPlayercount(playerCount int) {
 
 // Get active playerID
 func (pm *PlayerManager) GetActivePlayerId() int {
+	log.Tracef("Active player is '%d'", pm.activePlayer)
 	return pm.activePlayer
 }
 
@@ -53,45 +54,68 @@ func (pm *PlayerManager) GetPlayerState() (state dto.PlayerState) {
 
 // Move to next player and return playerstate
 func (pm *PlayerManager) MoveToNextPlayer() (state dto.PlayerState) {
-	if pm.activePlayer+1 >= pm.playerCount {
-		pm.activePlayer = 0
-	} else {
-		pm.activePlayer += 1
+	log.Trace("Moving to next player")
+	nextPlayer := pm.activePlayer + 1
+	if nextPlayer >= pm.playerCount {
+		log.Trace("Current player is last player, next player is first player [0] ")
+		nextPlayer = 0
 	}
+	log.Infof("Next player is '%d'", nextPlayer)
+	pm.activePlayer = nextPlayer
 	return pm.GetPlayerState()
 }
 
 // Increase score of active player and return playerstate
 func (pm *PlayerManager) IncreaseScoreOfActivePlayer() (state dto.PlayerState) {
-	pm.playerScores[pm.activePlayer] += 1
+	nextScore := pm.playerScores[pm.activePlayer] + 1
+	log.Infof("Increasing score of player '%d' to '%d'", pm.activePlayer, nextScore)
+	pm.playerScores[pm.activePlayer] = nextScore
 	return pm.GetPlayerState()
 }
 
 // Increase turn count of active player and return playerstate
 func (pm *PlayerManager) IncreasePlayerTurnOfActivePlayer() (state dto.PlayerState) {
-	pm.playerTurns[pm.activePlayer] += 1
+	nextTurn := pm.playerTurns[pm.activePlayer] + 1
+	log.Debugf("Increasing turn of player '%d' to '%d'", pm.activePlayer, nextTurn)
+	pm.playerTurns[pm.activePlayer] = nextTurn
 	return pm.GetPlayerState()
 }
 
 // Returns the turn of the next player, so the current active player plus one
 func (pm *PlayerManager) GetTurnOfNextPlayer() int {
-	if pm.activePlayer+1 >= pm.playerCount {
-		return pm.playerTurns[0]
+	log.Trace("Getting turn of next player")
+	nextPlayer := pm.activePlayer + 1
+	if nextPlayer >= pm.playerCount {
+		log.Trace("Current player is last player, next player is first player [0] ")
+		nextPlayer = 0
 	}
-	return pm.playerTurns[pm.activePlayer+1]
+	turn := pm.playerTurns[nextPlayer]
+	log.Debugf("Turn of player '%d' (the next player) is '%d'", nextPlayer, turn)
+	return pm.playerTurns[nextPlayer]
 }
 
 // Returns the turn of the active player
 func (pm *PlayerManager) GetTurnOfActivePlayer() int {
-	return pm.playerTurns[pm.activePlayer]
+	turn := pm.playerTurns[pm.activePlayer]
+	log.Debugf("Turn of player '%d' (the active player) is '%d'", pm.activePlayer, turn)
+	return turn
 }
 
 // Returns the score of the active player
 func (pm *PlayerManager) GetScoreOfActivePlayer() int {
-	return pm.playerScores[pm.activePlayer]
+	score := pm.playerScores[pm.activePlayer]
+	log.Debugf("Score of player '%d' (the active player) is '%d'", pm.activePlayer, score)
+	return score
 }
 
 // Returns true if the winning scire is reached by the active player and false if it is not reached
 func (pm *PlayerManager) HasActivePlayerReachedWinningScore() bool {
-	return pm.GetScoreOfActivePlayer() >= configuration.GetQuizzitConfig().Game.ScoredPointsToWin
+	winningScore := configuration.GetQuizzitConfig().Game.ScoredPointsToWin
+	playerScore := pm.GetScoreOfActivePlayer()
+	if playerScore < winningScore {
+		log.Debugf("Active player's score '%d' is lower than the winning score '%d'", playerScore, winningScore)
+		return false
+	}
+	log.Infof("Active player with score '%d' has reached the winning score '%d'", playerScore, winningScore)
+	return true
 }
