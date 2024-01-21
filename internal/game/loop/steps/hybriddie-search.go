@@ -6,6 +6,7 @@ import (
 	log "github.com/sirupsen/logrus"
 	"gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/configuration"
 	gameloop "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/game/loop"
+	gameloopprinter "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/game/loop/printer"
 	"gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/game/managers"
 	dto "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/generated-sources/dto"
 	messagetypes "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/message-types"
@@ -29,7 +30,9 @@ func (s *HybridDieSearchStep) AddTransitionToHybridDieConnected(hdConnectedStep 
 	var action gameloop.ActionHandler = func(managers managers.GameObjectManagers, msg dto.WebsocketMessagePublish) (nextstep gameloop.GameStepIf, success bool) {
 		return hdConnectedStep, true
 	}
-	s.base.AddTransition(string(messagetypes.Game_Die_HybridDieConnected), action)
+	msgType := messagetypes.Game_Die_HybridDieConnected
+	s.base.AddTransition(string(msgType), action)
+	gameloopprinter.Append(s, msgType, hdConnectedStep)
 }
 
 // AddTransitionToHybridDieNotFound adds transition to [HybridDieNotFoundStep]
@@ -37,7 +40,9 @@ func (s *HybridDieSearchStep) AddTransitionToHybridDieNotFound(hdNotFoundStep *H
 	var action gameloop.ActionHandler = func(managers managers.GameObjectManagers, msg dto.WebsocketMessagePublish) (nextstep gameloop.GameStepIf, success bool) {
 		return hdNotFoundStep, true
 	}
-	s.base.AddTransition(string(messagetypes.Game_Die_HybridDieNotFound), action)
+	msgType := messagetypes.Game_Die_HybridDieNotFound
+	s.base.AddTransition(string(msgType), action)
+	gameloopprinter.Append(s, msgType, hdNotFoundStep)
 }
 
 // GetMessageType returns the [MessageTypeSubscribe] sent to frontend when this step is active

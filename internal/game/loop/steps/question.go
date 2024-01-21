@@ -3,6 +3,7 @@ package steps
 import (
 	log "github.com/sirupsen/logrus"
 	gameloop "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/game/loop"
+	gameloopprinter "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/game/loop/printer"
 	"gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/game/managers"
 	dto "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/generated-sources/dto"
 	helpers "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/helper-functions"
@@ -38,7 +39,9 @@ func (s *QuestionStep) AddSelectAnswerTransition() {
 		s.selectAnswerById(managers, selectedAnswer.AnswerId)
 		return s, true
 	}
-	s.base.AddTransition(string(messagetypes.Player_Question_SelectAnswer), action)
+	msgType := messagetypes.Player_Question_SelectAnswer
+	s.base.AddTransition(string(msgType), action)
+	gameloopprinter.Append(s, msgType, s)
 }
 
 // AddSubmitAnswerTransition adds the transition to the [CorrectnessFeedbackStep]
@@ -57,7 +60,9 @@ func (s *QuestionStep) AddSubmitAnswerTransition(correctnessFeedbackStep *Correc
 		}
 		return correctnessFeedbackStep, true
 	}
-	s.base.AddTransition(string(messagetypes.Player_Question_SubmitAnswer), action)
+	msgType := messagetypes.Player_Question_SubmitAnswer
+	s.base.AddTransition(string(msgType), action)
+	gameloopprinter.Append(s, msgType, correctnessFeedbackStep)
 }
 
 // AddUseJokerTransition adds handling when using a joker
@@ -72,7 +77,9 @@ func (s *QuestionStep) AddUseJokerTransition() {
 		}
 		return s, true
 	}
-	s.base.AddTransition(string(messagetypes.Player_Question_UseJoker), action)
+	msgType := messagetypes.Player_Question_UseJoker
+	s.base.AddTransition(string(msgType), action)
+	gameloopprinter.Append(s, msgType, s)
 }
 
 // selectAnswerById selects the given answer, if it is not disabled

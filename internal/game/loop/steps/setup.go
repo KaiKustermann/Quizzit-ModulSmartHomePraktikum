@@ -3,6 +3,7 @@ package steps
 import (
 	log "github.com/sirupsen/logrus"
 	gameloop "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/game/loop"
+	gameloopprinter "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/game/loop/printer"
 	"gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/game/managers"
 	dto "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/generated-sources/dto"
 	messagetypes "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/message-types"
@@ -37,7 +38,10 @@ func (s *SetupStep) AddTransitions(gsNewPlayer *NewPlayerStep, gsSearchHybridDie
 		}
 		return gsSearchHybridDie, true
 	}
-	s.base.AddTransition(string(messagetypes.Player_Setup_SubmitPlayerCount), action)
+	msgType := messagetypes.Player_Setup_SubmitPlayerCount
+	s.base.AddTransition(string(msgType), action)
+	gameloopprinter.Append(s, msgType, gsNewPlayer)
+	gameloopprinter.Append(s, msgType, gsSearchHybridDie)
 }
 
 // GetMessageType returns the [MessageTypeSubscribe] sent to frontend when this step is active

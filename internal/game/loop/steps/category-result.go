@@ -2,6 +2,7 @@ package steps
 
 import (
 	gameloop "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/game/loop"
+	gameloopprinter "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/game/loop/printer"
 	"gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/game/managers"
 	dto "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/generated-sources/dto"
 	messagetypes "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/message-types"
@@ -28,7 +29,9 @@ func (s *CategoryResultStep) AddTransitionToQuestion(gsQuestion *QuestionStep) {
 		managers.QuestionManager.ResetActiveQuestion()
 		return gsQuestion, true
 	}
-	s.base.AddTransition(string(messagetypes.Player_Generic_Confirm), action)
+	msgType := messagetypes.Player_Generic_Confirm
+	s.base.AddTransition(string(msgType), action)
+	gameloopprinter.Append(s, msgType, gsQuestion)
 }
 
 // GetMessageType returns the [MessageTypeSubscribe] sent to frontend when this step is active

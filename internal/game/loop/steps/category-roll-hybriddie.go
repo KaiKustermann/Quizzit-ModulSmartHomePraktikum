@@ -4,6 +4,7 @@ import (
 	"fmt"
 
 	gameloop "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/game/loop"
+	gameloopprinter "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/game/loop/printer"
 	"gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/game/managers"
 	dto "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/generated-sources/dto"
 	hybriddie "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/hybrid-die"
@@ -29,7 +30,9 @@ func (s *CategoryRollHybridDieStep) AddTransitionToCategoryResult(gsCategoryResu
 		managers.QuestionManager.SetActiveCategory(category)
 		return gsCategoryResult, true
 	}
-	s.base.AddTransition(string(hybriddie.Hybrid_die_roll_result), action)
+	msgType := hybriddie.Hybrid_die_roll_result
+	s.base.AddTransition(string(msgType), action)
+	gameloopprinter.Append(s, msgType, gsCategoryResult)
 }
 
 // AddTransitionToDigitalRoll adds transition to [CategoryDigitalRollStep]
@@ -39,7 +42,9 @@ func (s *CategoryRollHybridDieStep) AddTransitionToDigitalRoll(gsCategoryDigital
 	var action gameloop.ActionHandler = func(managers managers.GameObjectManagers, msg dto.WebsocketMessagePublish) (nextstep gameloop.GameStepIf, success bool) {
 		return gsCategoryDigitalRoll, true
 	}
-	s.base.AddTransition(string(messagetypes.Game_Die_HybridDieLost), action)
+	msgType := messagetypes.Game_Die_HybridDieLost
+	s.base.AddTransition(string(msgType), action)
+	gameloopprinter.Append(s, msgType, gsCategoryDigitalRoll)
 }
 
 // GetMessageType returns the [MessageTypeSubscribe] sent to frontend when this step is active

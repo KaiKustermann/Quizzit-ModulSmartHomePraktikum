@@ -3,6 +3,7 @@ package steps
 import (
 	log "github.com/sirupsen/logrus"
 	gameloop "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/game/loop"
+	gameloopprinter "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/game/loop/printer"
 	"gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/game/managers"
 	dto "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/generated-sources/dto"
 	messagetypes "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/message-types"
@@ -30,7 +31,10 @@ func (s *SpecificPlayerStep) AddTransitionToDieRoll(gsDigitalCategoryRoll *Categ
 		log.Debug("Hybrid die is not ready, going DIGITAL ")
 		return gsDigitalCategoryRoll, true
 	}
-	s.base.AddTransition(string(messagetypes.Player_Generic_Confirm), action)
+	msgType := messagetypes.Player_Generic_Confirm
+	s.base.AddTransition(string(msgType), action)
+	gameloopprinter.Append(s, msgType, gsDigitalCategoryRoll)
+	gameloopprinter.Append(s, msgType, gsHybridDieCategoryRoll)
 }
 
 // GetMessageType returns the [MessageTypeSubscribe] sent to frontend when this step is active

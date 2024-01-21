@@ -2,6 +2,7 @@ package steps
 
 import (
 	gameloop "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/game/loop"
+	gameloopprinter "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/game/loop/printer"
 	"gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/game/managers"
 	dto "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/generated-sources/dto"
 	messagetypes "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/message-types"
@@ -25,7 +26,9 @@ func (s *CategoryRollDigitalStep) AddTransitionToCategoryResult(gsCategoryResult
 		managers.QuestionManager.SetRandomCategory()
 		return gsCategoryResult, true
 	}
-	s.base.AddTransition(string(messagetypes.Player_Die_DigitalCategoryRollRequest), action)
+	msgType := messagetypes.Player_Die_DigitalCategoryRollRequest
+	s.base.AddTransition(string(msgType), action)
+	gameloopprinter.Append(s, msgType, gsCategoryResult)
 }
 
 // GetMessageType returns the [MessageTypeSubscribe] sent to frontend when this step is active
