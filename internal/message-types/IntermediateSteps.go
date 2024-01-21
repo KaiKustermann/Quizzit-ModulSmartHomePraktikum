@@ -1,8 +1,9 @@
 package messagetypes
 
-type IntermediateSteps string
+type DelegateSteps string
 
 const (
-	Game_PlayerTurn_End   IntermediateSteps = "game/playerturn/End"
-	Game_PlayerTurn_Start IntermediateSteps = "game/playerturn/Start"
+	Delegate_PlayerTurn_End   DelegateSteps = "delegate/playerturn/End"
+	Delegate_PlayerTurn_Start DelegateSteps = "delegate/playerturn/Start"
+	Delegate_Roll_Category    DelegateSteps = "delegate/roll/Category"
 )

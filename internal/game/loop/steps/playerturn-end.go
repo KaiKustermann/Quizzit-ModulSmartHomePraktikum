@@ -27,7 +27,7 @@ func (s *PlayerTurnEndDelegate) AddTransitions(playerWonStep *PlayerWonStep, rem
 }
 
 func (s *PlayerTurnEndDelegate) GetMessageType() string {
-	return string(messagetypes.Game_PlayerTurn_End)
+	return string(messagetypes.Delegate_PlayerTurn_End)
 }
 
 func (s *PlayerTurnEndDelegate) DelegateStep(managers *managers.GameObjectManagers) (nextstep gameloop.GameStepIf, switchStep bool) {
