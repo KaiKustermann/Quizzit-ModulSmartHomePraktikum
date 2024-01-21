@@ -93,7 +93,7 @@ func (s *QuestionStep) selectAnswerById(managers *managers.GameObjectManagers, a
 		log.Warnf("Answer with id '%s' is disabled, not selecting! ", answerId)
 		return false
 	}
-	managers.QuestionManager.GetActiveQuestion().SetSelectedAnswerByAnswerId(answerId)
+	managers.QuestionManager.GetActiveQuestion().SelectAnswerById(answerId)
 	log.Debugf("Selected answer with id '%s'", answerId)
 	return true
 }

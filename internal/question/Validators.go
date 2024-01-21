@@ -97,7 +97,7 @@ func (question Question) validateCategory() (ok bool, error ValidationError) {
 			categorySupported = true
 		}
 	}
-	if categorySupported == false {
+	if !categorySupported {
 		ok = false
 		error.Problem = fmt.Sprintf("The category is defined as %s, but should be one of the following: %v", question.Category, supportedCategories)
 		error.Question = question
