@@ -9,6 +9,7 @@ import (
 	"gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/game/managers"
 	player "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/game/managers/player"
 	questionmanager "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/game/managers/question"
+	settingsmanager "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/game/managers/settings"
 	dto "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/generated-sources/dto"
 	hybriddie "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/hybrid-die"
 	messagetypes "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/message-types"
@@ -26,8 +27,9 @@ type Game struct {
 
 // NewGame constructs and injects a new Game instance
 func NewGame() (game Game) {
+	settingsManager := settingsmanager.NewSettingsManager()
 	game.managers = &managers.GameObjectManagers{
-		PlayerManager:    player.NewPlayerManager(),
+		PlayerManager:    player.NewPlayerManager(settingsManager),
 		QuestionManager:  questionmanager.NewQuestionManager(),
 		HybridDieManager: hybriddie.NewHybridDieManager(),
 	}
@@ -89,8 +91,15 @@ func (game *Game) TransitionToGameStep(next gameloop.GameStepIf) {
 	nextState := dto.WebsocketMessageSubscribe{}
 	nextState.Body = next.GetMessageBody(game.managers)
 	nextState.MessageType = next.GetMessageType()
+
+	cLog.Trace("Adding PlayerState")
 	playerState := game.managers.PlayerManager.GetPlayerState()
 	nextState.PlayerState = &playerState
+
+	cLog.Trace("Adding Settings")
+	settings := game.managers.SettingsManager.GetGameSettings()
+	nextState.Settings = &settings
+
 	game.currentStep = next
 	game.stateMessage = nextState
 	cLog.Debugf("Next gameState: %v ", nextState)

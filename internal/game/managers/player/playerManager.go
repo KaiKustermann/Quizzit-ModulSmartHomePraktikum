@@ -2,22 +2,25 @@ package playermanager
 
 import (
 	log "github.com/sirupsen/logrus"
-	configuration "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/configuration"
+	settingsmanager "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/game/managers/settings"
 	dto "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/generated-sources/dto"
 )
 
 // PlayerManager statefully handles the players' scores, turns and turn order
 type PlayerManager struct {
-	playerCount    int
-	activePlayerId int
-	playerScores   []int
-	playerTurns    []int
+	playerCount     int
+	activePlayerId  int
+	playerScores    []int
+	playerTurns     []int
+	settingsManager *settingsmanager.SettingsManager
 }
 
 // NewPlayerManager constructs a new PlayerManager
-func NewPlayerManager() *PlayerManager {
+func NewPlayerManager(settingsManager *settingsmanager.SettingsManager) *PlayerManager {
 	log.Infof("Constructing new PlayerManager")
-	pm := &PlayerManager{}
+	pm := &PlayerManager{
+		settingsManager: settingsManager,
+	}
 	pm.activePlayerId = -1
 	pm.playerCount = 2
 	pm.playerScores = make([]int, pm.playerCount)
@@ -107,7 +110,7 @@ func (pm *PlayerManager) GetScoreOfActivePlayer() int {
 //
 // returns FALSE in all other cases.
 func (pm *PlayerManager) HasActivePlayerReachedWinningScore() bool {
-	winningScore := configuration.GetQuizzitConfig().Game.ScoredPointsToWin
+	winningScore := pm.settingsManager.GetScoredPointsToWin()
 	playerScore := pm.GetScoreOfActivePlayer()
 	if playerScore < winningScore {
 		log.Debugf("Active player's score '%d' is lower than the winning score '%d'", playerScore, winningScore)
