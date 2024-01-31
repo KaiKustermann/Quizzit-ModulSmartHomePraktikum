@@ -9,7 +9,7 @@ tags:
 info:
   title: Quizzit
   description: A quiz game for nursery homes
-  version: 0.13.0
+  version: 0.14.0
   license:
     name: not licensed
   contact:
@@ -111,6 +111,8 @@ components:
             - $ref: "#/components/schemas/PlayerWonPrompt"
         playerState:
           $ref: "#/components/schemas/PlayerState"
+        settings:
+          $ref: "#/components/schemas/GameSettings"
       additionalProperties: false
       required:
         - correlationId
@@ -333,3 +335,18 @@ components:
         - targetPlayerId
     # *************************************************************************
     # **** END GAME SCHEMAS ***************************************************
+    # **** START OPTION SCHEMAS ***********************************************
+    # *************************************************************************
+    GameSettings:
+      title: Game Settings
+      description: Contains the game's settings.
+      type: object
+      properties:
+        scoredPointsToWin:
+          type: integer
+      additionalProperties: false
+      required:
+        - scoredPointsToWin
+    # *************************************************************************
+    # **** END OPTION SCHEMAS *************************************************
+    # *************************************************************************
