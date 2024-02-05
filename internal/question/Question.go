@@ -47,6 +47,20 @@ func (q Question) GetCorrectnessFeedback() (fb dto.CorrectnessFeedback) {
 	return
 }
 
+// IsSelectedAnswerCorrect returns whether the selected answer is correct
+func (q Question) IsSelectedAnswerCorrect() bool {
+	for _, a := range q.Answers {
+		if a.IsCorrect {
+			if a.IsSelected {
+				return true
+			} else {
+				return false
+			}
+		}
+	}
+	return false
+}
+
 // IsJokerAlreadyUsed checks whether a Joker has already been used on this question
 //
 // Returns TRUE if any answer is already disabled.
