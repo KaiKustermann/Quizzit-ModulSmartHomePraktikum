@@ -3,10 +3,10 @@
 # log:
 #   level: info
 #   file-level: info
-# hybrid-die:
+hybrid-die:
 #   disabled: yes
-#   search:
-#     timeout: 10s
-# game:
-#   scored-points-to-win: 3
+  search:
+    timeout: 5s
+game:
+  scored-points-to-win: 3
 #   questions: "./questions.json"
