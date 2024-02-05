@@ -52,6 +52,11 @@ func (qm *QuestionManager) GetCorrectnessFeedback() dto.CorrectnessFeedback {
 	return qm.activeQuestion.GetCorrectnessFeedback()
 }
 
+// IsSelectedAnswerCorrect exposes IsSelectedAnswerCorrect of the active [Question]
+func (qm *QuestionManager) IsSelectedAnswerCorrect() bool {
+	return qm.activeQuestion.IsSelectedAnswerCorrect()
+}
+
 // GetActiveCategory returns the active category
 func (qm *QuestionManager) GetActiveCategory() string {
 	return qm.activeCategory

@@ -18,7 +18,7 @@ type PlayerTurnStartDelegate struct {
 	rollCategory         *CategoryRollDelegate
 }
 
-// AddTransitions adds stransition to [NewPlayerStep], [SpecificPlayerStep], [CategoryRollDelegate]
+// AddTransitions adds transition to [NewPlayerStep], [SpecificPlayerStep], [CategoryRollDelegate]
 func (s *PlayerTurnStartDelegate) AddTransitions(passToNewPlayer *NewPlayerStep, passToSpecificPlayer *SpecificPlayerStep, rollCategory *CategoryRollDelegate) {
 	s.passToNewPlayer = passToNewPlayer
 	s.passToSpecificPlayer = passToSpecificPlayer

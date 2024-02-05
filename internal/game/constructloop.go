@@ -27,7 +27,9 @@ func (game *Game) constructLoop() *Game {
 	gsHybridDieCategoryRoll := &steps.CategoryRollHybridDieStep{}
 	gsCategoryResult := &steps.CategoryResultStep{}
 	gsQuestion := &steps.QuestionStep{}
-	gsCorrectnessFeedback := &steps.CorrectnessFeedbackStep{}
+	gsCorrectnessFeedback := &steps.CorrectnessFeedbackDelegate{}
+	gsAnswerCorrect := &steps.AnswerCorrectStep{}
+	gsAnswerWrong := &steps.AnswerWrongStep{}
 	gsPlayerTurnEnd := &steps.PlayerTurnEndDelegate{}
 	gsPlayerWon := &steps.PlayerWonStep{}
 
@@ -51,7 +53,9 @@ func (game *Game) constructLoop() *Game {
 	gsQuestion.AddSubmitAnswerTransition(gsCorrectnessFeedback)
 	gsQuestion.AddUseJokerTransition()
 	gsQuestion.AddSelectAnswerTransition()
-	gsCorrectnessFeedback.AddPlayerTurnEnd(gsPlayerTurnEnd)
+	gsCorrectnessFeedback.AddTransitions(gsAnswerCorrect, gsAnswerWrong)
+	gsAnswerCorrect.AddPlayerTurnEnd(gsPlayerTurnEnd)
+	gsAnswerWrong.AddPlayerTurnEnd(gsPlayerTurnEnd)
 	gsPlayerTurnEnd.AddTransitions(gsPlayerWon, gsRemindPlayerColor, gsPlayerTurnStart)
 	gsRemindPlayerColor.AddTransitionToNextPlayer(gsPlayerTurnStart)
 	gsPlayerWon.AddWelcomeTransition(gsWelcome)

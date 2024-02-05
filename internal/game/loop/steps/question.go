@@ -46,7 +46,7 @@ func (s *QuestionStep) AddSelectAnswerTransition() {
 //
 // The transition parses the message input and selects the given answer by its ID.
 // It will then move to [CorrectnessFeedbackStep] as next step.
-func (s *QuestionStep) AddSubmitAnswerTransition(correctnessFeedbackStep *CorrectnessFeedbackStep) {
+func (s *QuestionStep) AddSubmitAnswerTransition(correctnessFeedbackStep *CorrectnessFeedbackDelegate) {
 	var action ActionHandler = func(managers *managers.GameObjectManagers, msg dto.WebsocketMessagePublish) (nextstep gameloop.GameStepIf, success bool) {
 		submittedAnswer := dto.SubmitAnswer{}
 		log.Trace("Transforming message body to struct")
