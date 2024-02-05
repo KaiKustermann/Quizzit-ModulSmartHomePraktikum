@@ -55,24 +55,6 @@ func MarshalToLowerCamelCaseJSON(data any) ([]byte, error) {
 	return converted, err
 }
 
-func QuestionToWebsocketMessageSubscribe(question dto.Question, playerState dto.PlayerState) dto.WebsocketMessageSubscribe {
-	msg := dto.WebsocketMessageSubscribe{
-		MessageType: string(messagetypes.Game_Question_Question),
-		Body:        question,
-		PlayerState: &playerState,
-	}
-	return msg
-}
-
-func CorrectnessFeedbackToWebsocketMessageSubscribe(correctnessFeedback dto.CorrectnessFeedback, playerState dto.PlayerState) dto.WebsocketMessageSubscribe {
-	msg := dto.WebsocketMessageSubscribe{
-		MessageType: string(messagetypes.Game_Question_CorrectnessFeedback),
-		Body:        correctnessFeedback,
-		PlayerState: &playerState,
-	}
-	return msg
-}
-
 func ErrorFeedbackToWebsocketMessageSubscribe(iMsg dto.ErrorFeedback) dto.WebsocketMessageSubscribe {
 	msg := dto.WebsocketMessageSubscribe{
 		MessageType:   string(messagetypes.Game_Generic_ErrorFeedback),

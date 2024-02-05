@@ -31,5 +31,5 @@ func (s *AnswerBaseStep) AddPlayerTurnEnd(playerTurnEnd *PlayerTurnEndDelegate) 
 
 // GetMessageType returns the [MessageTypeSubscribe] sent to frontend when this step is active
 func (s *AnswerBaseStep) GetMessageType() string {
-	return string(messagetypes.Game_Question_CorrectnessFeedback)
+	return string(messagetypes.Delegate_Question_CorrectnessFeedback)
 }
