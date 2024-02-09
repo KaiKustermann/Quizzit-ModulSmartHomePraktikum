@@ -5,9 +5,9 @@ import (
 	"time"
 
 	log "github.com/sirupsen/logrus"
-	configfile "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/configuration/file"
 	configflag "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/configuration/flag"
 	model "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/configuration/model"
+	configpatcher "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/configuration/patcher"
 )
 
 // configInstance is the local instance of our [QuizzitConfig]
@@ -23,7 +23,7 @@ func GetQuizzitConfig() model.QuizzitConfig {
 func ReloadConfig() {
 	flags := configflag.GetAppFlags()
 	conf := createDefaultConfig()
-	configfile.PatchWithYAMLFile(&conf, flags.ConfigFile)
+	configpatcher.PatchWithYAMLFile(&conf, flags.ConfigFile)
 	configflag.PatchwithFlags(&conf)
 	log.Infof("New config loaded: %s", conf.String())
 	configInstance = conf

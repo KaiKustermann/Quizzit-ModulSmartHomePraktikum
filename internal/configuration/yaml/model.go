@@ -1,5 +1,5 @@
-// Package configfile provides the means to read a YAML config file and patch its contents to the config model
-package configfile
+// Package configyaml provides the YAML config definitions
+package configyaml
 
 // HttpYAML is a container for http related options
 type HttpYAML struct {
@@ -27,12 +27,4 @@ type HybridDieSearchYAML struct {
 type GameYAML struct {
 	ScoredPointsToWin *int    `yaml:"scored-points-to-win"`
 	QuestionsPath     *string `yaml:"questions"`
-}
-
-// ConfigYAML is the root description of the config file
-type QuizzitYAML struct {
-	Http      *HttpYAML      `yaml:"http"`
-	Log       *LogYAML       `yaml:"log"`
-	HybridDie *HybridDieYAML `yaml:"hybrid-die"`
-	Game      *GameYAML      `yaml:"game"`
 }
