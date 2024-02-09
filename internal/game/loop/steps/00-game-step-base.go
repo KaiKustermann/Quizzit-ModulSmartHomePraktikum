@@ -50,7 +50,7 @@ func (gs *BaseGameStep) HandleMessage(managers *managers.GameObjectManagers, env
 			return transition.handler(managers, envelope)
 		}
 	}
-	err = fmt.Errorf("MessageType not appropriate for GameStep")
+	err = fmt.Errorf("messageType not appropriate for GameStep, \nSupported MessageTypes: [%v]", gs.GetPossibleActions())
 	return
 }
 

@@ -1,8 +1,6 @@
 package game
 
 import (
-	"fmt"
-
 	"github.com/gorilla/websocket"
 	log "github.com/sirupsen/logrus"
 	dto "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/generated-sources/dto"
@@ -21,9 +19,7 @@ func (game *Game) handleMessage(conn *websocket.Conn, envelope dto.WebsocketMess
 	contextLogger.Trace("Attempting to handle message ")
 	nextStep, err := game.currentStep.HandleMessage(game.managers, envelope)
 	if err != nil {
-		return fmt.Errorf(
-			"%v,\nAdditional Info:\n - Supported MessageTypes: %v",
-			err, game.currentStep.GetPossibleActions())
+		return err
 	}
 	err = game.TransitionToGameStep(nextStep)
 	return
