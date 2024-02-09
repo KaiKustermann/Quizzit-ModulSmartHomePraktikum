@@ -45,23 +45,36 @@ update_typescript_packages:
       if: $CI_PIPELINE_SOURCE != "merge_request_event"
       allow_failure: true
 
-generate_golang_models:
+generate_asyncapi_golang_models:
   stage: api
   image: docker.io/hdmstuttgartquizzit/asyncapi-generator:0.1.0
   script:
-    - echo "Generating GOLANG Source Code from API specifications"
-    - npm run generate:golang
+    - echo "Generating GOLANG Source Code from ASYNC-API specifications"
+    - npm run generate:golang:asyncapi
   artifacts:
     when: on_success
     expire_in: "1 hour"
     paths:
-      - "internal/generated-sources"
+      - "internal/generated-sources/asyncapi"
+
+generate_swagger_golang_models:
+  stage: api
+  image: swaggerapi/swagger-codegen-cli-v3:3.0.46
+  script:
+    - echo "Generating GOLANG Source Code from SWAGGER specifications"
+    - java -jar /opt/swagger-codegen-cli/swagger-codegen-cli.jar generate -i ./api/swagger.yaml -l go -o ./internal/generated-sources/swagger
+  artifacts:
+    when: on_success
+    expire_in: "1 hour"
+    paths:
+      - "internal/generated-sources/swagger"
 
 # https://go.dev/doc/install/source#environment
 build_go:
   stage: build-and-test
   dependencies:
-    - "generate_golang_models"
+    - "generate_asyncapi_golang_models"
+    - "generate_swagger_golang_models"
   image: docker.io/golang:1.20.3
   script:
     - echo "Setting up ..."
