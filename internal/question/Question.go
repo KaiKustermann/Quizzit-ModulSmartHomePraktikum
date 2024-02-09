@@ -5,7 +5,7 @@ import (
 	"math/rand"
 
 	log "github.com/sirupsen/logrus"
-	dto "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/generated-sources/dto"
+	"gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/generated-sources/asyncapi"
 )
 
 // Question represents a question object internally, for use in the backend
@@ -17,18 +17,18 @@ type Question struct {
 	Used     bool
 }
 
-// ConvertToDTO converts this object to a dto.Question
-func (q Question) ConvertToDTO() *dto.Question {
+// ConvertToDTO converts this object to a asyncapi.Question
+func (q Question) ConvertToDTO() *asyncapi.Question {
 	var answers []interface{}
 	for _, a := range q.Answers {
 		answers = append(answers, a.ConvertToDTO())
 	}
-	return &dto.Question{Id: q.Id, Query: q.Query, Answers: answers, Category: string(q.Category)}
+	return &asyncapi.Question{Id: q.Id, Query: q.Query, Answers: answers, Category: string(q.Category)}
 }
 
 // GetCorrectnessFeedback returns feedback for the currently selected answer
-func (q Question) GetCorrectnessFeedback() (fb dto.CorrectnessFeedback) {
-	fb = dto.CorrectnessFeedback{
+func (q Question) GetCorrectnessFeedback() (fb asyncapi.CorrectnessFeedback) {
+	fb = asyncapi.CorrectnessFeedback{
 		Question:                q.ConvertToDTO(),
 		SelectedAnswerIsCorrect: false,
 	}

@@ -4,7 +4,7 @@ import (
 	gameloop "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/game/loop"
 	gameloopprinter "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/game/loop/printer"
 	"gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/game/managers"
-	dto "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/generated-sources/dto"
+	"gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/generated-sources/asyncapi"
 	messagetypes "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/message-types"
 )
 
@@ -14,14 +14,14 @@ type PlayerWonStep struct {
 }
 
 func (s *PlayerWonStep) GetMessageBody(managers *managers.GameObjectManagers) interface{} {
-	return dto.PlayerWonPrompt{PlayerId: managers.PlayerManager.GetActivePlayerId()}
+	return asyncapi.PlayerWonPrompt{PlayerId: managers.PlayerManager.GetActivePlayerId()}
 }
 
 // AddWelcomeTransition adds the transition to the [WelcomeStep]
 //
 // This transition allows to play another round of Quizzit after someone had won.
 func (s *PlayerWonStep) AddWelcomeTransition(welcomeStep *WelcomeStep) {
-	var action ActionHandler = func(managers *managers.GameObjectManagers, msg dto.WebsocketMessagePublish) (nextstep gameloop.GameStepIf, err error) {
+	var action ActionHandler = func(managers *managers.GameObjectManagers, msg asyncapi.WebsocketMessagePublish) (nextstep gameloop.GameStepIf, err error) {
 		return welcomeStep, nil
 	}
 	msgType := messagetypes.Player_Generic_Confirm

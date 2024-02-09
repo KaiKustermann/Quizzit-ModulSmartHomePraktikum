@@ -7,7 +7,7 @@ import (
 
 	"github.com/gorilla/websocket"
 	log "github.com/sirupsen/logrus"
-	dto "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/generated-sources/dto"
+	"gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/generated-sources/asyncapi"
 	helpers "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/helper-functions"
 )
 
@@ -50,7 +50,7 @@ func RemoveClient(conn *websocket.Conn) {
 }
 
 // Broadcasts a message to all connected clients
-func BroadCast(msg dto.WebsocketMessageSubscribe) error {
+func BroadCast(msg asyncapi.WebsocketMessageSubscribe) error {
 	for i := 0; i < len(clients); i++ {
 		err := helpers.WriteWebsocketMessage(clients[i], msg)
 		if err != nil {
@@ -99,7 +99,7 @@ func onClose(conn *websocket.Conn) {
 }
 
 // Listens for incoming Messages on the Websocket
-// Expects messages to be of type dto.WebsocketMessagePublish
+// Expects messages to be of type asyncapi.WebsocketMessagePublish
 func listen(conn *websocket.Conn) {
 	defer onClose(conn)
 	for {
@@ -126,7 +126,7 @@ func listen(conn *websocket.Conn) {
 // Find the correct handler for the envelope
 // Expects messageType to be SET
 // Return 'message was handled'
-func routeByMessageType(conn *websocket.Conn, envelope dto.WebsocketMessagePublish) (err error) {
+func routeByMessageType(conn *websocket.Conn, envelope asyncapi.WebsocketMessagePublish) (err error) {
 	cLog := log.WithFields(log.Fields{
 		// "body":          envelope.Body,
 		"correlationId": envelope.CorrelationId,
@@ -143,9 +143,9 @@ func routeByMessageType(conn *websocket.Conn, envelope dto.WebsocketMessagePubli
 	return
 }
 
-func logErrorAndWriteFeedback(conn *websocket.Conn, err error, envelope dto.WebsocketMessagePublish) {
+func logErrorAndWriteFeedback(conn *websocket.Conn, err error, envelope asyncapi.WebsocketMessagePublish) {
 	log.Warnf("Could not handle message, Reason: %s", err.Error())
-	helpers.WriteWebsocketMessage(conn, helpers.ErrorFeedbackToWebsocketMessageSubscribe(dto.ErrorFeedback{
+	helpers.WriteWebsocketMessage(conn, helpers.ErrorFeedbackToWebsocketMessageSubscribe(asyncapi.ErrorFeedback{
 		ReceivedMessage: &envelope,
 		ErrorMessage:    err.Error(),
 	}))

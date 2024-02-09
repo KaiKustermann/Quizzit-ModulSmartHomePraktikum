@@ -5,16 +5,27 @@
   "scripts": {
     "tsc": "tsc",
     "clear:typescript": "rm -rf ./api/typescript/src",
-    "generate:typescript": "asyncapi generate models typescript ./api/websocket-asyncapi.yaml -o ./api/typescript/src --tsModuleSystem=CJS --tsExportType=named --tsEnumType=enum --tsModelType=interface",
+    "generate:typescript": "npm run generate:typescript:asyncapi && npm run generate:typescript:swagger",
+    "generate:typescript:asyncapi": "asyncapi generate models typescript ./api/websocket-asyncapi.yaml -o ./api/typescript/src --tsModuleSystem=CJS --tsExportType=named --tsEnumType=enum --tsModelType=interface",
+    "generate:typescript:swagger": "asyncapi generate models typescript ./api/websocket-asyncapi.yaml -o ./api/typescript/src --tsModuleSystem=CJS --tsExportType=named --tsEnumType=enum --tsModelType=interface",
     "regenerate:typescript": "npm run clear:typescript && npm run generate:typescript",
     "module:typescript": "tsc api/typescript/src/index.ts -d --lib esnext --outDir api/typescript/dist",
-    "clear:golang": "rm -rf ./internal/generated-sources/dto",
-    "generate:golang": "asyncapi generate models golang ./api/websocket-asyncapi.yaml -o ./internal/generated-sources/dto --packageName=quizzit_dto",
+    "clear:golang": "rm -rf ./internal/generated-sources/asyncapi && rm -rf ./internal/generated-sources/swagger",
+    "generate:golang": "npm run generate:golang:asyncapi && npm run generate:golang:swagger",
+    "generate:golang:asyncapi": "asyncapi generate models golang ./api/websocket-asyncapi.yaml -o ./internal/generated-sources/asyncapi --packageName=asyncapi",
+    "generate:golang:swagger": "cross-os generate:golang:swagger",
     "regenerate:golang": "npm run clear:golang && npm run generate:golang"
+  },
+  "cross-os": {
+    "generate:golang:swagger": {
+      "win32": " docker run --rm -v %CD%:/local swaggerapi/swagger-codegen-cli-v3:3.0.46 generate -i /local/api/swagger.yaml -l go -o /local/internal/generated-sources/swagger",
+      "linux": " docker run --rm -v $PWD:/local swaggerapi/swagger-codegen-cli-v3:3.0.46 generate -i /local/api/swagger.yaml -l go -o /local/internal/generated-sources/swagger"
+    }
   },
   "devDependencies": {
     "@asyncapi/cli": "^0.37.2",
     "@asyncapi/modelina": "^1.3.2",
+    "cross-os": "^1.5.0",
     "typescript": "^5.0.4"
   },
   "author": "",

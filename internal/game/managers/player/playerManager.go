@@ -3,7 +3,7 @@ package playermanager
 import (
 	log "github.com/sirupsen/logrus"
 	settingsmanager "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/game/managers/settings"
-	dto "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/generated-sources/dto"
+	"gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/generated-sources/asyncapi"
 )
 
 // PlayerManager statefully handles the players' scores, turns and turn order
@@ -47,7 +47,7 @@ func (pm *PlayerManager) GetActivePlayerId() int {
 }
 
 // GetPlayerState retruns the current player's state
-func (pm *PlayerManager) GetPlayerState() (state dto.PlayerState) {
+func (pm *PlayerManager) GetPlayerState() (state asyncapi.PlayerState) {
 	state.ActivePlayerId = pm.activePlayerId
 	for i := 0; i < len(pm.playerScores); i++ {
 		state.Scores = append(state.Scores, pm.playerScores[i])
@@ -58,7 +58,7 @@ func (pm *PlayerManager) GetPlayerState() (state dto.PlayerState) {
 // MoveToNextPlayer moves to the next player
 //
 // Returns new [PlayerState] for convenience
-func (pm *PlayerManager) MoveToNextPlayer() (state dto.PlayerState) {
+func (pm *PlayerManager) MoveToNextPlayer() (state asyncapi.PlayerState) {
 	log.Trace("Moving to next player")
 	nextPlayer := pm.activePlayerId + 1
 	if nextPlayer >= pm.playerCount {
@@ -73,7 +73,7 @@ func (pm *PlayerManager) MoveToNextPlayer() (state dto.PlayerState) {
 // IncreaseScoreOfActivePlayer increases the active player's score by one
 //
 // Returns new [PlayerState] for convenience
-func (pm *PlayerManager) IncreaseScoreOfActivePlayer() (state dto.PlayerState) {
+func (pm *PlayerManager) IncreaseScoreOfActivePlayer() (state asyncapi.PlayerState) {
 	nextScore := pm.playerScores[pm.activePlayerId] + 1
 	log.Infof("Increasing score of player '%d' to '%d'", pm.activePlayerId, nextScore)
 	pm.playerScores[pm.activePlayerId] = nextScore
@@ -83,7 +83,7 @@ func (pm *PlayerManager) IncreaseScoreOfActivePlayer() (state dto.PlayerState) {
 // IncreasePlayerTurnOfActivePlayer increases the active player's turn count by one
 //
 // Returns new [PlayerState] for convenience
-func (pm *PlayerManager) IncreasePlayerTurnOfActivePlayer() (state dto.PlayerState) {
+func (pm *PlayerManager) IncreasePlayerTurnOfActivePlayer() (state asyncapi.PlayerState) {
 	nextTurn := pm.playerTurns[pm.activePlayerId] + 1
 	log.Debugf("Increasing turn of player '%d' to '%d'", pm.activePlayerId, nextTurn)
 	pm.playerTurns[pm.activePlayerId] = nextTurn
