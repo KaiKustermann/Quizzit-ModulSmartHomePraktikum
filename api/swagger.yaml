@@ -13,15 +13,41 @@ info:
     name: Unlicensed
   version: 0.1.0
 servers:
-  - url: localhost
+  - url: localhost:8080
     description: Local development
 paths:
   /health:
     get:
-      summary: Alive?
-      description: Health Endpoint
+      tags:
+        - system
+      summary: Health Endpoint
+      description: Is the service up and running?
       responses:
         '200':
           description: is healthy
         '500':
           description: something is off
+  /settings:
+    get:
+      tags:
+        - settings
+      summary: Retrieve Settings
+      description: Get the current settings
+      responses:
+        '200':
+          $ref: '#/components/schemas/Settings'
+
+components:
+  schemas:
+    Game:
+      description: Game Settings
+      type: object
+      properties:
+        pointsToWin:
+          type: integer
+    Settings:
+      description: Quizzit Settings
+      type: object
+      properties:
+        game:
+          $ref: '#/components/schemas/Game'
