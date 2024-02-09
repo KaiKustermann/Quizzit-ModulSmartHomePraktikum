@@ -23,10 +23,10 @@ func (s *CategoryResultStep) GetMessageBody(managers *managers.GameObjectManager
 //
 // The transition moves to the next question and makes sure it is reset to a clean state.
 func (s *CategoryResultStep) AddTransitionToQuestion(gsQuestion *QuestionStep) {
-	var action ActionHandler = func(managers *managers.GameObjectManagers, _ dto.WebsocketMessagePublish) (nextstep gameloop.GameStepIf, success bool) {
+	var action ActionHandler = func(managers *managers.GameObjectManagers, _ dto.WebsocketMessagePublish) (nextstep gameloop.GameStepIf, err error) {
 		managers.QuestionManager.MoveToNextQuestion()
 		managers.QuestionManager.ResetActiveQuestion()
-		return gsQuestion, true
+		return gsQuestion, nil
 	}
 	msgType := messagetypes.Player_Generic_Confirm
 	s.addTransition(string(msgType), action)

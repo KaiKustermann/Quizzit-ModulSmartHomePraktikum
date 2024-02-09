@@ -1,6 +1,7 @@
 package ws
 
 import (
+	"fmt"
 	"net/http"
 	"sync"
 
@@ -62,7 +63,7 @@ func BroadCast(msg dto.WebsocketMessageSubscribe) error {
 }
 
 // Register a handler that gets invoked when the messageType matches
-func RegisterMessageHandler(messageType string, handle func(conn *websocket.Conn, envelope dto.WebsocketMessagePublish, wantsFeedback bool) bool) {
+func RegisterMessageHandler(messageType string, handle RouteHandler) {
 	route := Route{messageType: messageType, handle: handle}
 	routes = append(routes, route)
 }
@@ -103,17 +104,22 @@ func onClose(conn *websocket.Conn) {
 func listen(conn *websocket.Conn) {
 	defer onClose(conn)
 	for {
-		var handled = false
 		_, payload, err := conn.ReadMessage()
 		if err != nil {
 			log.Warn("Could not read Message", err)
 			break
 		}
 		envelope, err := helpers.ParseWebsocketMessage(payload)
-		if err == nil {
-			handled = routeByMessageType(conn, envelope)
+		if err != nil {
+			logErrorAndWriteFeedback(conn, err, envelope)
+			continue
 		}
-		log.Tracef("Message handled? %v", handled)
+		err = routeByMessageType(conn, envelope)
+		if err != nil {
+			logErrorAndWriteFeedback(conn, err, envelope)
+			continue
+		}
+		log.Trace("Message handled")
 	}
 	log.Info("Disconnected listener")
 }
@@ -121,33 +127,27 @@ func listen(conn *websocket.Conn) {
 // Find the correct handler for the envelope
 // Expects messageType to be SET
 // Return 'message was handled'
-func routeByMessageType(conn *websocket.Conn, envelope dto.WebsocketMessagePublish) (handled bool) {
+func routeByMessageType(conn *websocket.Conn, envelope dto.WebsocketMessagePublish) (err error) {
 	cLog := log.WithFields(log.Fields{
 		// "body":          envelope.Body,
 		"correlationId": envelope.CorrelationId,
 		"messageType":   envelope.MessageType,
 	})
 	cLog.Trace("Attempting to route by message type ")
-	handled = false
-	knownMsgType := false
 	for _, v := range routes {
 		if v.messageType == envelope.MessageType {
 			cLog.Trace("Found handler for messageType ")
-			knownMsgType = true
-			handled = v.handle(conn, envelope, true)
-			if handled {
-				cLog.Trace("Message successfully handled ")
-				return
-			}
+			return v.handle(conn, envelope)
 		}
 	}
-	if !knownMsgType {
-		feedback := dto.ErrorFeedback{
-			ReceivedMessage: &envelope,
-			ErrorMessage:    "Sorry, no handler for this messageType ",
-		}
-		cLog.Warn(feedback.ErrorMessage + " ")
-		helpers.WriteWebsocketMessage(conn, helpers.ErrorFeedbackToWebsocketMessageSubscribe(feedback))
-	}
+	err = fmt.Errorf("no handler for messageType %s", envelope.MessageType)
 	return
+}
+
+func logErrorAndWriteFeedback(conn *websocket.Conn, err error, envelope dto.WebsocketMessagePublish) {
+	log.Warnf("Could not handle message, Reason: %s", err.Error())
+	helpers.WriteWebsocketMessage(conn, helpers.ErrorFeedbackToWebsocketMessageSubscribe(dto.ErrorFeedback{
+		ReceivedMessage: &envelope,
+		ErrorMessage:    err.Error(),
+	}))
 }

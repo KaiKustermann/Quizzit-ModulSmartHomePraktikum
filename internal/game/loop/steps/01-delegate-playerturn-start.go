@@ -39,16 +39,16 @@ func (s *PlayerTurnStartDelegate) GetMessageType() string {
 // 1. If the active player is in their first turn, we move to [NewPlayerStep]
 //
 // 2. Else we move to [SpecificPlayerStep]
-func (s *PlayerTurnStartDelegate) DelegateStep(managers *managers.GameObjectManagers) (nextstep gameloop.GameStepIf, switchStep bool) {
+func (s *PlayerTurnStartDelegate) DelegateStep(managers *managers.GameObjectManagers) (nextstep gameloop.GameStepIf, err error) {
 	managers.PlayerManager.MoveToNextPlayer()
 	playerTurn := managers.PlayerManager.GetTurnOfActivePlayer()
 	managers.PlayerManager.IncreasePlayerTurnOfActivePlayer()
 	if managers.PlayerManager.GetPlayerCount() < 2 {
 		log.Debug("Solo play - Skip ahead to rolling category")
-		return s.rollCategory, true
+		return s.rollCategory, nil
 	}
 	if playerTurn == 0 {
-		return s.passToNewPlayer, true
+		return s.passToNewPlayer, nil
 	}
-	return s.passToSpecificPlayer, true
+	return s.passToSpecificPlayer, nil
 }

@@ -1,7 +1,8 @@
 package steps
 
 import (
-	log "github.com/sirupsen/logrus"
+	"fmt"
+
 	"gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/configuration"
 	gameloop "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/game/loop"
 	gameloopprinter "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/game/loop/printer"
@@ -23,20 +24,20 @@ type SetupStep struct {
 //
 // 2. Else moves to [HybridDieSearchStep]
 func (s *SetupStep) AddTransitions(gsPlayerTurnStart *PlayerTurnStartDelegate, gsSearchHybridDie *HybridDieSearchStep) {
-	var action ActionHandler = func(managers *managers.GameObjectManagers, msg dto.WebsocketMessagePublish) (nextstep gameloop.GameStepIf, success bool) {
+	var action ActionHandler = func(managers *managers.GameObjectManagers, msg dto.WebsocketMessagePublish) (nextstep gameloop.GameStepIf, err error) {
 		pCasFloat, ok := msg.Body.(float64)
 		if !ok {
-			log.Warn("Received bad message body for this messageType")
-			return s, false
+			err = fmt.Errorf("message body must be an integer")
+			return nil, err
 		}
 		pC := int(pCasFloat)
 		managers.PlayerManager.SetPlayercount(pC)
 
 		conf := configuration.GetQuizzitConfig()
 		if conf.HybridDie.Disabled || managers.HybridDieManager.IsConnected() {
-			return gsPlayerTurnStart, true
+			return gsPlayerTurnStart, nil
 		}
-		return gsSearchHybridDie, true
+		return gsSearchHybridDie, nil
 	}
 	msgType := messagetypes.Player_Setup_SubmitPlayerCount
 	s.addTransition(string(msgType), action)

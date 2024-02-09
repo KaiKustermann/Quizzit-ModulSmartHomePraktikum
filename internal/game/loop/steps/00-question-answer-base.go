@@ -21,8 +21,8 @@ func (s *AnswerBaseStep) GetMessageBody(managers *managers.GameObjectManagers) i
 
 // AddTransitions adds stransition to [PlayerTurnEndDelegate]
 func (s *AnswerBaseStep) AddPlayerTurnEnd(playerTurnEnd *PlayerTurnEndDelegate) {
-	var action ActionHandler = func(managers *managers.GameObjectManagers, msg dto.WebsocketMessagePublish) (nextstep gameloop.GameStepIf, success bool) {
-		return playerTurnEnd, true
+	var action ActionHandler = func(managers *managers.GameObjectManagers, msg dto.WebsocketMessagePublish) (nextstep gameloop.GameStepIf, err error) {
+		return playerTurnEnd, nil
 	}
 	msgType := messagetypes.Player_Generic_Confirm
 	s.addTransition(string(msgType), action)

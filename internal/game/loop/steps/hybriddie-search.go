@@ -20,8 +20,8 @@ type HybridDieSearchStep struct {
 
 // AddTransitionToHybridDieConnected adds transition to [HybridDieConnectedStep]
 func (s *HybridDieSearchStep) AddTransitionToHybridDieConnected(hdConnectedStep *HybridDieConnectedStep) {
-	var action ActionHandler = func(managers *managers.GameObjectManagers, msg dto.WebsocketMessagePublish) (nextstep gameloop.GameStepIf, success bool) {
-		return hdConnectedStep, true
+	var action ActionHandler = func(managers *managers.GameObjectManagers, msg dto.WebsocketMessagePublish) (nextstep gameloop.GameStepIf, err error) {
+		return hdConnectedStep, nil
 	}
 	msgType := messagetypes.Game_Die_HybridDieConnected
 	s.addTransition(string(msgType), action)
@@ -30,8 +30,8 @@ func (s *HybridDieSearchStep) AddTransitionToHybridDieConnected(hdConnectedStep 
 
 // AddTransitionToHybridDieNotFound adds transition to [HybridDieNotFoundStep]
 func (s *HybridDieSearchStep) AddTransitionToHybridDieNotFound(hdNotFoundStep *HybridDieNotFoundStep) {
-	var action ActionHandler = func(managers *managers.GameObjectManagers, msg dto.WebsocketMessagePublish) (nextstep gameloop.GameStepIf, success bool) {
-		return hdNotFoundStep, true
+	var action ActionHandler = func(managers *managers.GameObjectManagers, msg dto.WebsocketMessagePublish) (nextstep gameloop.GameStepIf, err error) {
+		return hdNotFoundStep, nil
 	}
 	msgType := messagetypes.Game_Die_HybridDieNotFound
 	s.addTransition(string(msgType), action)

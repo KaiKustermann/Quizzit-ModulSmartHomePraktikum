@@ -23,7 +23,7 @@ type GameStepIf interface {
 	// HandleMessage exposes [BaseGameStep] HandleMessage
 	//
 	// See also [ActionHandler]
-	HandleMessage(managers *managers.GameObjectManagers, envelope dto.WebsocketMessagePublish) (nextstep GameStepIf, success bool)
+	HandleMessage(managers *managers.GameObjectManagers, envelope dto.WebsocketMessagePublish) (nextstep GameStepIf, err error)
 
 	// OnEnterStep is called by the gameloop upon entering this step
 	//
@@ -36,6 +36,6 @@ type GameStepIf interface {
 	//
 	// Use this to implement shadow/transition steps for simplicity.
 	//
-	// Returns the desired [GameStepIf] and must set 'switchStep' to TRUE in order to apply the change.
-	DelegateStep(managers *managers.GameObjectManagers) (nextstep GameStepIf, switchStep bool)
+	// Returns the desired [GameStepIf] or an 'err' if any occured.
+	DelegateStep(managers *managers.GameObjectManagers) (nextstep GameStepIf, err error)
 }

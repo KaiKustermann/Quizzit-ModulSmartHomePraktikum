@@ -1,6 +1,7 @@
 package question
 
 import (
+	"fmt"
 	"math/rand"
 
 	log "github.com/sirupsen/logrus"
@@ -61,10 +62,10 @@ func (q Question) IsSelectedAnswerCorrect() bool {
 	return false
 }
 
-// IsJokerAlreadyUsed checks whether a Joker has already been used on this question
+// isJokerAlreadyUsed checks whether a Joker has already been used on this question
 //
 // Returns TRUE if any answer is already disabled.
-func (q Question) IsJokerAlreadyUsed() bool {
+func (q Question) isJokerAlreadyUsed() bool {
 	for _, a := range q.Answers {
 		if a.IsDisabled {
 			return true
@@ -74,8 +75,13 @@ func (q Question) IsJokerAlreadyUsed() bool {
 }
 
 // UseJoker sets two random uncorrect answers to disabled
-func (q Question) UseJoker() {
-	log.Debug("Using Joker on active question ")
+//
+// Returns an error, if the joker was already used.
+func (q Question) UseJoker() error {
+	log.Debug("Attempt to us joker on active question ")
+	if q.isJokerAlreadyUsed() {
+		return fmt.Errorf("joker was already used on this question")
+	}
 
 	// Create a slice with random numbers from 0 to length of the array minus 1
 	numbers := rand.Perm(len(q.Answers))
@@ -92,6 +98,7 @@ func (q Question) UseJoker() {
 			answersDisabled += 1
 		}
 	}
+	return nil
 }
 
 // Sets the field IsDisabled of all answers to false
@@ -105,14 +112,25 @@ func (q Question) ResetDisabledStateOfAllAnswers() {
 //
 // Sets the field IsSelected of the answer with the given Id to true
 // and the field IsSelected of all other answers to false
-func (q Question) SelectAnswerById(selectedAnswerId string) {
+func (q Question) SelectAnswerById(selectedAnswerId string) (err error) {
+	didSelect := false
+	log.Tracef("Attempting to select answer with id '%s'", selectedAnswerId)
 	for idx := range q.Answers {
 		if q.Answers[idx].Id == selectedAnswerId {
-			q.Answers[idx].IsSelected = true
+			if q.Answers[idx].IsDisabled {
+				err = fmt.Errorf("answer with id '%s' is disabled", selectedAnswerId)
+			} else {
+				q.Answers[idx].IsSelected = true
+				didSelect = true
+			}
 		} else {
 			q.Answers[idx].IsSelected = false
 		}
 	}
+	if !didSelect {
+		err = fmt.Errorf("no answer with id '%s'", selectedAnswerId)
+	}
+	return
 }
 
 // ResetSelectedStateOfAllAnswers sets the field IsSelected of all answers to false
@@ -120,19 +138,4 @@ func (q Question) ResetSelectedStateOfAllAnswers() {
 	for idx := range q.Answers {
 		q.Answers[idx].IsSelected = false
 	}
-}
-
-// IsAnswerWithGivenIdDisabled checks if the given answerr is disabled
-//
-// Returns TRUE if the answer with the given Id is disabled OR if the answerId was not found.
-//
-// Returns FALSE if the answer is present, but not disabled.
-func (q Question) IsAnswerWithGivenIdDisabled(answerId string) bool {
-	for idx := range q.Answers {
-		if q.Answers[idx].Id == answerId {
-			return q.Answers[idx].IsDisabled
-		}
-	}
-	log.Warnf("No answer with ID '%s', returning TRUE", answerId)
-	return true
 }

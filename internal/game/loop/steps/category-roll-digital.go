@@ -17,9 +17,9 @@ type CategoryRollDigitalStep struct {
 //
 // The transition sets a random category, before moving to [CategoryResultStep]
 func (s *CategoryRollDigitalStep) AddTransitionToCategoryResult(gsCategoryResult *CategoryResultStep) {
-	var action ActionHandler = func(managers *managers.GameObjectManagers, _ dto.WebsocketMessagePublish) (nextstep gameloop.GameStepIf, success bool) {
+	var action ActionHandler = func(managers *managers.GameObjectManagers, _ dto.WebsocketMessagePublish) (nextstep gameloop.GameStepIf, err error) {
 		managers.QuestionManager.SetRandomCategory()
-		return gsCategoryResult, true
+		return gsCategoryResult, nil
 	}
 	msgType := messagetypes.Player_Die_DigitalCategoryRollRequest
 	s.addTransition(string(msgType), action)
