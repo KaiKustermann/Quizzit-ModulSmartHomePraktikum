@@ -66,6 +66,8 @@ bundle_typescript_package:
   script:
     - echo export * from './asyncapi'; > api/typescript/src/index.ts
     - echo export * from './swagger/models'; >> api/typescript/src/index.ts
+    - echo "TYPESCRIPT - Contents of index.ts:"
+    - cat api/typescript/src/index.ts
     - echo "TYPESCRIPT - Compiling to js and .d.ts files"
     - npm run module:typescript
   artifacts:
