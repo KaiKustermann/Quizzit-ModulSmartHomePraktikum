@@ -76,7 +76,6 @@ bundle_typescript_package:
     paths:
       - "api/typescript/dist"
 
-
 publish_typescript_package:
   stage: publish-api
   dependencies:
@@ -120,7 +119,7 @@ generate_swagger_golang_models:
 # https://go.dev/doc/install/source#environment
 build_go:
   stage: build-and-test
-  dependencies:
+  needs:
     - "generate_asyncapi_golang_models"
     - "generate_swagger_golang_models"
   image: docker.io/golang:1.20.3
@@ -146,7 +145,7 @@ build_go:
 # See https://gitlab.mi.hdm-stuttgart.de/help/user/project/releases/release_fields.md#use-a-generic-package-for-attaching-binaries
 upload_binaries:
   stage: upload
-  dependencies:
+  needs:
     - "build_go"
   image: docker.io/curlimages/curl:8.00.1
   rules:
@@ -164,7 +163,7 @@ upload_binaries:
 # See https://gitlab.mi.hdm-stuttgart.de/help/user/project/releases/release_fields.md#use-a-generic-package-for-attaching-binaries
 release_job:
   stage: release
-  dependencies:
+  needs:
     - "upload_binaries"
   image: registry.gitlab.com/gitlab-org/release-cli:latest
   rules:
