@@ -64,8 +64,8 @@ bundle_typescript_package:
     - "generate_swagger_typescript_models"
   image: docker.io/hdmstuttgartquizzit/asyncapi-generator:0.2.0
   script:
-    - echo "export * from './asyncapi'; > api/typescript/src/index.ts"
-    - echo "export * from './swagger/models'; >> api/typescript/src/index.ts"
+    - echo "export * from './asyncapi';" > api/typescript/src/index.ts
+    - echo "export * from './swagger/models';" >> api/typescript/src/index.ts
     - echo "TYPESCRIPT - Contents of index.ts:"
     - cat api/typescript/src/index.ts
     - echo "TYPESCRIPT - Compiling to js and .d.ts files"
