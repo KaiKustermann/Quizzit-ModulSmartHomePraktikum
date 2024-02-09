@@ -23,8 +23,9 @@ func GetQuizzitConfig() model.QuizzitConfig {
 func ReloadConfig() {
 	flags := configflag.GetAppFlags()
 	conf := createDefaultConfig()
-	configpatcher.PatchWithYAMLFile(&conf, flags.ConfigFile)
+	configpatcher.ApplySystemConfigYAMLPatches(&conf, flags.ConfigFile)
 	configflag.PatchwithFlags(&conf)
+	configpatcher.ApplySystemConfigYAMLPatches(&conf, flags.UserConfigFile)
 	log.Infof("New config loaded: %s", conf.String())
 	configInstance = conf
 }
