@@ -8,7 +8,6 @@ import (
 	"github.com/gorilla/websocket"
 	log "github.com/sirupsen/logrus"
 	dto "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/generated-sources/dto"
-	"gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/health"
 	helpers "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/helper-functions"
 )
 
@@ -79,7 +78,7 @@ func WebsocketEndpoint(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		log.Error(err)
 	}
-	go health.ContinuouslySendHealth(ws)
+	go ContinuouslySendHealth(ws)
 	onConnect(ws)
 	go listen(ws)
 }

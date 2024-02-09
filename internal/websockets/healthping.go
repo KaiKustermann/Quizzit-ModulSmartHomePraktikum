@@ -1,8 +1,6 @@
-package health
+package ws
 
 import (
-	"fmt"
-	"net/http"
 	"time"
 
 	dto "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/generated-sources/dto"
@@ -13,15 +11,6 @@ import (
 
 	"github.com/gorilla/websocket"
 )
-
-// Handle incoming health requests
-func HealthCheckHttp(w http.ResponseWriter, r *http.Request) {
-	if r.Method == http.MethodGet {
-		fmt.Fprintf(w, "System is running...")
-	} else {
-		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
-	}
-}
 
 // Send Health information via Websocket continuously
 func ContinuouslySendHealth(conn *websocket.Conn) {

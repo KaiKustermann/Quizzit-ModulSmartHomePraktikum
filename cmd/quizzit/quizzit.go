@@ -3,14 +3,10 @@
 package main
 
 import (
-	"fmt"
-	"net/http"
-
 	"gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/configuration"
 	game "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/game"
-	"gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/health"
+	quizzithttp "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/http"
 	"gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/logging"
-	ws "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/websockets"
 
 	log "github.com/sirupsen/logrus"
 )
@@ -39,13 +35,5 @@ func main() {
 	gameInstance := game.NewGame()
 	defer gameInstance.Stop()
 
-	log.Debug("Setting up HTTP handlers")
-	http.HandleFunc("/health", health.HealthCheckHttp)
-	http.HandleFunc("/ws", ws.WebsocketEndpoint)
-
-	log.Debug("Creating HTTP server")
-	port := configuration.GetQuizzitConfig().Http.Port
-	address := fmt.Sprintf(":%d", port)
-	log.Warnf("Serving at %s", address)
-	log.Fatal(http.ListenAndServe(address, nil))
+	quizzithttp.RunHttpServer()
 }
