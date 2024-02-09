@@ -1,5 +1,3 @@
-//go:generate npm run regenerate:golang
-
 package quizzithttp
 
 import (

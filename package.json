@@ -13,17 +13,18 @@
     "clear:golang": "rm -rf ./internal/generated-sources/asyncapi && rm -rf ./internal/generated-sources/swagger",
     "generate:golang": "npm run generate:golang:asyncapi && npm run generate:golang:swagger",
     "generate:golang:asyncapi": "asyncapi generate models golang ./api/websocket-asyncapi.yaml -o ./internal/generated-sources/asyncapi --packageName=asyncapi",
-    "generate:golang:swagger": "cross-os generate:golang:swagger",
+    "generate:golang:swagger": "cross-os generate:golang:swagger && npm run tidy:golang:swagger",
+    "tidy:golang:swagger": "rm ./internal/generated-sources/swagger/client.go ./internal/generated-sources/swagger/api_*.go",
     "regenerate:golang": "npm run clear:golang && npm run generate:golang"
   },
   "cross-os": {
     "generate:golang:swagger": {
-      "win32": " docker run --rm -v %CD%:/local swaggerapi/swagger-codegen-cli-v3:3.0.46 generate -i /local/api/swagger.yaml -l go -o /local/internal/generated-sources/swagger",
-      "linux": " docker run --rm -v $PWD:/local swaggerapi/swagger-codegen-cli-v3:3.0.46 generate -i /local/api/swagger.yaml -l go -o /local/internal/generated-sources/swagger"
+      "win32": "docker run --rm -v %CD%:/local swaggerapi/swagger-codegen-cli-v3:3.0.46 generate -i /local/api/swagger.yaml -l go -o /local/internal/generated-sources/swagger",
+      "linux": "docker run --rm -v $PWD:/local swaggerapi/swagger-codegen-cli-v3:3.0.46 generate -i /local/api/swagger.yaml -l go -o /local/internal/generated-sources/swagger"
     },
     "generate:typescript:swagger": {
-      "win32": " docker run --rm -v %CD%:/local swaggerapi/swagger-codegen-cli-v3:3.0.46 generate -i /local/api/swagger.yaml -l typescript-axios -o /local/api/typescript/src/swagger",
-      "linux": " docker run --rm -v $PWD:/local swaggerapi/swagger-codegen-cli-v3:3.0.46 generate -i /local/api/swagger.yaml -l typescript-axios -o /local/api/typescript/src/swagger"
+      "win32": "docker run --rm -v %CD%:/local swaggerapi/swagger-codegen-cli-v3:3.0.46 generate -i /local/api/swagger.yaml -l typescript-axios -o /local/api/typescript/src/swagger",
+      "linux": "docker run --rm -v $PWD:/local swaggerapi/swagger-codegen-cli-v3:3.0.46 generate -i /local/api/swagger.yaml -l typescript-axios -o /local/api/typescript/src/swagger"
     }
   },
   "devDependencies": {
