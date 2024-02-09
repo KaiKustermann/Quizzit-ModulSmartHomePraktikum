@@ -59,7 +59,10 @@ generate_asyncapi_golang_models:
 
 generate_swagger_golang_models:
   stage: api
-  image: swaggerapi/swagger-codegen-cli-v3:3.0.46
+  image: 
+    name: swaggerapi/swagger-codegen-cli-v3:3.0.46
+    entrypoint:
+      - sh
   script:
     - echo "Generating GOLANG Source Code from SWAGGER specifications"
     - java -jar /opt/swagger-codegen-cli/swagger-codegen-cli.jar generate -i ./api/swagger.yaml -l go -o ./internal/generated-sources/swagger
