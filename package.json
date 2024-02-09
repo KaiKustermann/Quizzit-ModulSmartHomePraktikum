@@ -6,8 +6,8 @@
     "tsc": "tsc",
     "clear:typescript": "rm -rf ./api/typescript/src",
     "generate:typescript": "npm run generate:typescript:asyncapi && npm run generate:typescript:swagger",
-    "generate:typescript:asyncapi": "asyncapi generate models typescript ./api/websocket-asyncapi.yaml -o ./api/typescript/src --tsModuleSystem=CJS --tsExportType=named --tsEnumType=enum --tsModelType=interface",
-    "generate:typescript:swagger": "asyncapi generate models typescript ./api/websocket-asyncapi.yaml -o ./api/typescript/src --tsModuleSystem=CJS --tsExportType=named --tsEnumType=enum --tsModelType=interface",
+    "generate:typescript:asyncapi": "asyncapi generate models typescript ./api/websocket-asyncapi.yaml -o ./api/typescript/src/asyncapi --tsModuleSystem=CJS --tsExportType=named --tsEnumType=enum --tsModelType=interface",
+    "generate:typescript:swagger": "cross-os generate:typescript:swagger",
     "regenerate:typescript": "npm run clear:typescript && npm run generate:typescript",
     "module:typescript": "tsc api/typescript/src/index.ts -d --lib esnext --outDir api/typescript/dist",
     "clear:golang": "rm -rf ./internal/generated-sources/asyncapi && rm -rf ./internal/generated-sources/swagger",
@@ -20,6 +20,10 @@
     "generate:golang:swagger": {
       "win32": " docker run --rm -v %CD%:/local swaggerapi/swagger-codegen-cli-v3:3.0.46 generate -i /local/api/swagger.yaml -l go -o /local/internal/generated-sources/swagger",
       "linux": " docker run --rm -v $PWD:/local swaggerapi/swagger-codegen-cli-v3:3.0.46 generate -i /local/api/swagger.yaml -l go -o /local/internal/generated-sources/swagger"
+    },
+    "generate:typescript:swagger": {
+      "win32": " docker run --rm -v %CD%:/local swaggerapi/swagger-codegen-cli-v3:3.0.46 generate -i /local/api/swagger.yaml -l typescript-axios -o /local/api/typescript/src/swagger",
+      "linux": " docker run --rm -v $PWD:/local swaggerapi/swagger-codegen-cli-v3:3.0.46 generate -i /local/api/swagger.yaml -l typescript-axios -o /local/api/typescript/src/swagger"
     }
   },
   "devDependencies": {

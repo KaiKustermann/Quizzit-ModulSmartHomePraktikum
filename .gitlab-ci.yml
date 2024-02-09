@@ -1,6 +1,7 @@
 stages:
   - validate
   - api
+  - publish-api
   - build-and-test
   - upload
   - release
@@ -23,18 +24,47 @@ validate_asyncapi:
   script:
     - asyncapi validate api/websocket-asyncapi.yaml
 
-update_typescript_packages:
+generate_asyncapi_typescript_packages:
   stage: api
   image: docker.io/hdmstuttgartquizzit/asyncapi-generator:0.2.0
   script:
     - asyncapi --version
     - tsc --version
-    - echo "TYPESCRIPT - Generating Source Code from API specifications"
-    - npm run generate:typescript
-    - echo "TYPESCRIPT - Generating index.ts file"
-    - ls api/typescript/src | grep -v "index.ts" | sed "s/.ts//g" | sed "s/^/export * from '.\//" | sed "s/$/';/" > api/typescript/src/index.ts
-    - echo "TYPESCRIPT - Contents of index.ts:"
-    - cat api/typescript/src/index.ts
+    - echo "TYPESCRIPT - Generating Source Code from ASYNC-API specifications"
+    - npm run generate:typescript:asyncapi
+    - echo "TYPESCRIPT - Generating asyncapi/index.ts file"
+    - ls api/typescript/src/asyncapi | grep -v "index.ts" | sed "s/.ts//g" | sed "s/^/export * from '.\//" | sed "s/$/';/" > api/typescript/src/asyncapi/index.ts
+    - echo "TYPESCRIPT - Contents of asyncapi/index.ts:"
+    - cat api/typescript/src/asyncapi/index.ts
+  artifacts:
+    when: on_success
+    expire_in: "1 hour"
+    paths:
+      - "api/typescript/src/asyncapi"
+
+generate_swagger_typescript_models:
+  stage: api
+  image: 
+    name: swaggerapi/swagger-codegen-cli-v3:3.0.46
+    entrypoint: ["/bin/sh", "-c"]
+  script:
+    - echo "Generating TYPESCRIPT Source Code from SWAGGER specifications"
+    - java -jar /opt/swagger-codegen-cli/swagger-codegen-cli.jar generate -i ./api/swagger.yaml -l typescript-axios -o ./internal/generated-sources/swagger
+  artifacts:
+    when: on_success
+    expire_in: "1 hour"
+    paths:
+      - "internal/generated-sources/swagger/models"
+
+publish_typescript_packages:
+  stage: publish-api
+  dependencies:
+    - "generate_asyncapi_typescript_packages"
+    - "generate_swagger_typescript_models"
+  image: docker.io/hdmstuttgartquizzit/asyncapi-generator:0.2.0
+  script:
+    - echo export * from './asyncapi'; > api/typescript/src/index.ts
+    - echo export * from './swagger/models'; >> api/typescript/src/index.ts
     - echo "TYPESCRIPT - Compiling to js and .d.ts files"
     - npm run module:typescript
     - cd api/typescript
