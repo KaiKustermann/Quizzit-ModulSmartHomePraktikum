@@ -1,8 +1,6 @@
 package steps
 
 import (
-	"fmt"
-
 	log "github.com/sirupsen/logrus"
 	gameloop "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/game/loop"
 	gameloopprinter "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/game/loop/printer"
@@ -33,9 +31,9 @@ func (s *QuestionStep) AddSelectAnswerTransition() {
 		log.Trace("Transforming message body to struct")
 		err = helpers.InterfaceToStruct(msg.Body, &selectedAnswer)
 		if err != nil {
-			return s, err
+			return nil, err
 		}
-		err = s.selectAnswerById(managers, selectedAnswer.AnswerId)
+		err = managers.QuestionManager.GetActiveQuestion().SelectAnswerById(selectedAnswer.AnswerId)
 		return s, err
 	}
 	msgType := messagetypes.Player_Question_SelectAnswer
@@ -53,14 +51,10 @@ func (s *QuestionStep) AddSubmitAnswerTransition(correctnessFeedbackStep *Correc
 		log.Trace("Transforming message body to struct")
 		err = helpers.InterfaceToStruct(msg.Body, &submittedAnswer)
 		if err != nil {
-			log.Warn("Received bad message body for this messageType")
-			return s, err
+			return nil, err
 		}
-		err = s.selectAnswerById(managers, submittedAnswer.AnswerId)
-		if err != nil {
-			return s, err
-		}
-		return correctnessFeedbackStep, nil
+		err = managers.QuestionManager.GetActiveQuestion().SelectAnswerById(submittedAnswer.AnswerId)
+		return correctnessFeedbackStep, err
 	}
 	msgType := messagetypes.Player_Question_SubmitAnswer
 	s.addTransition(string(msgType), action)
@@ -73,31 +67,12 @@ func (s *QuestionStep) AddSubmitAnswerTransition(correctnessFeedbackStep *Correc
 // It will in any case return itself ([QuestionStep]) as the next step.
 func (s *QuestionStep) AddUseJokerTransition() {
 	var action ActionHandler = func(managers *managers.GameObjectManagers, msg dto.WebsocketMessagePublish) (nextstep gameloop.GameStepIf, err error) {
-		if managers.QuestionManager.GetActiveQuestion().IsJokerAlreadyUsed() {
-			err = fmt.Errorf("Joker was already used on this question")
-			return
-		} else {
-			managers.QuestionManager.GetActiveQuestion().UseJoker()
-		}
-		return s, nil
+		err = managers.QuestionManager.GetActiveQuestion().UseJoker()
+		return s, err
 	}
 	msgType := messagetypes.Player_Question_UseJoker
 	s.addTransition(string(msgType), action)
 	gameloopprinter.Append(s, msgType, s)
-}
-
-// selectAnswerById selects the given answer, if it is not disabled
-//
-// Returns whether or not the answer was successfully selected
-func (s *QuestionStep) selectAnswerById(managers *managers.GameObjectManagers, answerId string) (err error) {
-	log.Tracef("Attempting to select answer with id '%s'", answerId)
-	if managers.QuestionManager.GetActiveQuestion().IsAnswerWithGivenIdDisabled(answerId) {
-		err = fmt.Errorf("Answer with id '%s' is disabled, not selecting! ", answerId)
-		return
-	}
-	managers.QuestionManager.GetActiveQuestion().SelectAnswerById(answerId)
-	log.Debugf("Selected answer with id '%s'", answerId)
-	return nil
 }
 
 func (s *QuestionStep) GetMessageType() string {

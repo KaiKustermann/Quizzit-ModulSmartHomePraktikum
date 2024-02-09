@@ -21,8 +21,7 @@ func (game *Game) handleMessage(conn *websocket.Conn, envelope dto.WebsocketMess
 	if err != nil {
 		return err
 	}
-	err = game.TransitionToGameStep(nextStep)
-	return
+	return game.TransitionToGameStep(nextStep)
 }
 
 // Send out the latest state to the new client

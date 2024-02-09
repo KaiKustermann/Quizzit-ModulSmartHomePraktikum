@@ -27,8 +27,8 @@ func (s *SetupStep) AddTransitions(gsPlayerTurnStart *PlayerTurnStartDelegate, g
 	var action ActionHandler = func(managers *managers.GameObjectManagers, msg dto.WebsocketMessagePublish) (nextstep gameloop.GameStepIf, err error) {
 		pCasFloat, ok := msg.Body.(float64)
 		if !ok {
-			err = fmt.Errorf("Received bad message body for this messageType")
-			return s, err
+			err = fmt.Errorf("message body must be an integer")
+			return nil, err
 		}
 		pC := int(pCasFloat)
 		managers.PlayerManager.SetPlayercount(pC)
