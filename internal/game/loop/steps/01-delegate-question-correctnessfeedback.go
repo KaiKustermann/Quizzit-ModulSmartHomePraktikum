@@ -31,25 +31,18 @@ func (s *CorrectnessFeedbackDelegate) GetMessageType() string {
 	return string(messagetypes.Delegate_Question_CorrectnessFeedback)
 }
 
-// OnEnterStep checks if the selected answer was correct and increases the score, if so.
-func (s *CorrectnessFeedbackDelegate) OnEnterStep(managers *managers.GameObjectManagers) {
-	if managers.QuestionManager.IsSelectedAnswerCorrect() {
-		managers.PlayerManager.IncreaseScoreOfActivePlayer()
-	}
-}
-
 // CorrectnessFeedbackStep checks whether the given answer was correct.
 // Then it routes between [AnswerCorrectStep], [AnswerWrongStep]
 //
 // 1. If the answer is correct, we move to [AnswerCorrectStep]
 //
 // 2. Else we move to [AnswerWrongStep]
-func (s *CorrectnessFeedbackDelegate) DelegateStep(managers *managers.GameObjectManagers) (nextstep gameloop.GameStepIf, switchStep bool) {
+func (s *CorrectnessFeedbackDelegate) DelegateStep(managers *managers.GameObjectManagers) (nextstep gameloop.GameStepIf, err error) {
 	isCorrect := managers.QuestionManager.IsSelectedAnswerCorrect()
 	if isCorrect {
 		log.Info("The submitted answer was correct!")
-		return s.correct, true
+		return s.correct, nil
 	}
 	log.Info("The submitted answer was wrong!")
-	return s.wrong, true
+	return s.wrong, nil
 }

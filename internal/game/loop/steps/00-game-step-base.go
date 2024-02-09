@@ -1,6 +1,8 @@
 package steps
 
 import (
+	"fmt"
+
 	log "github.com/sirupsen/logrus"
 	gameloop "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/game/loop"
 	"gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/game/managers"
@@ -8,7 +10,7 @@ import (
 )
 
 // ActionHandler defines the functional interface used for and by [HandleMessage]
-type ActionHandler func(*managers.GameObjectManagers, dto.WebsocketMessagePublish) (nextstep gameloop.GameStepIf, success bool)
+type ActionHandler func(*managers.GameObjectManagers, dto.WebsocketMessagePublish) (nextstep gameloop.GameStepIf, err error)
 
 // Transition defines an [ActionHandler] for a given messageType
 type Transition struct {
@@ -41,14 +43,14 @@ func (gs *BaseGameStep) GetPossibleActions() []string {
 // HandleMessage iterates over the known [Transition]s and calls the first matching handler
 //
 // Returns whether or not the message was handled and also the next [GameStateIf] for the [Game]
-func (gs *BaseGameStep) HandleMessage(managers *managers.GameObjectManagers, envelope dto.WebsocketMessagePublish) (nextstep gameloop.GameStepIf, success bool) {
-	success = false
+func (gs *BaseGameStep) HandleMessage(managers *managers.GameObjectManagers, envelope dto.WebsocketMessagePublish) (nextstep gameloop.GameStepIf, err error) {
 	for i := 0; i < len(gs.transitions); i++ {
 		transition := gs.transitions[i]
 		if transition.messageType == envelope.MessageType {
 			return transition.handler(managers, envelope)
 		}
 	}
+	err = fmt.Errorf("MessageType not appropriate for GameStep")
 	return
 }
 
@@ -61,14 +63,15 @@ func (s *BaseGameStep) OnEnterStep(managers *managers.GameObjectManagers) {
 	log.Trace("Gamestep does not override 'OnEnterStep', will do nothing")
 }
 
-// DelegateStep is called right after 'OnEnterStep' and allows to return a different step that should be used instead.
+// DelegateStep is called before 'OnEnterStep' and allows to return a different step that should be used instead.
 //
 // Use this to implement shadow/transition steps for simplicity.
 //
-// Returns the desired [GameStepIf] and must set 'switchStep' to TRUE in order to apply the change.
-func (s *BaseGameStep) DelegateStep(managers *managers.GameObjectManagers) (nextstep gameloop.GameStepIf, switchStep bool) {
+// Returns the desired [GameStepIf] or an error
+//
+// When this returns an error the caller should not continue their routine.
+func (s *BaseGameStep) DelegateStep(managers *managers.GameObjectManagers) (nextstep gameloop.GameStepIf, err error) {
 	log.Trace("Gamestep does not override 'DelegateStep', will return false")
-	switchStep = false
 	return
 }
 

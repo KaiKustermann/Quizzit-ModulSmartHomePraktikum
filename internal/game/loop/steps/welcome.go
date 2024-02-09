@@ -15,8 +15,8 @@ type WelcomeStep struct {
 
 // AddSetupTransition adds the transition to the [SetupStep]
 func (s *WelcomeStep) AddSetupTransition(setupStep *SetupStep) {
-	var action ActionHandler = func(_ *managers.GameObjectManagers, _ dto.WebsocketMessagePublish) (nextstep gameloop.GameStepIf, success bool) {
-		return setupStep, true
+	var action ActionHandler = func(_ *managers.GameObjectManagers, _ dto.WebsocketMessagePublish) (nextstep gameloop.GameStepIf, err error) {
+		return setupStep, nil
 	}
 	msgType := messagetypes.Player_Generic_Confirm
 	s.addTransition(string(msgType), action)

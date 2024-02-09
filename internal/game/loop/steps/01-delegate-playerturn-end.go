@@ -37,13 +37,13 @@ func (s *PlayerTurnEndDelegate) GetMessageType() string {
 // 2. If the active player is in their first turn, we move to [RemindPlayerColorStep]
 //
 // 3. Else we move to [PlayerTurnStartDelegate]
-func (s *PlayerTurnEndDelegate) DelegateStep(managers *managers.GameObjectManagers) (nextstep gameloop.GameStepIf, switchStep bool) {
+func (s *PlayerTurnEndDelegate) DelegateStep(managers *managers.GameObjectManagers) (nextstep gameloop.GameStepIf, err error) {
 	if managers.PlayerManager.HasActivePlayerReachedWinningScore() {
-		return s.playerWonStep, true
+		return s.playerWonStep, nil
 	}
 	activeplayerTurn := managers.PlayerManager.GetTurnOfActivePlayer()
 	if activeplayerTurn == 1 && managers.PlayerManager.GetPlayerCount() > 1 {
-		return s.remindColorStep, true
+		return s.remindColorStep, nil
 	}
-	return s.playerTurnStartDelegate, true
+	return s.playerTurnStartDelegate, nil
 }

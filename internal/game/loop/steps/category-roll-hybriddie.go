@@ -20,10 +20,10 @@ type CategoryRollHybridDieStep struct {
 //
 // The transition parses the message input and sets the category accordingly, before moving to [CategoryResultStep]
 func (s *CategoryRollHybridDieStep) AddTransitionToCategoryResult(gsCategoryResult *CategoryResultStep) {
-	var action ActionHandler = func(managers *managers.GameObjectManagers, msg dto.WebsocketMessagePublish) (nextstep gameloop.GameStepIf, success bool) {
+	var action ActionHandler = func(managers *managers.GameObjectManagers, msg dto.WebsocketMessagePublish) (nextstep gameloop.GameStepIf, err error) {
 		category := fmt.Sprintf("%v", msg.Body)
 		managers.QuestionManager.SetActiveCategory(category)
-		return gsCategoryResult, true
+		return gsCategoryResult, nil
 	}
 	msgType := hybriddie.Hybrid_die_roll_result
 	s.addTransition(string(msgType), action)
@@ -35,8 +35,8 @@ func (s *CategoryRollHybridDieStep) AddTransitionToCategoryResult(gsCategoryResu
 // This transition is used if we lose hybrid-die connection during the roll step.
 // In that case we switch to [CategoryDigitalRollStep] to enable the players to keep going.
 func (s *CategoryRollHybridDieStep) AddTransitionToDigitalRoll(gsCategoryDigitalRoll *CategoryRollDigitalStep) {
-	var action ActionHandler = func(managers *managers.GameObjectManagers, msg dto.WebsocketMessagePublish) (nextstep gameloop.GameStepIf, success bool) {
-		return gsCategoryDigitalRoll, true
+	var action ActionHandler = func(managers *managers.GameObjectManagers, msg dto.WebsocketMessagePublish) (nextstep gameloop.GameStepIf, err error) {
+		return gsCategoryDigitalRoll, nil
 	}
 	msgType := messagetypes.Game_Die_HybridDieLost
 	s.addTransition(string(msgType), action)

@@ -1,9 +1,10 @@
 package game
 
 import (
+	"fmt"
+
 	"github.com/gorilla/websocket"
 	log "github.com/sirupsen/logrus"
-	gameloop "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/game/loop"
 	dto "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/generated-sources/dto"
 	helpers "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/helper-functions"
 	msgType "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/message-types"
@@ -12,25 +13,20 @@ import (
 
 // Generic handler for incoming messages
 // Check the current GameState and call the appropriate handler function
-// 'wantsFeedback' toggles if the 'conn' param is used to send error feedback
-func (game *Game) handleMessage(conn *websocket.Conn, envelope dto.WebsocketMessagePublish, wantsFeedback bool) bool {
+func (game *Game) handleMessage(conn *websocket.Conn, envelope dto.WebsocketMessagePublish) (err error) {
 	contextLogger := log.WithFields(log.Fields{
 		"GameStep":    game.currentStep.GetMessageType(),
 		"MessageType": envelope.MessageType,
 	})
 	contextLogger.Trace("Attempting to handle message ")
-	nextStep, success := game.currentStep.HandleMessage(game.managers, envelope)
-	if success {
-		game.TransitionToGameStep(nextStep)
-		contextLogger.Debug("Message handled ")
-		return true
+	nextStep, err := game.currentStep.HandleMessage(game.managers, envelope)
+	if err != nil {
+		return fmt.Errorf(
+			"%v,\nAdditional Info:\n - Supported MessageTypes: %v",
+			err, game.currentStep.GetPossibleActions())
 	}
-	contextLogger.Warn("MessageType not appropriate for GameStep ")
-	feedback := buildErrorFeedback(game.currentStep, envelope)
-	if wantsFeedback {
-		helpers.WriteWebsocketMessage(conn, helpers.ErrorFeedbackToWebsocketMessageSubscribe(feedback))
-	}
-	return false
+	err = game.TransitionToGameStep(nextStep)
+	return
 }
 
 // Send out the latest state to the new client
@@ -56,13 +52,4 @@ func (game *Game) registerHandlers() *Game {
 	log.Trace("Registering on-connect")
 	ws.RegisterOnConnectHandler(game.handleOnConnect)
 	return game
-}
-
-func buildErrorFeedback(gs gameloop.GameStepIf, envelope dto.WebsocketMessagePublish) (fb dto.ErrorFeedback) {
-	props := make(map[string]interface{})
-	props["supportedMessageTypes"] = gs.GetPossibleActions()
-	fb.ErrorMessage = "MessageType not appropriate for GameStep"
-	fb.ReceivedMessage = &envelope
-	fb.AdditionalProperties = props
-	return
 }

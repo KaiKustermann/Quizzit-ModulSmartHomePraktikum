@@ -48,21 +48,22 @@ func (game *Game) Stop() {
 // any messageType / body
 // 'conn' object will be nil and no feedback can be given
 func (game *Game) forwardToGameLoop(messageType string, body interface{}) {
-	game.handleMessage(
+	err := game.handleMessage(
 		&websocket.Conn{},
 		dto.WebsocketMessagePublish{
 			MessageType: messageType,
 			Body:        body,
-		}, false)
+		})
+	log.Errorf("Forwarding to game failed: %v", err)
 }
 
 // TransitionToGameStep moves the GameLoop forward to the next Step and updates connected clients.
 //
-// 1. Calls 'OnEnterStep' on the next GameStep
+// 1. Calls 'DelegateStep' on the next GameStep
 //
-// 2. Calls 'DelegateStep' on the next GameStep
+// 2. If 'DelegateStep' returns 'switch'=TRUE, calls self with the new delegateStep and stops this execution.
 //
-// 3. If 'DelegateStep' returns 'switch'=TRUE, calls self with the new delegateStep and stops this execution.
+// 3. Calls 'OnEnterStep' on the next GameStep
 //
 // 4. Calls 'GetMessageBody' on the next GameStep
 //
@@ -73,23 +74,30 @@ func (game *Game) forwardToGameLoop(messageType string, body interface{}) {
 // 7. Build next GameState from retrieved information
 //
 // 8. Updates self as well as clients with the new GameState and Step
-func (game *Game) TransitionToGameStep(next gameloop.GameStepIf) {
+func (game *Game) TransitionToGameStep(next gameloop.GameStepIf) (err error) {
 	cLog := log.WithFields(log.Fields{
 		"name": next.GetMessageType(),
 	})
-	cLog.Tracef("Switching Gamestep")
-	next.OnEnterStep(game.managers)
-	delegate, switchStep := next.DelegateStep(game.managers)
-	if switchStep {
-		cLog.Trace("Delegating Gamestep")
-		game.TransitionToGameStep(delegate)
-		cLog.Trace("Gamestep delegated.")
-		return
+	cLog.Debug("Switching Gamestep")
+	cLog.Trace("Calling 'DelegateStep'")
+	delegate, err := next.DelegateStep(game.managers)
+	if err != nil {
+		return err
+	}
+	if delegate != nil {
+		cLog.Debug("Delegating Gamestep")
+		return game.TransitionToGameStep(delegate)
 	} else {
 		cLog.Trace("Not delegating Gamestep")
 	}
+
+	cLog.Trace("Calling 'OnEnterStep'")
+	next.OnEnterStep(game.managers)
 	nextState := dto.WebsocketMessageSubscribe{}
+
+	cLog.Trace("Calling 'GetMessageBody'")
 	nextState.Body = next.GetMessageBody(game.managers)
+	cLog.Trace("Calling 'GetMessageType'")
 	nextState.MessageType = next.GetMessageType()
 
 	cLog.Trace("Adding PlayerState")
@@ -104,6 +112,7 @@ func (game *Game) TransitionToGameStep(next gameloop.GameStepIf) {
 	game.stateMessage = nextState
 	cLog.Debugf("Next gameState: %v ", nextState)
 	ws.BroadCast(nextState)
+	return
 }
 
 // Set up any forwarding to the gameloop

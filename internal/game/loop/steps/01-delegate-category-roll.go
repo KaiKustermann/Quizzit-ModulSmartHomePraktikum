@@ -33,11 +33,11 @@ func (s *CategoryRollDelegate) GetMessageType() string {
 // * If no HybridDie is present moves to [CategoryRollDigitalStep]
 //
 // * If HybridDie is connected moves to [CategoryRollHybridDieStep]
-func (s *CategoryRollDelegate) DelegateStep(managers *managers.GameObjectManagers) (nextstep gameloop.GameStepIf, switchStep bool) {
+func (s *CategoryRollDelegate) DelegateStep(managers *managers.GameObjectManagers) (nextstep gameloop.GameStepIf, err error) {
 	if managers.HybridDieManager.IsConnected() {
 		log.Debug("Hybrid die is ready, using HYBRIDDIE ")
-		return s.gsHybridDieCategoryRoll, true
+		return s.gsHybridDieCategoryRoll, nil
 	}
 	log.Debug("Hybrid die is not ready, going DIGITAL ")
-	return s.gsDigitalCategoryRoll, true
+	return s.gsDigitalCategoryRoll, nil
 }

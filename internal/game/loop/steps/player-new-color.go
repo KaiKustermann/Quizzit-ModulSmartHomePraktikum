@@ -19,8 +19,8 @@ func (s *NewPlayerColorStep) GetMessageBody(managers *managers.GameObjectManager
 
 // AddTransitionToDieRoll adds the transition to [CategoryRollDelegate]
 func (s *NewPlayerColorStep) AddTransitionToDieRoll(gsCategoryRollDelegate *CategoryRollDelegate) {
-	var action ActionHandler = func(_ *managers.GameObjectManagers, _ dto.WebsocketMessagePublish) (nextstep gameloop.GameStepIf, success bool) {
-		return gsCategoryRollDelegate, true
+	var action ActionHandler = func(_ *managers.GameObjectManagers, _ dto.WebsocketMessagePublish) (nextstep gameloop.GameStepIf, err error) {
+		return gsCategoryRollDelegate, nil
 	}
 	msgType := messagetypes.Player_Generic_Confirm
 	s.addTransition(string(msgType), action)
