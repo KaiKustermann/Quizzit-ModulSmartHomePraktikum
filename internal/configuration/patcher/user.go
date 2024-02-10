@@ -11,14 +11,13 @@ import (
 // LoadUserConfigYAMLAndPatchConfig reads the system config file and apply values to 'conf'
 // Attempts to read the config file from 'relPath'
 // If succeeding, changes the values in 'conf' to any set value of the config file.
-func LoadUserConfigYAMLAndPatchConfig(conf *configmodel.QuizzitConfig, relPath string) (err error) {
+func LoadUserConfigYAMLAndPatchConfig(conf *configmodel.QuizzitConfig, relPath string) {
 	fileConf, err := configfileloader.LoadConfigurationFile[configyaml.UserConfigYAML](relPath)
 	if err != nil {
-		log.Errorf("Could not apply config from file %e", err)
+		log.Warnf("Not using user config file -> %e", err)
 		return
 	}
 	PatchConfigWithUserConfig(conf, fileConf)
-	return
 }
 
 func PatchConfigWithUserConfig(conf *configmodel.QuizzitConfig, userConf configyaml.UserConfigYAML) {
