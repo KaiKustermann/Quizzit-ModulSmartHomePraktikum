@@ -50,12 +50,13 @@ generate_swagger_typescript_models:
     entrypoint: ["/bin/sh", "-c"]
   script:
     - echo "Generating TYPESCRIPT Source Code from SWAGGER specifications"
-    - java -jar /opt/swagger-codegen-cli/swagger-codegen-cli.jar generate -i ./api/swagger.yaml -l typescript-axios -o ./api/typescript/src/swagger
+    - java -jar /opt/swagger-codegen-cli/swagger-codegen-cli.jar generate -i ./api/swagger.yaml -l typescript-axios -o ./api/typescript/src/tmp
+    - mv ./api/typescript/src/tmp/models ./api/typescript/src/swagger
   artifacts:
     when: on_success
     expire_in: "1 hour"
     paths:
-      - "api/typescript/src/swagger/models"
+      - "api/typescript/src/swagger"
 
 bundle_typescript_package:
   stage: bundle-api
@@ -65,7 +66,7 @@ bundle_typescript_package:
   image: docker.io/hdmstuttgartquizzit/asyncapi-generator:0.2.0
   script:
     - echo "export * from './asyncapi';" > api/typescript/src/index.ts
-    - echo "export * from './swagger/models';" >> api/typescript/src/index.ts
+    - echo "export * from './swagger';" >> api/typescript/src/index.ts
     - echo "TYPESCRIPT - Contents of index.ts:"
     - cat api/typescript/src/index.ts
     - echo "TYPESCRIPT - Compiling to js and .d.ts files"
