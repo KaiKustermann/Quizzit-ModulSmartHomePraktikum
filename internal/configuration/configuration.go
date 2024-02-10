@@ -42,7 +42,7 @@ func ReloadConfig() {
 	configpatcher.LoadSystemConfigYAMLAndPatchConfig(&conf, flags.ConfigFile)
 	configflag.PatchwithFlags(&conf)
 	configpatcher.LoadUserConfigYAMLAndPatchConfig(&conf, flags.UserConfigFile)
-	log.Infof("New config loaded: %s", conf.String())
+	log.Infof("New config loaded: %s", util.JsonString(conf))
 	configInstance = conf
 }
 
