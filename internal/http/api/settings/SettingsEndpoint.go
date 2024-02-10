@@ -50,8 +50,10 @@ func (h SettingsHandler) Patch(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	userConfig := *h.mapper.mapToUserConfigYAML(*settings)
-	log.Debugf("Received UserConfig: %s", userConfig.String())
-	configuration.ChangeUserConfig(userConfig)
+	if err := configuration.ChangeUserConfig(userConfig); err != nil {
+		h.SendBadRequest(w)
+		return
+	}
 	h.SendOK(w)
 }
 

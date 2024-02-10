@@ -10,6 +10,7 @@ import (
 	configpatcher "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/configuration/patcher"
 	configfilewriter "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/configuration/writer"
 	configyaml "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/configuration/yaml"
+	"gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/pkg/util"
 )
 
 // configInstance is the local instance of our [QuizzitConfig]
@@ -20,7 +21,9 @@ func GetQuizzitConfig() model.QuizzitConfig {
 	return configInstance
 }
 
+// ChangeUserConfig writes the given userconfig to the user-config file and applies its values as patches to [QuizzitConfig]
 func ChangeUserConfig(config configyaml.UserConfigYAML) (err error) {
+	log.Debugf("Changing UserConfig to: %s", util.JsonString(config))
 	flags := configflag.GetAppFlags()
 	err = configfilewriter.WriteConfigurationFile(config, flags.UserConfigFile)
 	if err != nil {
