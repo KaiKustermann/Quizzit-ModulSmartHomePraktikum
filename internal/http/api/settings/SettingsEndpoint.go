@@ -1,3 +1,4 @@
+// Package settingsapi defines endpoints to handle requests related to Settings
 package settingsapi
 
 import (
@@ -10,19 +11,24 @@ import (
 	apibase "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/http/api/base"
 )
 
-type SettingsHandler struct {
+// SettingsEndpoint implements http.[Handler]
+type SettingsEndpoint struct {
 	apibase.BasicHandler
 	mapper SettingsMapper
 }
 
-func NewSettingsHandler() SettingsHandler {
-	log.Debug("Creating new SettingsHandler")
-	return SettingsHandler{
+// NewSettingsEndpoint constructs a new [SettingsEndpoint]
+func NewSettingsEndpoint() SettingsEndpoint {
+	log.Debug("Creating new SettingsEndpoint")
+	return SettingsEndpoint{
 		mapper: SettingsMapper{},
 	}
 }
 
-func (h SettingsHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+// ServeHTTP implements http.[Handler]
+//
+// Defines all reactions to requests of all http-methods
+func (h SettingsEndpoint) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	h.LogIncoming(*r)
 	w.Header().Set("Content-Type", "application/json")
 	w.Header().Add("Access-Control-Allow-Origin", "*")
@@ -38,12 +44,14 @@ func (h SettingsHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func (h SettingsHandler) Get(w http.ResponseWriter, r *http.Request) {
+// Get handles the GET requests
+func (h SettingsEndpoint) Get(w http.ResponseWriter, r *http.Request) {
 	dto := h.mapper.mapToSettingsDTO(configuration.GetQuizzitConfig())
 	h.SendJSON(w, dto)
 }
 
-func (h SettingsHandler) Patch(w http.ResponseWriter, r *http.Request) {
+// Patch handles the PATCH requests
+func (h SettingsEndpoint) Patch(w http.ResponseWriter, r *http.Request) {
 	settings := &swagger.Settings{}
 	if err := json.NewDecoder(r.Body).Decode(settings); err != nil {
 		h.SendBadRequest(w)
@@ -57,7 +65,8 @@ func (h SettingsHandler) Patch(w http.ResponseWriter, r *http.Request) {
 	h.SendOK(w)
 }
 
-func (h SettingsHandler) Options(w http.ResponseWriter) {
+// Options handles the OPTIONS requests
+func (h SettingsEndpoint) Options(w http.ResponseWriter) {
 	allowed := []string{http.MethodOptions, http.MethodGet, http.MethodPatch}
 	e := w.Header()
 	for _, v := range allowed {
