@@ -33,10 +33,6 @@ generate_asyncapi_typescript_packages:
     - tsc --version
     - echo "TYPESCRIPT - Generating Source Code from ASYNC-API specifications"
     - npm run generate:typescript:asyncapi
-    - echo "TYPESCRIPT - Generating asyncapi/index.ts file"
-    - ls api/typescript/src/asyncapi | grep -v "index.ts" | sed "s/.ts//g" | sed "s/^/export * from '.\//" | sed "s/$/';/" > api/typescript/src/asyncapi/index.ts
-    - echo "TYPESCRIPT - Contents of asyncapi/index.ts:"
-    - cat api/typescript/src/asyncapi/index.ts
   artifacts:
     when: on_success
     expire_in: "1 hour"
@@ -65,12 +61,10 @@ bundle_typescript_package:
     - "generate_swagger_typescript_models"
   image: docker.io/hdmstuttgartquizzit/asyncapi-generator:0.2.0
   script:
-    - echo "export * from './asyncapi';" > api/typescript/src/index.ts
-    - echo "export * from './swagger';" >> api/typescript/src/index.ts
-    - echo "TYPESCRIPT - Contents of index.ts:"
-    - cat api/typescript/src/index.ts
+    - echo "TYPESCRIPT - Entering api/typescript DIR"
+    - cd ./api/typescript
     - echo "TYPESCRIPT - Compiling to js and .d.ts files"
-    - npm run module:typescript
+    - npm run module
   artifacts:
     when: on_success
     expire_in: "1 hour"
