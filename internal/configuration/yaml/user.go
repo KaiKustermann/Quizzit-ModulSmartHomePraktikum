@@ -11,8 +11,8 @@ import (
 //
 // Provides a subset of configuration options to be set by the user
 type UserConfigYAML struct {
-	HybridDie *HybridDieYAML `yaml:"hybrid-die"`
-	Game      *GameYAML      `yaml:"game"`
+	HybridDie *HybridDieYAML `yaml:"hybrid-die,omitempty"`
+	Game      *GameYAML      `yaml:"game,omitempty"`
 }
 
 // String returns a string representation of this struct for logging purposes
