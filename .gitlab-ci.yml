@@ -55,7 +55,7 @@ generate_swagger_typescript_models:
     when: on_success
     expire_in: "1 hour"
     paths:
-      - "api/typescript/src/swagger"
+      - "api/typescript/src/swagger/models"
 
 bundle_typescript_package:
   stage: bundle-api
@@ -114,7 +114,7 @@ generate_swagger_golang_models:
     when: on_success
     expire_in: "1 hour"
     paths:
-      - "internal/generated-sources/swagger"
+      - "internal/generated-sources/swagger/model_*.go"
 
 # https://go.dev/doc/install/source#environment
 build_go:
