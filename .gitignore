@@ -33,3 +33,6 @@ quizzit
 
 # Logs
 logs
+
+# Quizzit runtime-generated files
+user-config.yaml
