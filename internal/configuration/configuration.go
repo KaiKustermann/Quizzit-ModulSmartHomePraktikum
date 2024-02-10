@@ -38,7 +38,7 @@ func ReloadConfig() {
 	conf := createDefaultConfig()
 	configpatcher.ApplySystemConfigYAMLPatches(&conf, flags.ConfigFile)
 	configflag.PatchwithFlags(&conf)
-	configpatcher.ApplySystemConfigYAMLPatches(&conf, flags.UserConfigFile)
+	configpatcher.ApplyUserConfigYAMLPatches(&conf, flags.UserConfigFile)
 	log.Infof("New config loaded: %s", conf.String())
 	configInstance = conf
 }
