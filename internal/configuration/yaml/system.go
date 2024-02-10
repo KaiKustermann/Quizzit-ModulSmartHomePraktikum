@@ -3,8 +3,8 @@ package configyaml
 
 // SystemConfigYAML is the root description of the system config file
 type SystemConfigYAML struct {
-	Http      *HttpYAML      `yaml:"http"`
-	Log       *LogYAML       `yaml:"log"`
-	HybridDie *HybridDieYAML `yaml:"hybrid-die"`
-	Game      *GameYAML      `yaml:"game"`
+	Http      *HttpYAML      `yaml:"http,omitempty"`
+	Log       *LogYAML       `yaml:"log,omitempty"`
+	HybridDie *HybridDieYAML `yaml:"hybrid-die,omitempty"`
+	Game      *GameYAML      `yaml:"game,omitempty"`
 }
