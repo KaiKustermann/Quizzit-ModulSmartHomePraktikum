@@ -4,6 +4,7 @@
   "description": "",
   "scripts": {
     "tsc": "tsc",
+    "cross-os": "cross-os",
     "clear:typescript": "rm -rf ./api/typescript/src",
     "generate:typescript": "npm run generate:typescript:asyncapi && npm run generate:typescript:swagger",
     "generate:typescript:asyncapi": "asyncapi generate models typescript ./api/websocket-asyncapi.yaml -o ./api/typescript/src/asyncapi --tsModuleSystem=CJS --tsExportType=named --tsEnumType=enum --tsModelType=interface",
@@ -14,7 +15,7 @@
     "generate:golang": "npm run generate:golang:asyncapi && npm run generate:golang:swagger",
     "generate:golang:asyncapi": "asyncapi generate models golang ./api/websocket-asyncapi.yaml -o ./internal/generated-sources/asyncapi --packageName=asyncapi",
     "generate:golang:swagger": "cross-os generate:golang:swagger && npm run tidy:golang:swagger",
-    "tidy:golang:swagger": "rm ./internal/generated-sources/swagger/client.go ./internal/generated-sources/swagger/api_*.go",
+    "tidy:golang:swagger": "cd ./internal/generated-sources/swagger && rm -rf git_push.sh api docs && ls | grep -v 'model_' | xargs rm",
     "regenerate:golang": "npm run clear:golang && npm run generate:golang"
   },
   "cross-os": {
