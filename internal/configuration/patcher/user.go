@@ -8,16 +8,21 @@ import (
 	configyaml "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/configuration/yaml"
 )
 
-// ApplyUserConfigYAMLPatches reads the system config file and apply values to 'conf'
+// LoadUserConfigYAMLAndPatchConfig reads the system config file and apply values to 'conf'
 // Attempts to read the config file from 'relPath'
 // If succeeding, changes the values in 'conf' to any set value of the config file.
-func ApplyUserConfigYAMLPatches(conf *configmodel.QuizzitConfig, relPath string) (err error) {
+func LoadUserConfigYAMLAndPatchConfig(conf *configmodel.QuizzitConfig, relPath string) (err error) {
 	fileConf, err := configfileloader.LoadConfigurationFile[configyaml.UserConfigYAML](relPath)
 	if err != nil {
 		log.Errorf("Could not apply config from file %e", err)
 		return
 	}
-	patchGame(&conf.Game, fileConf.Game)
-	patchHybridDie(&conf.HybridDie, fileConf.HybridDie)
+	PatchConfigWithUserConfig(conf, fileConf)
 	return
+}
+
+func PatchConfigWithUserConfig(conf *configmodel.QuizzitConfig, userConf configyaml.UserConfigYAML) {
+	log.Infof("Patching Config with UserConfig")
+	patchGame(&conf.Game, userConf.Game)
+	patchHybridDie(&conf.HybridDie, userConf.HybridDie)
 }

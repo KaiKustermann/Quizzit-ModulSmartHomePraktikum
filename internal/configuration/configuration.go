@@ -27,7 +27,7 @@ func ChangeUserConfig(config configyaml.UserConfigYAML) (err error) {
 		log.Errorf("Failed to change user config, not reloading configuration.")
 		return err
 	}
-	ReloadConfig()
+	configpatcher.PatchConfigWithUserConfig(&configInstance, config)
 	return
 }
 
@@ -36,9 +36,9 @@ func ChangeUserConfig(config configyaml.UserConfigYAML) (err error) {
 func ReloadConfig() {
 	flags := configflag.GetAppFlags()
 	conf := createDefaultConfig()
-	configpatcher.ApplySystemConfigYAMLPatches(&conf, flags.ConfigFile)
+	configpatcher.LoadSystemConfigYAMLAndPatchConfig(&conf, flags.ConfigFile)
 	configflag.PatchwithFlags(&conf)
-	configpatcher.ApplyUserConfigYAMLPatches(&conf, flags.UserConfigFile)
+	configpatcher.LoadUserConfigYAMLAndPatchConfig(&conf, flags.UserConfigFile)
 	log.Infof("New config loaded: %s", conf.String())
 	configInstance = conf
 }
