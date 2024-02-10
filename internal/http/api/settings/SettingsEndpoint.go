@@ -49,7 +49,7 @@ func (h SettingsHandler) Post(w http.ResponseWriter, r *http.Request) {
 		h.SendBadRequest(w)
 		return
 	}
-	userConfig := *h.mapper.mapToUserconfig(*settings)
+	userConfig := *h.mapper.mapToUserConfigYAML(*settings)
 	log.Debugf("Received UserConfig: %s", userConfig.String())
 	configuration.ChangeUserConfig(userConfig)
 	h.SendOK(w)

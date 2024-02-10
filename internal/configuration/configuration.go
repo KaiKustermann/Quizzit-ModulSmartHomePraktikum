@@ -6,10 +6,10 @@ import (
 
 	log "github.com/sirupsen/logrus"
 	configflag "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/configuration/flag"
-	configmodel "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/configuration/model"
 	model "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/configuration/model"
 	configpatcher "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/configuration/patcher"
 	configfilewriter "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/configuration/writer"
+	configyaml "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/configuration/yaml"
 )
 
 // configInstance is the local instance of our [QuizzitConfig]
@@ -20,9 +20,9 @@ func GetQuizzitConfig() model.QuizzitConfig {
 	return configInstance
 }
 
-func ChangeUserConfig(config configmodel.UserConfig) (err error) {
+func ChangeUserConfig(config configyaml.UserConfigYAML) (err error) {
 	flags := configflag.GetAppFlags()
-	err = configfilewriter.WriteConfigurationFile(config.ToYAML(), flags.UserConfigFile)
+	err = configfilewriter.WriteConfigurationFile(config, flags.UserConfigFile)
 	if err != nil {
 		log.Errorf("Failed to change user config, not reloading configuration.")
 		return err

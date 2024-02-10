@@ -2,6 +2,7 @@ package settingsapi
 
 import (
 	configmodel "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/configuration/model"
+	configyaml "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/configuration/yaml"
 	"gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/generated-sources/swagger"
 )
 
@@ -20,14 +21,20 @@ func (m SettingsMapper) mapToGameDTO(conf configmodel.GameConfig) *swagger.Game 
 	}
 }
 
-func (m SettingsMapper) mapToUserconfig(settings swagger.Settings) *configmodel.UserConfig {
-	return &configmodel.UserConfig{
-		Game: m.mapToGameConfig(settings.Game),
+func (m SettingsMapper) mapToUserConfigYAML(in swagger.Settings) *configyaml.UserConfigYAML {
+	return &configyaml.UserConfigYAML{
+		Game: m.mapToGameYAML(in.Game),
 	}
 }
 
-func (m SettingsMapper) mapToGameConfig(settings *swagger.Game) configmodel.GameConfig {
-	return configmodel.GameConfig{
-		ScoredPointsToWin: int(settings.PointsToWin),
+func (m SettingsMapper) mapToGameYAML(in *swagger.Game) *configyaml.GameYAML {
+	if in == nil {
+		return nil
 	}
+	game := configyaml.GameYAML{}
+	if in.PointsToWin != 0 {
+		p := int(in.PointsToWin)
+		game.ScoredPointsToWin = &p
+	}
+	return &game
 }
