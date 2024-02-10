@@ -31,8 +31,8 @@ func (h SettingsHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		h.Options(w)
 	case http.MethodGet:
 		h.Get(w, r)
-	case http.MethodPost:
-		h.Post(w, r)
+	case http.MethodPatch:
+		h.Patch(w, r)
 	default:
 		h.SendMethodNotAllowed(w)
 	}
@@ -43,7 +43,7 @@ func (h SettingsHandler) Get(w http.ResponseWriter, r *http.Request) {
 	h.SendJSON(w, dto)
 }
 
-func (h SettingsHandler) Post(w http.ResponseWriter, r *http.Request) {
+func (h SettingsHandler) Patch(w http.ResponseWriter, r *http.Request) {
 	settings := &swagger.Settings{}
 	if err := json.NewDecoder(r.Body).Decode(settings); err != nil {
 		h.SendBadRequest(w)
@@ -56,7 +56,7 @@ func (h SettingsHandler) Post(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h SettingsHandler) Options(w http.ResponseWriter) {
-	allowed := []string{http.MethodOptions, http.MethodGet, http.MethodPost}
+	allowed := []string{http.MethodOptions, http.MethodGet, http.MethodPatch}
 	e := w.Header()
 	for _, v := range allowed {
 		e.Add("Allow", v)

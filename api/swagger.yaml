@@ -36,11 +36,11 @@ paths:
       responses:
         '200':
           $ref: '#/components/schemas/Settings'
-    post:
+    patch:
       tags:
         - settings
-      summary: Post Settings
-      description: Set current config to new values
+      summary: Update Settings
+      description: Update Settings with new values
       requestBody:
         $ref: '#/components/requestBodies/Settings'
       responses:
