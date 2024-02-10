@@ -6,7 +6,7 @@ import (
 	log "github.com/sirupsen/logrus"
 	gameloop "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/game/loop"
 	"gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/game/managers"
-	dto "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/generated-sources/dto"
+	"gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/generated-sources/asyncapi"
 )
 
 // ActionHandler defines the functional interface used for and by [HandleMessage]
@@ -14,7 +14,7 @@ import (
 // # Returns the next gameStep to transition to
 //
 // If an error is returned, should not transition to next gameStep!
-type ActionHandler func(*managers.GameObjectManagers, dto.WebsocketMessagePublish) (nextstep gameloop.GameStepIf, err error)
+type ActionHandler func(*managers.GameObjectManagers, asyncapi.WebsocketMessagePublish) (nextstep gameloop.GameStepIf, err error)
 
 // Transition defines an [ActionHandler] for a given messageType
 type Transition struct {
@@ -47,7 +47,7 @@ func (gs *BaseGameStep) GetPossibleActions() []string {
 // HandleMessage iterates over the known [Transition]s and calls the first matching handler
 //
 // Returns whether or not the message was handled and also the next [GameStateIf] for the [Game]
-func (gs *BaseGameStep) HandleMessage(managers *managers.GameObjectManagers, envelope dto.WebsocketMessagePublish) (nextstep gameloop.GameStepIf, err error) {
+func (gs *BaseGameStep) HandleMessage(managers *managers.GameObjectManagers, envelope asyncapi.WebsocketMessagePublish) (nextstep gameloop.GameStepIf, err error) {
 	for i := 0; i < len(gs.transitions); i++ {
 		transition := gs.transitions[i]
 		if transition.messageType == envelope.MessageType {

@@ -8,7 +8,7 @@ import (
 	gameloop "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/game/loop"
 	gameloopprinter "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/game/loop/printer"
 	"gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/game/managers"
-	dto "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/generated-sources/dto"
+	"gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/generated-sources/asyncapi"
 	messagetypes "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/message-types"
 )
 
@@ -20,7 +20,7 @@ type HybridDieSearchStep struct {
 
 // AddTransitionToHybridDieConnected adds transition to [HybridDieConnectedStep]
 func (s *HybridDieSearchStep) AddTransitionToHybridDieConnected(hdConnectedStep *HybridDieConnectedStep) {
-	var action ActionHandler = func(managers *managers.GameObjectManagers, msg dto.WebsocketMessagePublish) (nextstep gameloop.GameStepIf, err error) {
+	var action ActionHandler = func(managers *managers.GameObjectManagers, msg asyncapi.WebsocketMessagePublish) (nextstep gameloop.GameStepIf, err error) {
 		return hdConnectedStep, nil
 	}
 	msgType := messagetypes.Game_Die_HybridDieConnected
@@ -30,7 +30,7 @@ func (s *HybridDieSearchStep) AddTransitionToHybridDieConnected(hdConnectedStep 
 
 // AddTransitionToHybridDieNotFound adds transition to [HybridDieNotFoundStep]
 func (s *HybridDieSearchStep) AddTransitionToHybridDieNotFound(hdNotFoundStep *HybridDieNotFoundStep) {
-	var action ActionHandler = func(managers *managers.GameObjectManagers, msg dto.WebsocketMessagePublish) (nextstep gameloop.GameStepIf, err error) {
+	var action ActionHandler = func(managers *managers.GameObjectManagers, msg asyncapi.WebsocketMessagePublish) (nextstep gameloop.GameStepIf, err error) {
 		return hdNotFoundStep, nil
 	}
 	msgType := messagetypes.Game_Die_HybridDieNotFound

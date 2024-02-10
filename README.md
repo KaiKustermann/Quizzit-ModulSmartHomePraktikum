@@ -42,6 +42,7 @@ Directory structure as seen in ["Golang Standard Project Layout"](https://github
 
 * Golang 1.20 or higher
 * npm to generate GO code from api spec
+* docker
 
 ## Setup
 
@@ -49,7 +50,7 @@ Download dependencies and generate GO code from api spec.
 
     go mod download
     npm i
-    go generate cmd/quizzit/quizzit.go (generates golang types from the ./api/websocket-asyncapi.yaml)
+    go generate cmd/quizzit/quizzit.go (generates golang types from the specs inside ./api/...)
 
 ## Run
 

@@ -2,7 +2,7 @@ package gameloop
 
 import (
 	"gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/game/managers"
-	dto "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/generated-sources/dto"
+	"gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/generated-sources/asyncapi"
 )
 
 // GameStepIf defines the interface for a GameStep
@@ -23,7 +23,7 @@ type GameStepIf interface {
 	// HandleMessage exposes [BaseGameStep] HandleMessage
 	//
 	// See also [ActionHandler]
-	HandleMessage(managers *managers.GameObjectManagers, envelope dto.WebsocketMessagePublish) (nextstep GameStepIf, err error)
+	HandleMessage(managers *managers.GameObjectManagers, envelope asyncapi.WebsocketMessagePublish) (nextstep GameStepIf, err error)
 
 	// OnEnterStep is called by the gameloop upon entering this step
 	//

@@ -3,7 +3,7 @@ package game
 import (
 	"github.com/gorilla/websocket"
 	log "github.com/sirupsen/logrus"
-	dto "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/generated-sources/dto"
+	"gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/generated-sources/asyncapi"
 	helpers "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/helper-functions"
 	msgType "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/message-types"
 	ws "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/websockets"
@@ -11,7 +11,7 @@ import (
 
 // Generic handler for incoming messages
 // Check the current GameState and call the appropriate handler function
-func (game *Game) handleMessage(conn *websocket.Conn, envelope dto.WebsocketMessagePublish) (err error) {
+func (game *Game) handleMessage(conn *websocket.Conn, envelope asyncapi.WebsocketMessagePublish) (err error) {
 	contextLogger := log.WithFields(log.Fields{
 		"GameStep":    game.currentStep.GetMessageType(),
 		"MessageType": envelope.MessageType,

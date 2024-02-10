@@ -1,5 +1,5 @@
-// Package configfile provides the means to read a YAML config file and patch its contents to the config model
-package configfile
+// Package configfileloader provides the means to load a config from file
+package configfileloader
 
 import (
 	"io"
@@ -7,11 +7,12 @@ import (
 	"path/filepath"
 
 	log "github.com/sirupsen/logrus"
+	configyaml "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/configuration/yaml"
 	"gopkg.in/yaml.v3"
 )
 
-// loadConfigurationFile works like [loadFromAbsolutePath], however takes a relative path
-func loadConfigurationFile(relPath string) (config QuizzitYAML, err error) {
+// LoadConfigurationFile works like [LoadFromAbsolutePath], however takes a relative path
+func LoadConfigurationFile[K configyaml.SystemConfigYAML | configyaml.UserConfigYAML](relPath string) (config K, err error) {
 	cL := log.WithField("filename", relPath)
 	cL.Infof("Loading configuration... ")
 	absPath, err := filepath.Abs(relPath)
@@ -19,13 +20,13 @@ func loadConfigurationFile(relPath string) (config QuizzitYAML, err error) {
 		return
 	}
 	cL.Debugf("Expanded to absolute path '%s'", absPath)
-	return loadFromAbsolutePath(absPath)
+	return LoadFromAbsolutePath[K](absPath)
 }
 
-// loadConfigurationFile attempts to load the config file from the specified absolute path
-// The config file must be in YAML format and match the definitions of [QuizzitYAML]
+// LoadFromAbsolutePath attempts to load the config file from the specified absolute path
+// The config file must be in YAML format and match the definitions of the provided [K]
 // On encountering any errors, returns those errors
-func loadFromAbsolutePath(absPath string) (config QuizzitYAML, err error) {
+func LoadFromAbsolutePath[K configyaml.SystemConfigYAML | configyaml.UserConfigYAML](absPath string) (config K, err error) {
 	cL := log.WithField("filename", absPath)
 	cL.Info("Loading config ")
 

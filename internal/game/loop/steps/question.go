@@ -5,7 +5,7 @@ import (
 	gameloop "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/game/loop"
 	gameloopprinter "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/game/loop/printer"
 	"gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/game/managers"
-	dto "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/generated-sources/dto"
+	"gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/generated-sources/asyncapi"
 	helpers "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/helper-functions"
 	messagetypes "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/message-types"
 )
@@ -26,8 +26,8 @@ func (s *QuestionStep) GetMessageBody(managers *managers.GameObjectManagers) int
 // The transition parses the message input and selects the given answer by its ID.
 // It will in any case return itself ([QuestionStep]) as the next step.
 func (s *QuestionStep) AddSelectAnswerTransition() {
-	var action ActionHandler = func(managers *managers.GameObjectManagers, msg dto.WebsocketMessagePublish) (nextstep gameloop.GameStepIf, err error) {
-		selectedAnswer := dto.SelectAnswer{}
+	var action ActionHandler = func(managers *managers.GameObjectManagers, msg asyncapi.WebsocketMessagePublish) (nextstep gameloop.GameStepIf, err error) {
+		selectedAnswer := asyncapi.SelectAnswer{}
 		log.Trace("Transforming message body to struct")
 		err = helpers.InterfaceToStruct(msg.Body, &selectedAnswer)
 		if err != nil {
@@ -46,8 +46,8 @@ func (s *QuestionStep) AddSelectAnswerTransition() {
 // The transition parses the message input and selects the given answer by its ID.
 // It will then move to [CorrectnessFeedbackStep] as next step.
 func (s *QuestionStep) AddSubmitAnswerTransition(correctnessFeedbackStep *CorrectnessFeedbackDelegate) {
-	var action ActionHandler = func(managers *managers.GameObjectManagers, msg dto.WebsocketMessagePublish) (nextstep gameloop.GameStepIf, err error) {
-		submittedAnswer := dto.SubmitAnswer{}
+	var action ActionHandler = func(managers *managers.GameObjectManagers, msg asyncapi.WebsocketMessagePublish) (nextstep gameloop.GameStepIf, err error) {
+		submittedAnswer := asyncapi.SubmitAnswer{}
 		log.Trace("Transforming message body to struct")
 		err = helpers.InterfaceToStruct(msg.Body, &submittedAnswer)
 		if err != nil {
@@ -66,7 +66,7 @@ func (s *QuestionStep) AddSubmitAnswerTransition(correctnessFeedbackStep *Correc
 // The transition disables two random wrong answer possibilities of the question
 // It will in any case return itself ([QuestionStep]) as the next step.
 func (s *QuestionStep) AddUseJokerTransition() {
-	var action ActionHandler = func(managers *managers.GameObjectManagers, msg dto.WebsocketMessagePublish) (nextstep gameloop.GameStepIf, err error) {
+	var action ActionHandler = func(managers *managers.GameObjectManagers, msg asyncapi.WebsocketMessagePublish) (nextstep gameloop.GameStepIf, err error) {
 		err = managers.QuestionManager.GetActiveQuestion().UseJoker()
 		return s, err
 	}

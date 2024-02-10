@@ -4,7 +4,7 @@ import (
 	gameloop "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/game/loop"
 	gameloopprinter "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/game/loop/printer"
 	"gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/game/managers"
-	dto "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/generated-sources/dto"
+	"gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/generated-sources/asyncapi"
 	messagetypes "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/message-types"
 )
 
@@ -21,7 +21,7 @@ func (s *AnswerBaseStep) GetMessageBody(managers *managers.GameObjectManagers) i
 
 // AddTransitions adds stransition to [PlayerTurnEndDelegate]
 func (s *AnswerBaseStep) AddPlayerTurnEnd(playerTurnEnd *PlayerTurnEndDelegate) {
-	var action ActionHandler = func(managers *managers.GameObjectManagers, msg dto.WebsocketMessagePublish) (nextstep gameloop.GameStepIf, err error) {
+	var action ActionHandler = func(managers *managers.GameObjectManagers, msg asyncapi.WebsocketMessagePublish) (nextstep gameloop.GameStepIf, err error) {
 		return playerTurnEnd, nil
 	}
 	msgType := messagetypes.Player_Generic_Confirm

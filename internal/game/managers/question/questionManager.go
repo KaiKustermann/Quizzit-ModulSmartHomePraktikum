@@ -6,7 +6,7 @@ import (
 	log "github.com/sirupsen/logrus"
 
 	"gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/category"
-	dto "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/generated-sources/dto"
+	"gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/generated-sources/asyncapi"
 	question "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/question"
 )
 
@@ -48,7 +48,7 @@ func (qm *QuestionManager) ResetActiveQuestion() {
 }
 
 // GetCorrectnessFeedback exposes GetCorrectnessFeedback of the active [Question]
-func (qm *QuestionManager) GetCorrectnessFeedback() dto.CorrectnessFeedback {
+func (qm *QuestionManager) GetCorrectnessFeedback() asyncapi.CorrectnessFeedback {
 	return qm.activeQuestion.GetCorrectnessFeedback()
 }
 

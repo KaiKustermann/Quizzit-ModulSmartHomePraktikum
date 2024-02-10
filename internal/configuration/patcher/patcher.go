@@ -1,33 +1,18 @@
-// Package configfile provides the means to read a YAML config file and patch its contents to the config model
-package configfile
+// Package configpatcher provides the means to patch the config model with [configyaml] models
+package configpatcher
 
 import (
 	"time"
 
 	log "github.com/sirupsen/logrus"
 	configmodel "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/configuration/model"
+	configyaml "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/configuration/yaml"
 )
-
-// PatchWithYAMLFile reads the config file and apply values to 'conf'
-// Attempts to read the config file from 'relPath'
-// If succeeding, changes the values in 'conf' to any set value of the config file.
-func PatchWithYAMLFile(conf *configmodel.QuizzitConfig, relPath string) (err error) {
-	fileConf, err := loadConfigurationFile(relPath)
-	if err != nil {
-		log.Errorf("Could not apply config from file %e", err)
-		return
-	}
-	patchHttp(&conf.Http, fileConf.Http)
-	patchGame(&conf.Game, fileConf.Game)
-	patchLog(&conf.Log, fileConf.Log)
-	patchHybridDie(&conf.HybridDie, fileConf.HybridDie)
-	return
-}
 
 // patchGame patches the GameConfig field
 //
 // Only applies patches, if the value of the 'game' config is not nil
-func patchGame(conf *configmodel.GameConfig, game *GameYAML) {
+func patchGame(conf *configmodel.GameConfig, game *configyaml.GameYAML) {
 	if game == nil {
 		log.Debug("Game is nil, not patching")
 		return
@@ -61,7 +46,7 @@ func patchQuestionsPath(conf *configmodel.GameConfig, questionsPath *string) {
 // patchHttp patches the HttpConfig field
 //
 // Only applies the patch, if the value of the 'file' config is not nil
-func patchHttp(conf *configmodel.HttpConfig, file *HttpYAML) {
+func patchHttp(conf *configmodel.HttpConfig, file *configyaml.HttpYAML) {
 	if file == nil || file.Port == nil {
 		log.Debug("Port is nil, not patching")
 		return
@@ -72,7 +57,7 @@ func patchHttp(conf *configmodel.HttpConfig, file *HttpYAML) {
 // patchLog patches the LogConfig field
 //
 // Only applies the patch, if the value of the 'file' config is not nil
-func patchLog(conf *configmodel.LogConfig, file *LogYAML) {
+func patchLog(conf *configmodel.LogConfig, file *configyaml.LogYAML) {
 	if file == nil {
 		log.Debug("Log is nil, not patching")
 		return
@@ -118,7 +103,7 @@ func patchLogFileLevel(conf *configmodel.LogConfig, file *string) {
 // The duration, given by the 'file' config is parsed.
 //
 // Only applies the patch, if the value of the 'file' config is not nil and a valid duration was provided
-func patchHybridDie(conf *configmodel.HybridDieConfig, file *HybridDieYAML) {
+func patchHybridDie(conf *configmodel.HybridDieConfig, file *configyaml.HybridDieYAML) {
 	if file == nil {
 		log.Debug("HybridDie YAML is nil, not patching")
 		return
@@ -131,12 +116,12 @@ func patchHybridDie(conf *configmodel.HybridDieConfig, file *HybridDieYAML) {
 	}
 }
 
-// patchHybridDie patches the HybridDieConfig field
+// patchHybridDieSearch patches the HybridDieSearchConfig field
 //
 // The duration, given by the 'file' config is parsed.
 //
 // Only applies the patch, if the value of the 'file' config is not nil and a valid duration was provided
-func patchHybridDieSearch(conf *configmodel.HybridDieSearchConfig, file *HybridDieSearchYAML) {
+func patchHybridDieSearch(conf *configmodel.HybridDieSearchConfig, file *configyaml.HybridDieSearchYAML) {
 	if file == nil || file.Timeout == nil {
 		log.Debug("Search Timeout is nil, not patching")
 		return

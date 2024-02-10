@@ -7,7 +7,7 @@ import (
 	"unicode/utf8"
 
 	log "github.com/sirupsen/logrus"
-	dto "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/generated-sources/dto"
+	"gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/generated-sources/asyncapi"
 	messagetypes "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/message-types"
 )
 
@@ -55,8 +55,8 @@ func MarshalToLowerCamelCaseJSON(data any) ([]byte, error) {
 	return converted, err
 }
 
-func ErrorFeedbackToWebsocketMessageSubscribe(iMsg dto.ErrorFeedback) dto.WebsocketMessageSubscribe {
-	msg := dto.WebsocketMessageSubscribe{
+func ErrorFeedbackToWebsocketMessageSubscribe(iMsg asyncapi.ErrorFeedback) asyncapi.WebsocketMessageSubscribe {
+	msg := asyncapi.WebsocketMessageSubscribe{
 		MessageType:   string(messagetypes.Game_Generic_ErrorFeedback),
 		Body:          iMsg,
 		CorrelationId: iMsg.ReceivedMessage.CorrelationId,

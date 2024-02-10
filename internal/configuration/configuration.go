@@ -5,9 +5,12 @@ import (
 	"time"
 
 	log "github.com/sirupsen/logrus"
-	configfile "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/configuration/file"
 	configflag "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/configuration/flag"
 	model "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/configuration/model"
+	configpatcher "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/configuration/patcher"
+	configfilewriter "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/configuration/writer"
+	configyaml "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/configuration/yaml"
+	"gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/pkg/util"
 )
 
 // configInstance is the local instance of our [QuizzitConfig]
@@ -18,14 +21,28 @@ func GetQuizzitConfig() model.QuizzitConfig {
 	return configInstance
 }
 
+// ChangeUserConfig writes the given userconfig to the user-config file and applies its values as patches to [QuizzitConfig]
+func ChangeUserConfig(config configyaml.UserConfigYAML) (err error) {
+	log.Debugf("Changing UserConfig to: %s", util.JsonString(config))
+	flags := configflag.GetAppFlags()
+	err = configfilewriter.WriteConfigurationFile(config, flags.UserConfigFile)
+	if err != nil {
+		log.Errorf("Failed to change user config, not reloading configuration.")
+		return err
+	}
+	configpatcher.PatchConfigWithUserConfig(&configInstance, config)
+	return
+}
+
 // ReloadConfig recreates the configuration by starting with the default config
 // and applying the file config as patch, before applying any patches made by flags.
 func ReloadConfig() {
 	flags := configflag.GetAppFlags()
 	conf := createDefaultConfig()
-	configfile.PatchWithYAMLFile(&conf, flags.ConfigFile)
+	configpatcher.LoadSystemConfigYAMLAndPatchConfig(&conf, flags.ConfigFile)
 	configflag.PatchwithFlags(&conf)
-	log.Infof("New config loaded: %s", conf.String())
+	configpatcher.LoadUserConfigYAMLAndPatchConfig(&conf, flags.UserConfigFile)
+	log.Infof("New config loaded: %s", util.JsonString(conf))
 	configInstance = conf
 }
 

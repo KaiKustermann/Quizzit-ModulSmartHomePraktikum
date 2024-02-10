@@ -5,13 +5,13 @@ import (
 	"errors"
 
 	log "github.com/sirupsen/logrus"
+	"gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/generated-sources/asyncapi"
 
 	"github.com/gorilla/websocket"
-	dto "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/generated-sources/dto"
 )
 
 // Transform the 'msg' into JSON and write to Socket
-func WriteWebsocketMessage(conn *websocket.Conn, msg dto.WebsocketMessageSubscribe) error {
+func WriteWebsocketMessage(conn *websocket.Conn, msg asyncapi.WebsocketMessageSubscribe) error {
 	data, err := MarshalToLowerCamelCaseJSON(msg)
 	if err != nil {
 		log.Error("Could not marshal to JSON", err)
@@ -23,8 +23,8 @@ func WriteWebsocketMessage(conn *websocket.Conn, msg dto.WebsocketMessageSubscri
 
 // Parse []byte payload as received by Websocket
 // Also run minimal validation
-func ParseWebsocketMessage(payload []byte) (dto.WebsocketMessagePublish, error) {
-	var parsedPayload dto.WebsocketMessagePublish
+func ParseWebsocketMessage(payload []byte) (asyncapi.WebsocketMessagePublish, error) {
+	var parsedPayload asyncapi.WebsocketMessagePublish
 	err := json.Unmarshal(payload, &parsedPayload)
 	if err != nil {
 		log.Debug("Could not unmarshal JSON", err)

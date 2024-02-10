@@ -4,17 +4,38 @@
   "description": "",
   "scripts": {
     "tsc": "tsc",
+    "cross-os": "cross-os",
     "clear:typescript": "rm -rf ./api/typescript/src",
-    "generate:typescript": "asyncapi generate models typescript ./api/websocket-asyncapi.yaml -o ./api/typescript/src --tsModuleSystem=CJS --tsExportType=named --tsEnumType=enum --tsModelType=interface",
+    "generate:typescript": "npm run generate:typescript:asyncapi && npm run generate:typescript:swagger",
+    "generate:typescript:asyncapi": "npm run generate:typescript:asyncapi:files && npm run generate:typescript:asyncapi:index",
+    "generate:typescript:asyncapi:files": "asyncapi generate models typescript ./api/websocket-asyncapi.yaml -o ./api/typescript/src/asyncapi --tsModuleSystem=CJS --tsExportType=named --tsEnumType=enum --tsModelType=interface",
+    "generate:typescript:asyncapi:index": "ls api/typescript/src/asyncapi | grep -v \"index.ts\" | sed \"s/.ts//g\" | sed \"s/^/export * from '.\\//\" | sed \"s/$/';/\" > api/typescript/src/asyncapi/index.ts",
+    "generate:typescript:swagger": "cross-os generate:typescript:swagger && mv ./api/typescript/src/tmp/models ./api/typescript/src/swagger && rm -rf ./api/typescript/src/tmp",
     "regenerate:typescript": "npm run clear:typescript && npm run generate:typescript",
-    "module:typescript": "tsc api/typescript/src/index.ts -d --lib esnext --outDir api/typescript/dist",
-    "clear:golang": "rm -rf ./internal/generated-sources/dto",
-    "generate:golang": "asyncapi generate models golang ./api/websocket-asyncapi.yaml -o ./internal/generated-sources/dto --packageName=quizzit_dto",
+    "clear:golang": "rm -rf ./internal/generated-sources",
+    "generate:golang": "npm run generate:golang:asyncapi && npm run generate:golang:swagger",
+    "generate:golang:asyncapi": "asyncapi generate models golang ./api/websocket-asyncapi.yaml -o ./internal/generated-sources/asyncapi --packageName=asyncapi",
+    "generate:golang:swagger": "cross-os generate:golang:swagger && cross-os mkdir:golang:swagger && mv ./internal/generated-sources/tmp/model_*.go ./internal/generated-sources/swagger/ && rm -rf ./internal/generated-sources/tmp",
     "regenerate:golang": "npm run clear:golang && npm run generate:golang"
+  },
+  "cross-os": {
+    "generate:golang:swagger": {
+      "win32": "docker run --rm -v %CD%:/local swaggerapi/swagger-codegen-cli-v3:3.0.46 generate -i /local/api/swagger.yaml -l go -o /local/internal/generated-sources/tmp",
+      "linux": "docker run --rm -v $PWD:/local swaggerapi/swagger-codegen-cli-v3:3.0.46 generate -i /local/api/swagger.yaml -l go -o /local/internal/generated-sources/tmp"
+    },
+    "mkdir:golang:swagger": {
+      "win32": "mkdir internal\\generated-sources\\swagger",
+      "linux": "mkdir -p internal/generated-sources/swagger"
+    },
+    "generate:typescript:swagger": {
+      "win32": "docker run --rm -v %CD%:/local swaggerapi/swagger-codegen-cli-v3:3.0.46 generate -i /local/api/swagger.yaml -l typescript-axios -o /local/api/typescript/src/tmp",
+      "linux": "docker run --rm -v $PWD:/local swaggerapi/swagger-codegen-cli-v3:3.0.46 generate -i /local/api/swagger.yaml -l typescript-axios -o /local/api/typescript/src/tmp"
+    }
   },
   "devDependencies": {
     "@asyncapi/cli": "^0.37.2",
     "@asyncapi/modelina": "^1.3.2",
+    "cross-os": "^1.5.0",
     "typescript": "^5.0.4"
   },
   "author": "",

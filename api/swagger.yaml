@@ -13,15 +13,57 @@ info:
     name: Unlicensed
   version: 0.1.0
 servers:
-  - url: localhost
+  - url: http://localhost:8080
     description: Local development
 paths:
   /health:
     get:
-      summary: Alive?
-      description: Health Endpoint
+      tags:
+        - system
+      summary: Health Endpoint
+      description: Is the service up and running?
       responses:
         '200':
           description: is healthy
         '500':
           description: something is off
+  /settings:
+    get:
+      tags:
+        - settings
+      summary: Retrieve Settings
+      description: Get the current settings
+      responses:
+        '200':
+          $ref: '#/components/schemas/Settings'
+    patch:
+      tags:
+        - settings
+      summary: Update Settings
+      description: Update Settings with new values
+      requestBody:
+        $ref: '#/components/requestBodies/Settings'
+      responses:
+        '200':
+          description: 'patch applied'
+
+components:
+  requestBodies:
+    Settings:
+      content:
+        "application/json":
+          schema:
+            $ref: '#/components/schemas/Settings'
+  schemas:
+    Game:
+      description: Game Settings
+      type: object
+      properties:
+        pointsToWin:
+          type: integer
+    Settings:
+      description: Quizzit Settings
+      type: object
+      properties:
+        game:
+          $ref: '#/components/schemas/Game'

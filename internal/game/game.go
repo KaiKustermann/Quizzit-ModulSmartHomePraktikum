@@ -10,7 +10,7 @@ import (
 	player "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/game/managers/player"
 	questionmanager "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/game/managers/question"
 	settingsmanager "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/game/managers/settings"
-	dto "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/generated-sources/dto"
+	"gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/generated-sources/asyncapi"
 	hybriddie "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/hybrid-die"
 	messagetypes "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/message-types"
 	ws "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/websockets"
@@ -21,7 +21,7 @@ import (
 // Handles incoming messages and updates clients on state changes
 type Game struct {
 	currentStep  gameloop.GameStepIf
-	stateMessage dto.WebsocketMessageSubscribe
+	stateMessage asyncapi.WebsocketMessageSubscribe
 	managers     *managers.GameObjectManagers
 }
 
@@ -50,7 +50,7 @@ func (game *Game) Stop() {
 func (game *Game) forwardToGameLoop(messageType string, body interface{}) {
 	err := game.handleMessage(
 		&websocket.Conn{},
-		dto.WebsocketMessagePublish{
+		asyncapi.WebsocketMessagePublish{
 			MessageType: messageType,
 			Body:        body,
 		})
@@ -93,7 +93,7 @@ func (game *Game) TransitionToGameStep(next gameloop.GameStepIf) (err error) {
 
 	cLog.Trace("Calling 'OnEnterStep'")
 	next.OnEnterStep(game.managers)
-	nextState := dto.WebsocketMessageSubscribe{}
+	nextState := asyncapi.WebsocketMessageSubscribe{}
 
 	cLog.Trace("Calling 'GetMessageBody'")
 	nextState.Body = next.GetMessageBody(game.managers)

@@ -1,6 +1,8 @@
 stages:
   - validate
   - api
+  - bundle-api
+  - publish-api
   - build-and-test
   - upload
   - release
@@ -23,20 +25,58 @@ validate_asyncapi:
   script:
     - asyncapi validate api/websocket-asyncapi.yaml
 
-update_typescript_packages:
+generate_asyncapi_typescript_packages:
   stage: api
   image: docker.io/hdmstuttgartquizzit/asyncapi-generator:0.2.0
   script:
     - asyncapi --version
     - tsc --version
-    - echo "TYPESCRIPT - Generating Source Code from API specifications"
-    - npm run generate:typescript
-    - echo "TYPESCRIPT - Generating index.ts file"
-    - ls api/typescript/src | grep -v "index.ts" | sed "s/.ts//g" | sed "s/^/export * from '.\//" | sed "s/$/';/" > api/typescript/src/index.ts
-    - echo "TYPESCRIPT - Contents of index.ts:"
-    - cat api/typescript/src/index.ts
+    - echo "TYPESCRIPT - Generating Source Code from ASYNC-API specifications"
+    - npm run generate:typescript:asyncapi
+  artifacts:
+    when: on_success
+    expire_in: "1 hour"
+    paths:
+      - "api/typescript/src/asyncapi"
+
+generate_swagger_typescript_models:
+  stage: api
+  image: 
+    name: swaggerapi/swagger-codegen-cli-v3:3.0.46
+    entrypoint: ["/bin/sh", "-c"]
+  script:
+    - echo "Generating TYPESCRIPT Source Code from SWAGGER specifications"
+    - java -jar /opt/swagger-codegen-cli/swagger-codegen-cli.jar generate -i ./api/swagger.yaml -l typescript-axios -o ./api/typescript/src/tmp
+    - mv ./api/typescript/src/tmp/models ./api/typescript/src/swagger
+  artifacts:
+    when: on_success
+    expire_in: "1 hour"
+    paths:
+      - "api/typescript/src/swagger"
+
+bundle_typescript_package:
+  stage: bundle-api
+  dependencies:
+    - "generate_asyncapi_typescript_packages"
+    - "generate_swagger_typescript_models"
+  image: docker.io/hdmstuttgartquizzit/asyncapi-generator:0.2.0
+  script:
+    - echo "TYPESCRIPT - Entering api/typescript DIR"
+    - cd ./api/typescript
     - echo "TYPESCRIPT - Compiling to js and .d.ts files"
-    - npm run module:typescript
+    - npm run module
+  artifacts:
+    when: on_success
+    expire_in: "1 hour"
+    paths:
+      - "api/typescript/dist"
+
+publish_typescript_package:
+  stage: publish-api
+  dependencies:
+    - "bundle_typescript_package"
+  image: docker.io/hdmstuttgartquizzit/asyncapi-generator:0.2.0
+  script:
     - cd api/typescript
     - echo "TYPESCRIPT - Publishing Module"
     - npm publish
@@ -45,23 +85,38 @@ update_typescript_packages:
       if: $CI_PIPELINE_SOURCE != "merge_request_event"
       allow_failure: true
 
-generate_golang_models:
+generate_asyncapi_golang_models:
   stage: api
   image: docker.io/hdmstuttgartquizzit/asyncapi-generator:0.1.0
   script:
-    - echo "Generating GOLANG Source Code from API specifications"
-    - npm run generate:golang
+    - echo "Generating GOLANG Source Code from ASYNC-API specifications"
+    - npm run generate:golang:asyncapi
   artifacts:
     when: on_success
     expire_in: "1 hour"
     paths:
-      - "internal/generated-sources"
+      - "internal/generated-sources/asyncapi"
+
+generate_swagger_golang_models:
+  stage: api
+  image: 
+    name: swaggerapi/swagger-codegen-cli-v3:3.0.46
+    entrypoint: ["/bin/sh", "-c"]
+  script:
+    - echo "Generating GOLANG Source Code from SWAGGER specifications"
+    - java -jar /opt/swagger-codegen-cli/swagger-codegen-cli.jar generate -i ./api/swagger.yaml -l go -o ./internal/generated-sources/swagger
+  artifacts:
+    when: on_success
+    expire_in: "1 hour"
+    paths:
+      - "internal/generated-sources/swagger/model_*.go"
 
 # https://go.dev/doc/install/source#environment
 build_go:
   stage: build-and-test
-  dependencies:
-    - "generate_golang_models"
+  needs:
+    - "generate_asyncapi_golang_models"
+    - "generate_swagger_golang_models"
   image: docker.io/golang:1.20.3
   script:
     - echo "Setting up ..."
@@ -85,7 +140,7 @@ build_go:
 # See https://gitlab.mi.hdm-stuttgart.de/help/user/project/releases/release_fields.md#use-a-generic-package-for-attaching-binaries
 upload_binaries:
   stage: upload
-  dependencies:
+  needs:
     - "build_go"
   image: docker.io/curlimages/curl:8.00.1
   rules:
@@ -103,7 +158,7 @@ upload_binaries:
 # See https://gitlab.mi.hdm-stuttgart.de/help/user/project/releases/release_fields.md#use-a-generic-package-for-attaching-binaries
 release_job:
   stage: release
-  dependencies:
+  needs:
     - "upload_binaries"
   image: registry.gitlab.com/gitlab-org/release-cli:latest
   rules:

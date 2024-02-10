@@ -7,6 +7,6 @@ hybrid-die:
 #   disabled: yes
   search:
     timeout: 5s
-game:
-  scored-points-to-win: 3
+# game:
+#   scored-points-to-win: 5
 #   questions: "./questions.json"

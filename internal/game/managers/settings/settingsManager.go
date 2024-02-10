@@ -3,7 +3,7 @@ package settingsmanager
 import (
 	log "github.com/sirupsen/logrus"
 	configuration "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/configuration"
-	dto "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/generated-sources/dto"
+	"gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/generated-sources/asyncapi"
 )
 
 // SettingsManager provides access to the game's settings
@@ -23,8 +23,8 @@ func (pm *SettingsManager) GetScoredPointsToWin() int {
 }
 
 // GetGameSettings returns the current game settings
-func (pm *SettingsManager) GetGameSettings() dto.GameSettings {
-	return dto.GameSettings{
+func (pm *SettingsManager) GetGameSettings() asyncapi.GameSettings {
+	return asyncapi.GameSettings{
 		ScoredPointsToWin: pm.GetScoredPointsToWin(),
 	}
 }

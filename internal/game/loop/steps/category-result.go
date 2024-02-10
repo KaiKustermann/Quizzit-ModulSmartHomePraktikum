@@ -4,7 +4,7 @@ import (
 	gameloop "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/game/loop"
 	gameloopprinter "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/game/loop/printer"
 	"gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/game/managers"
-	dto "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/generated-sources/dto"
+	"gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/generated-sources/asyncapi"
 	messagetypes "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/message-types"
 )
 
@@ -14,7 +14,7 @@ type CategoryResultStep struct {
 }
 
 func (s *CategoryResultStep) GetMessageBody(managers *managers.GameObjectManagers) interface{} {
-	return dto.CategoryResult{
+	return asyncapi.CategoryResult{
 		Category: managers.QuestionManager.GetActiveCategory(),
 	}
 }
@@ -23,7 +23,7 @@ func (s *CategoryResultStep) GetMessageBody(managers *managers.GameObjectManager
 //
 // The transition moves to the next question and makes sure it is reset to a clean state.
 func (s *CategoryResultStep) AddTransitionToQuestion(gsQuestion *QuestionStep) {
-	var action ActionHandler = func(managers *managers.GameObjectManagers, _ dto.WebsocketMessagePublish) (nextstep gameloop.GameStepIf, err error) {
+	var action ActionHandler = func(managers *managers.GameObjectManagers, _ asyncapi.WebsocketMessagePublish) (nextstep gameloop.GameStepIf, err error) {
 		managers.QuestionManager.MoveToNextQuestion()
 		managers.QuestionManager.ResetActiveQuestion()
 		return gsQuestion, nil
