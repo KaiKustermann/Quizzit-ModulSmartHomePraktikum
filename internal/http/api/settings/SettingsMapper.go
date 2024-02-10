@@ -19,3 +19,15 @@ func (m SettingsMapper) mapToGameDTO(conf configmodel.GameConfig) *swagger.Game 
 		PointsToWin: int32(conf.ScoredPointsToWin),
 	}
 }
+
+func (m SettingsMapper) mapToUserconfig(settings swagger.Settings) *configmodel.UserConfig {
+	return &configmodel.UserConfig{
+		Game: m.mapToGameConfig(settings.Game),
+	}
+}
+
+func (m SettingsMapper) mapToGameConfig(settings *swagger.Game) configmodel.GameConfig {
+	return configmodel.GameConfig{
+		ScoredPointsToWin: int(settings.PointsToWin),
+	}
+}

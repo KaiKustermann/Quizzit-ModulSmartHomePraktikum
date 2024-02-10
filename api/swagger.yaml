@@ -36,8 +36,24 @@ paths:
       responses:
         '200':
           $ref: '#/components/schemas/Settings'
+    post:
+      tags:
+        - settings
+      summary: Post Settings
+      description: Set current config to new values
+      requestBody:
+        $ref: '#/components/requestBodies/Settings'
+      responses:
+        '200':
+          description: 'patch applied'
 
 components:
+  requestBodies:
+    Settings:
+      content:
+        "application/json":
+          schema:
+            $ref: '#/components/schemas/Settings'
   schemas:
     Game:
       description: Game Settings
