@@ -32,7 +32,7 @@ func (h SettingsHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	case http.MethodGet:
 		h.Get(w, r)
 	case http.MethodPost:
-		h.Patch(w, r)
+		h.Post(w, r)
 	default:
 		h.SendMethodNotAllowed(w)
 	}
@@ -43,14 +43,15 @@ func (h SettingsHandler) Get(w http.ResponseWriter, r *http.Request) {
 	h.SendJSON(w, dto)
 }
 
-func (h SettingsHandler) Patch(w http.ResponseWriter, r *http.Request) {
+func (h SettingsHandler) Post(w http.ResponseWriter, r *http.Request) {
 	settings := &swagger.Settings{}
 	if err := json.NewDecoder(r.Body).Decode(settings); err != nil {
 		h.SendBadRequest(w)
 		return
 	}
-	userConfig := h.mapper.mapToUserconfig(*settings)
+	userConfig := *h.mapper.mapToUserconfig(*settings)
 	log.Debugf("Received UserConfig: %s", userConfig.String())
+	configuration.ChangeUserConfig(userConfig)
 	h.SendOK(w)
 }
 

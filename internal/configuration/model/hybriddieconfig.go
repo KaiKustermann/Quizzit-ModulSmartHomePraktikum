@@ -3,7 +3,8 @@ package configmodel
 
 import (
 	"fmt"
-	"time"
+
+	configyaml "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/configuration/yaml"
 )
 
 // HybridDieConfig is a container for hybrid-die related options
@@ -17,12 +18,10 @@ func (c *HybridDieConfig) String() string {
 	return fmt.Sprintf("{disabled: %v, search: %s}", c.Disabled, c.Search.String())
 }
 
-// HybridDieSearchConfig holds options related to the hybrid die search
-type HybridDieSearchConfig struct {
-	Timeout time.Duration
-}
-
-// String returns a string representation of this struct for logging purposes
-func (c *HybridDieSearchConfig) String() string {
-	return fmt.Sprintf("{timeout: %v}", c.Timeout)
+// ToYAML maps to [HybridDieYAML]
+func (c *HybridDieConfig) ToYAML() *configyaml.HybridDieYAML {
+	return &configyaml.HybridDieYAML{
+		Disabled: &c.Disabled,
+		Search:   c.Search.ToYAML(),
+	}
 }
