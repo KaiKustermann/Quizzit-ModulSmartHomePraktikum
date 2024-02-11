@@ -101,11 +101,8 @@ generate_asyncapi_golang_models:
 generate_openapi_golang_models:
   stage: api
   image: 
-    name: "openapitools/openapi-generator-cli:v7.3.0"
+    name: openapitools/openapi-generator-cli:v7.3.0
     entrypoint: ["/bin/bash", "-c"]
-  script:
-    - echo "Generating GOLANG Source Code from OPENAPI specifications"
-    - docker-entrypoint.sh generate -i ./api/openapi.yaml -g go -o ./internal/generated-sources/openapi
   artifacts:
     when: on_success
     expire_in: "1 hour"
