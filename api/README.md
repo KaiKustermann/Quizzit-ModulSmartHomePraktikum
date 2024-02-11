@@ -24,7 +24,7 @@ The API ist described in [openapi.yaml](./openapi.yaml). You can use the [swagge
 
 ### Swagger UI
 
-Windwos:
+Windows:
 
     docker run --rm -p 8000:8080 -e SWAGGER_JSON=/local/api/openapi.yaml -v %CD%:/local swaggerapi/swagger-ui
 
@@ -34,5 +34,6 @@ Linux:
 
 # Futher Reading
 
-For more help and how-to,
-[see the API WIKI](https://gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/-/wikis/Updating-the-API).
+* [See the API WIKI](https://gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/-/wikis/Updating-the-API).
+* https://github.com/OpenAPITools/openapi-generator/blob/master/docs/generators/go.md
+* https://github.com/OpenAPITools/openapi-generator/blob/master/docs/generators/typescript-rxjs.md

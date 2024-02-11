@@ -11,12 +11,16 @@
     "generate:typescript:asyncapi": "npm run generate:typescript:asyncapi:files && npm run generate:typescript:asyncapi:index",
     "generate:typescript:asyncapi:files": "asyncapi generate models typescript ./api/websocket-asyncapi.yaml -o ./api/typescript/src/asyncapi --tsModuleSystem=CJS --tsExportType=named --tsEnumType=enum --tsModelType=interface",
     "generate:typescript:asyncapi:index": "ls api/typescript/src/asyncapi | grep -v \"index.ts\" | sed \"s/.ts//g\" | sed \"s/^/export * from '.\\//\" | sed \"s/$/';/\" > api/typescript/src/asyncapi/index.ts",
-    "generate:typescript:openapi": "cross-os generate:typescript:openapi && mv ./api/typescript/src/tmp/models ./api/typescript/src/openapi && rm -rf ./api/typescript/src/tmp",
+    "generate:typescript:openapi": "npm run generate:typescript:openapi:files && npm run generate:typescript:openapi:move",
+    "generate:typescript:openapi:files": "cross-os mkdir:typescript:openapi && cross-os generate:typescript:openapi",
+    "generate:typescript:openapi:move": "mv ./api/typescript/src/tmp/*.ts  ./api/typescript/src/tmp/apis ./api/typescript/src/tmp/models ./api/typescript/src/openapi/ && rm -rf ./api/typescript/src/tmp",
     "regenerate:typescript": "npm run clear:typescript && npm run generate:typescript",
     "clear:golang": "rm -rf ./internal/generated-sources",
     "generate:golang": "npm run generate:golang:asyncapi && npm run generate:golang:openapi",
     "generate:golang:asyncapi": "asyncapi generate models golang ./api/websocket-asyncapi.yaml -o ./internal/generated-sources/asyncapi --packageName=asyncapi",
-    "generate:golang:openapi": "cross-os generate:golang:openapi && cross-os mkdir:golang:openapi && mv ./internal/generated-sources/tmp/model_*.go ./internal/generated-sources/openapi/ && rm -rf ./internal/generated-sources/tmp",
+    "generate:golang:openapi": "npm run generate:golang:openapi:files && npm run generate:golang:openapi:move",
+    "generate:golang:openapi:files": "cross-os mkdir:golang:openapi && cross-os generate:golang:openapi",
+    "generate:golang:openapi:move": "mv ./internal/generated-sources/tmp/model_*.go ./internal/generated-sources/tmp/utils.go ./internal/generated-sources/openapi/ && rm -rf ./internal/generated-sources/tmp",
     "regenerate:golang": "npm run clear:golang && npm run generate:golang"
   },
   "cross-os": {
@@ -31,6 +35,10 @@
     "generate:typescript:openapi": {
       "win32": "docker run --rm -v %CD%:/local openapitools/openapi-generator-cli:v7.3.0 generate -i /local/api/openapi.yaml -g typescript-rxjs -o /local/api/typescript/src/tmp",
       "linux": "docker run --rm -v $PWD:/local openapitools/openapi-generator-cli:v7.3.0 generate -i /local/api/openapi.yaml -g typescript-rxjs -o /local/api/typescript/src/tmp"
+    },
+    "mkdir:typescript:openapi": {
+      "win32": "mkdir api\\typescript\\src\\openapi",
+      "linux": "mkdir -p api/typescript/src/openapi"
     }
   },
   "devDependencies": {

@@ -25,6 +25,6 @@ type HybridDieSearchYAML struct {
 
 // GameYAML is a container for game related options
 type GameYAML struct {
-	ScoredPointsToWin *int    `yaml:"scored-points-to-win,omitempty"`
+	ScoredPointsToWin *int32  `yaml:"scored-points-to-win,omitempty"`
 	QuestionsPath     *string `yaml:"questions,omitempty"`
 }
