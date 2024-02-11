@@ -19,7 +19,7 @@ func NewSettingsManager() *SettingsManager {
 
 // GetScoredPointsToWin returns the amount of points needed to win the game
 func (pm *SettingsManager) GetScoredPointsToWin() int {
-	return configuration.GetQuizzitConfig().Game.ScoredPointsToWin
+	return int(configuration.GetQuizzitConfig().Game.ScoredPointsToWin)
 }
 
 // GetGameSettings returns the current game settings

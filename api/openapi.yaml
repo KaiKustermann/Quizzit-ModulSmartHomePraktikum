@@ -1,4 +1,4 @@
-openapi: 3.0.3
+openapi: 3.1.0
 info:
   title: Quizzit REST
   description: |-
@@ -12,7 +12,8 @@ info:
     email: "H3rby7@users.noreply.github.com"
     url: "https://github.com/h3rby7"
   license:
-    name: Unlicensed
+    name: MIT
+    identifier: https://choosealicense.com/licenses/mit/
   version: 0.2.0
 servers:
   - url: http://localhost:8080
@@ -37,25 +38,23 @@ paths:
       description: Get the current settings
       responses:
         '200':
-          $ref: '#/components/schemas/Settings'
+          description: Successfully retrieved settings
+          content:
+            application/json:
+              schema:
+                  $ref: '#/components/schemas/UserSettings'
     patch:
       tags:
         - settings
       summary: Update Settings
       description: Update Settings with new values
       requestBody:
-        $ref: '#/components/requestBodies/Settings'
+        $ref: '#/components/requestBodies/UserSettings'
       responses:
         '200':
           description: 'patch applied'
 
 components:
-  requestBodies:
-    Settings:
-      content:
-        "application/json":
-          schema:
-            $ref: '#/components/schemas/Settings'
   schemas:
     Game:
       description: Game Settings
@@ -91,12 +90,17 @@ components:
               description: Timeout as GOLANG duration string, leave empty to make no change
               type: string
               default: ""
-        
-    Settings:
-      description: Quizzit Settings
+    UserSettings:
+      description: UserSettings
       type: object
       properties:
         game:
           $ref: '#/components/schemas/Game'
         hybrid-die:
           $ref: '#/components/schemas/HybridDie'
+  requestBodies:
+    UserSettings:
+      content:
+        "application/json":
+          schema:
+            $ref: '#/components/schemas/UserSettings'

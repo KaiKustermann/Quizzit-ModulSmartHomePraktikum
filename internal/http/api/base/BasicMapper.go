@@ -2,7 +2,7 @@
 package apibase
 
 import (
-	dto "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/generated-sources/swagger"
+	dto "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/generated-sources/openapi"
 )
 
 // BasicMapper provides common utility functions for mapping
@@ -15,14 +15,14 @@ type BasicMapper struct {
 //
 // If true returns [ENABLED], else [DISABLED]
 func (m BasicMapper) MapToEnabledDTO(b *bool) *dto.Enabled {
-	enabled := dto.EMPTY_Enabled
+	enabled := dto.EMPTY
 	if b == nil {
 		return &enabled
 	}
 	if *b {
-		enabled = dto.ENABLED_Enabled
+		enabled = dto.ENABLED
 	} else {
-		enabled = dto.DISABLED_Enabled
+		enabled = dto.DISABLED
 	}
 	return &enabled
 }
@@ -37,7 +37,7 @@ func (m BasicMapper) MapToEnabledBool(in *dto.Enabled) *bool {
 	if in == nil {
 		return &enabled
 	}
-	if *in == dto.ENABLED_Enabled {
+	if *in == dto.ENABLED {
 		enabled = true
 	} else {
 		enabled = false

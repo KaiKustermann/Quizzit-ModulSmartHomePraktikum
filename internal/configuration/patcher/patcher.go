@@ -24,7 +24,7 @@ func patchGame(conf *configmodel.GameConfig, game *configyaml.GameYAML) {
 // patchScoredPointsToWin patches the ScoredPointsToWin field
 //
 // Only applies the patch, if 'pointsToWin' is not nil
-func patchScoredPointsToWin(conf *configmodel.GameConfig, pointsToWin *int) {
+func patchScoredPointsToWin(conf *configmodel.GameConfig, pointsToWin *int32) {
 	if pointsToWin == nil {
 		log.Debug("ScoredPointsToWin is nil, not patching")
 		return

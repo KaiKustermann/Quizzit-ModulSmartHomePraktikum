@@ -3,6 +3,6 @@ package configmodel
 
 // GameConfig is a container for game related options
 type GameConfig struct {
-	ScoredPointsToWin int
+	ScoredPointsToWin int32
 	QuestionsPath     string
 }

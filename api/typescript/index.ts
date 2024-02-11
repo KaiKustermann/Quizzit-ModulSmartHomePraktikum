@@ -1,2 +1,2 @@
-export * from './src/swagger';
+export * from './src/openapi';
 export * from './src/asyncapi';

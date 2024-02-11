@@ -21,13 +21,21 @@ variables:
 
 validate_asyncapi:
   stage: validate
-  image: docker.io/hdmstuttgartquizzit/asyncapi-generator:0.2.0
+  image: docker.io/hdmstuttgartquizzit/asyncapi-generator:0.3.0
   script:
     - asyncapi validate api/websocket-asyncapi.yaml
 
+validate_openapi:
+  stage: validate
+  image:
+    name: openapitools/openapi-generator-cli:v7.3.0
+    entrypoint: [""]
+  script:
+    - docker-entrypoint.sh validate -i ./api/openapi.yaml
+
 generate_asyncapi_typescript_packages:
   stage: api
-  image: docker.io/hdmstuttgartquizzit/asyncapi-generator:0.2.0
+  image: docker.io/hdmstuttgartquizzit/asyncapi-generator:0.3.0
   script:
     - asyncapi --version
     - tsc --version
@@ -39,30 +47,32 @@ generate_asyncapi_typescript_packages:
     paths:
       - "api/typescript/src/asyncapi"
 
-generate_swagger_typescript_models:
+generate_openapi_typescript_models:
   stage: api
-  image: 
-    name: swaggerapi/swagger-codegen-cli-v3:3.0.46
-    entrypoint: ["/bin/sh", "-c"]
+  image:
+    name: openapitools/openapi-generator-cli:v7.3.0
+    entrypoint: [""]
   script:
-    - echo "Generating TYPESCRIPT Source Code from SWAGGER specifications"
-    - java -jar /opt/swagger-codegen-cli/swagger-codegen-cli.jar generate -i ./api/swagger.yaml -l typescript-axios -o ./api/typescript/src/tmp
-    - mv ./api/typescript/src/tmp/models ./api/typescript/src/swagger
+    - echo "Generating TYPESCRIPT Source Code from OPENAPI specifications"
+    - docker-entrypoint.sh generate -i ./api/openapi.yaml -g typescript-rxjs -o ./api/typescript/src/openapi
   artifacts:
     when: on_success
     expire_in: "1 hour"
     paths:
-      - "api/typescript/src/swagger"
+      - "api/typescript/src/openapi/*.ts"
+      - "api/typescript/src/openapi/apis"
+      - "api/typescript/src/openapi/models"
 
 bundle_typescript_package:
   stage: bundle-api
   dependencies:
     - "generate_asyncapi_typescript_packages"
-    - "generate_swagger_typescript_models"
-  image: docker.io/hdmstuttgartquizzit/asyncapi-generator:0.2.0
+    - "generate_openapi_typescript_models"
+  image: docker.io/hdmstuttgartquizzit/asyncapi-generator:0.3.0
   script:
     - echo "TYPESCRIPT - Entering api/typescript DIR"
     - cd ./api/typescript
+    - npm i --production
     - echo "TYPESCRIPT - Compiling to js and .d.ts files"
     - npm run module
   artifacts:
@@ -75,7 +85,7 @@ publish_typescript_package:
   stage: publish-api
   dependencies:
     - "bundle_typescript_package"
-  image: docker.io/hdmstuttgartquizzit/asyncapi-generator:0.2.0
+  image: docker.io/hdmstuttgartquizzit/asyncapi-generator:0.3.0
   script:
     - cd api/typescript
     - echo "TYPESCRIPT - Publishing Module"
@@ -87,7 +97,7 @@ publish_typescript_package:
 
 generate_asyncapi_golang_models:
   stage: api
-  image: docker.io/hdmstuttgartquizzit/asyncapi-generator:0.1.0
+  image: docker.io/hdmstuttgartquizzit/asyncapi-generator:0.3.0
   script:
     - echo "Generating GOLANG Source Code from ASYNC-API specifications"
     - npm run generate:golang:asyncapi
@@ -97,26 +107,27 @@ generate_asyncapi_golang_models:
     paths:
       - "internal/generated-sources/asyncapi"
 
-generate_swagger_golang_models:
+generate_openapi_golang_models:
   stage: api
-  image: 
-    name: swaggerapi/swagger-codegen-cli-v3:3.0.46
-    entrypoint: ["/bin/sh", "-c"]
+  image:
+    name: openapitools/openapi-generator-cli:v7.3.0
+    entrypoint: [""]
   script:
-    - echo "Generating GOLANG Source Code from SWAGGER specifications"
-    - java -jar /opt/swagger-codegen-cli/swagger-codegen-cli.jar generate -i ./api/swagger.yaml -l go -o ./internal/generated-sources/swagger
+    - echo "Generating GOLANG Source Code from OPENAPI specifications"
+    - docker-entrypoint.sh generate -i ./api/openapi.yaml -g go -o ./internal/generated-sources/openapi
   artifacts:
     when: on_success
     expire_in: "1 hour"
     paths:
-      - "internal/generated-sources/swagger/model_*.go"
+      - "internal/generated-sources/openapi/model_*.go"
+      - "internal/generated-sources/openapi/utils.go"
 
 # https://go.dev/doc/install/source#environment
 build_go:
   stage: build-and-test
   needs:
     - "generate_asyncapi_golang_models"
-    - "generate_swagger_golang_models"
+    - "generate_openapi_golang_models"
   image: docker.io/golang:1.20.3
   script:
     - echo "Setting up ..."

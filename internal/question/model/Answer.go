@@ -12,8 +12,8 @@ type Answer struct {
 }
 
 // Convert an internal Answer a DTO of type PossibleAnswer, some information might get lost (e.g. field IsCorrect)
-func (a Answer) ConvertToDTO() *asyncapi.PossibleAnswer {
-	return &asyncapi.PossibleAnswer{Id: a.Id, Answer: a.Answer, IsDisabled: a.IsDisabled, IsSelected: a.IsSelected}
+func (a Answer) ConvertToDTO() asyncapi.PossibleAnswer {
+	return asyncapi.PossibleAnswer{Id: a.Id, Answer: a.Answer, IsDisabled: a.IsDisabled, IsSelected: a.IsSelected}
 }
 
 // AnswerFromDTO creates an [Answer] from the DTO [PossibleAnswer]

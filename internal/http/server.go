@@ -6,7 +6,7 @@ import (
 
 	"gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/configuration"
 	healthapi "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/http/api/health"
-	settingsapi "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/http/api/settings"
+	"gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/http/api/usersettingsapi"
 	ws "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/websockets"
 
 	log "github.com/sirupsen/logrus"
@@ -16,7 +16,7 @@ import (
 func RunHttpServer() {
 	log.Debug("Setting up HTTP handlers")
 	http.HandleFunc("/health", healthapi.HealthCheckHttp)
-	http.Handle("/settings", settingsapi.NewSettingsEndpoint())
+	http.Handle("/settings", usersettingsapi.NewUserSettingsEndpoint())
 	http.HandleFunc("/ws", ws.WebsocketEndpoint)
 
 	log.Debug("Creating HTTP server")

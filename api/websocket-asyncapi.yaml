@@ -10,13 +10,14 @@ info:
   title: Quizzit Websocket
   description: |-
     Quizzit Websocket API specification.
-    We also provide a REST interface for certain information, refer to the swagger.yaml for these definitions.
+    We also provide a REST interface for certain information, refer to the openapi.yaml for these definitions.
     
     Some useful links:
     - [Quizzit repository](https://gitlab.mi.hdm-stuttgart.de/quizzit)
   version: 1.0.0
   license:
-    name: Unlicensed
+    name: MIT
+    url: https://choosealicense.com/licenses/mit/
   contact:
     name: "H3rby7"
     email: "H3rby7@users.noreply.github.com"

@@ -1,5 +1,5 @@
-// Package settingsapi defines endpoints to handle requests related to Settings
-package settingsapi
+// Package usersettingsapi defines endpoints to handle requests related to UserSettings
+package usersettingsapi
 
 import (
 	"encoding/json"
@@ -7,28 +7,28 @@ import (
 
 	log "github.com/sirupsen/logrus"
 	"gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/configuration"
-	dto "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/generated-sources/swagger"
+	dto "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/generated-sources/openapi"
 	apibase "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/http/api/base"
 )
 
-// SettingsEndpoint implements http.[Handler]
-type SettingsEndpoint struct {
+// UserSettingsEndpoint implements http.[Handler]
+type UserSettingsEndpoint struct {
 	apibase.BasicHandler
-	mapper SettingsMapper
+	mapper UserSettingsMapper
 }
 
-// NewSettingsEndpoint constructs a new [SettingsEndpoint]
-func NewSettingsEndpoint() SettingsEndpoint {
-	log.Debug("Creating new SettingsEndpoint")
-	return SettingsEndpoint{
-		mapper: SettingsMapper{},
+// NewSettingsEndpoint constructs a new [UserSettingsEndpoint]
+func NewUserSettingsEndpoint() UserSettingsEndpoint {
+	log.Debug("Creating new UserSettingsEndpoint")
+	return UserSettingsEndpoint{
+		mapper: UserSettingsMapper{},
 	}
 }
 
 // ServeHTTP implements http.[Handler]
 //
 // Defines all reactions to requests of all http-methods
-func (h SettingsEndpoint) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+func (h UserSettingsEndpoint) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	h.LogIncoming(*r)
 	w.Header().Set("Content-Type", "application/json")
 	w.Header().Add("Access-Control-Allow-Origin", "*")
@@ -45,14 +45,14 @@ func (h SettingsEndpoint) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 }
 
 // Get handles the GET requests
-func (h SettingsEndpoint) Get(w http.ResponseWriter, r *http.Request) {
+func (h UserSettingsEndpoint) Get(w http.ResponseWriter, r *http.Request) {
 	dto := h.mapper.mapToSettingsDTO(configuration.GetQuizzitConfig())
 	h.SendJSON(w, dto)
 }
 
 // Patch handles the PATCH requests
-func (h SettingsEndpoint) Patch(w http.ResponseWriter, r *http.Request) {
-	settings := &dto.Settings{}
+func (h UserSettingsEndpoint) Patch(w http.ResponseWriter, r *http.Request) {
+	settings := &dto.UserSettings{}
 	if err := json.NewDecoder(r.Body).Decode(settings); err != nil {
 		h.SendBadRequest(w)
 		return
@@ -66,7 +66,7 @@ func (h SettingsEndpoint) Patch(w http.ResponseWriter, r *http.Request) {
 }
 
 // Options handles the OPTIONS requests
-func (h SettingsEndpoint) Options(w http.ResponseWriter) {
+func (h UserSettingsEndpoint) Options(w http.ResponseWriter) {
 	allowed := []string{http.MethodOptions, http.MethodGet, http.MethodPatch}
 	e := w.Header()
 	for _, v := range allowed {
