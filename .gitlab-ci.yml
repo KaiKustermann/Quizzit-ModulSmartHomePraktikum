@@ -101,7 +101,7 @@ generate_asyncapi_golang_models:
 generate_openapi_golang_models:
   stage: api
   image: 
-    name: openapitools/openapi-generator-cli:v7.3.0
+    name: docker.io/hdmstuttgartquizzit/asyncapi-generator:0.1.0
     entrypoint: ["/bin/sh", "-c"]
   script:
     - echo Hello
