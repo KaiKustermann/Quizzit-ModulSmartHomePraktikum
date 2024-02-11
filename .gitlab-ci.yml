@@ -45,17 +45,15 @@ generate_openapi_typescript_models:
     name: openapitools/openapi-generator-cli:v7.3.0
     entrypoint: ["/bin/bash", "-c"]
   script:
-    - echo "Creating TYPESCRIPT DIR for openapi code"
-    - mkdir -p api/typescript/src/openapi
     - echo "Generating TYPESCRIPT Source Code from OPENAPI specifications"
-    - java -jar /opt/openapi-generator/modules/openapi-generator-cli/target/openapi-generator-cli.jar generate -i ./api/openapi.yaml -g typescript-rxjs -o ./api/typescript/src/tmp
-    - echo "Moving TYPESCRIPT files to target DIR"
-    - mv ./api/typescript/src/tmp/*.ts  ./api/typescript/src/tmp/apis ./api/typescript/src/tmp/models ./api/typescript/src/openapi/
+    - java -jar /opt/openapi-generator/modules/openapi-generator-cli/target/openapi-generator-cli.jar generate -i ./api/openapi.yaml -g typescript-rxjs -o ./api/typescript/src/openapi
   artifacts:
     when: on_success
     expire_in: "1 hour"
     paths:
-      - "api/typescript/src/openapi"
+      - "api/typescript/src/openapi/*.ts"
+      - "api/typescript/src/openapi/apis"
+      - "api/typescript/src/openapi/models"
 
 bundle_typescript_package:
   stage: bundle-api
@@ -106,17 +104,14 @@ generate_openapi_golang_models:
     name: openapitools/openapi-generator-cli:v7.3.0
     entrypoint: ["/bin/bash", "-c"]
   script:
-    - echo "Creating GOLANG DIR for openapi code"
-    - mkdir -p internal/generated-sources/openapi
     - echo "Generating GOLANG Source Code from OPENAPI specifications"
-    - java -jar /opt/openapi-generator/modules/openapi-generator-cli/target/openapi-generator-cli.jar generate -i ./api/openapi.yaml -g go -o ./internal/generated-sources/tmp
-    - echo "Moving GOLANG files to target DIR"
-    - mv ./internal/generated-sources/tmp/model_*.go ./internal/generated-sources/tmp/utils.go ./internal/generated-sources/openapi/
+    - java -jar /opt/openapi-generator/modules/openapi-generator-cli/target/openapi-generator-cli.jar generate -i ./api/openapi.yaml -g go -o ./internal/generated-sources/openapi
   artifacts:
     when: on_success
     expire_in: "1 hour"
     paths:
-      - "internal/generated-sources/openapi"
+      - "internal/generated-sources/openapi/model_*.go"
+      - "internal/generated-sources/openapi/utils.go"
 
 # https://go.dev/doc/install/source#environment
 build_go:
