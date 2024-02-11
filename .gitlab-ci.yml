@@ -43,14 +43,14 @@ generate_openapi_typescript_models:
   stage: api
   image: 
     name: openapitools/openapi-generator-cli:v7.3.0
-    entrypoint: ["/bin/sh", "-c"]
+    entrypoint: ["/bin/bash", "-c"]
   script:
     - echo "Creating TYPESCRIPT DIR for openapi code"
     - mkdir -p api/typescript/src/openapi
     - echo "Generating TYPESCRIPT Source Code from OPENAPI specifications"
     - java -jar /opt/openapi-generator/modules/openapi-generator-cli/target/openapi-generator-cli.jar generate -i ./api/openapi.yaml -g typescript-rxjs -o ./api/typescript/src/tmp
     - echo "Moving TYPESCRIPT files to target DIR"
-    - mv ./api/typescript/src/tmp/*.ts ./api/typescript/src/tmp/apis ./api/typescript/src/tmp/models ./api/typescript/src/openapi/
+    - mv ./api/typescript/src/tmp/*.ts  ./api/typescript/src/tmp/apis ./api/typescript/src/tmp/models ./api/typescript/src/openapi/
   artifacts:
     when: on_success
     expire_in: "1 hour"
@@ -104,7 +104,7 @@ generate_openapi_golang_models:
   stage: api
   image: 
     name: openapitools/openapi-generator-cli:v7.3.0
-    entrypoint: ["/bin/sh", "-c"]
+    entrypoint: ["/bin/bash", "-c"]
   script:
     - echo "Creating GOLANG DIR for openapi code"
     - mkdir -p internal/generated-sources/openapi
