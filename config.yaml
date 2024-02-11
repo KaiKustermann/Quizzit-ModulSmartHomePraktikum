@@ -4,7 +4,7 @@
 #   level: info
 #   file-level: info
 hybrid-die:
-#   disabled: yes
+#   enabled: no
   search:
     timeout: 5s
 game:

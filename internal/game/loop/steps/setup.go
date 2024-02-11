@@ -34,7 +34,7 @@ func (s *SetupStep) AddTransitions(gsPlayerTurnStart *PlayerTurnStartDelegate, g
 		managers.PlayerManager.SetPlayercount(pC)
 
 		conf := configuration.GetQuizzitConfig()
-		if conf.HybridDie.Disabled || managers.HybridDieManager.IsConnected() {
+		if !conf.HybridDie.Enabled || managers.HybridDieManager.IsConnected() {
 			return gsPlayerTurnStart, nil
 		}
 		return gsSearchHybridDie, nil

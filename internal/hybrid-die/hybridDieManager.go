@@ -61,7 +61,7 @@ func (hd *HybridDieManager) IsConnected() bool {
 // Start finding a hybrid die
 func (hd *HybridDieManager) Find() {
 	conf := configuration.GetQuizzitConfig()
-	if conf.HybridDie.Disabled {
+	if !conf.HybridDie.Enabled {
 		log.Info("Skipping find a hybrid die, because the hybrid die is disabled in config.")
 		return
 	}

@@ -62,25 +62,35 @@ components:
       type: object
       properties:
         scored-points-to-win:
-          description: How many points a player needs to win the game
+          description: How many points a player needs to win the game, values below '1' are ignored.
           type: integer
+          default: -1
         questions:
-          description: Filepath to the questions catalog to use
+          description: Filepath to the questions catalog to use, leave empty to make no change
           type: string
+          default: ""
+    Enabled:
+      description: Is Enabled, leave empty to make no change
+      type: string
+      default: ""
+      enum: 
+       - ""
+       - "ENABLED"
+       - "DISABLED"
     HybridDie:
       description: Hybrid-Die Settings
       type: object
       properties:
-        disabled:
-          description: Disable Hybrid-Die (will not search)
-          type: boolean
+        enabled:
+          $ref: "#/components/schemas/Enabled"
         search:
           description: Settings related to searching a hybrid-die
           type: object
           properties:
             timeout:
-              description: Timeout as GOLANG duration string
+              description: Timeout as GOLANG duration string, leave empty to make no change
               type: string
+              default: ""
         
     Settings:
       description: Quizzit Settings

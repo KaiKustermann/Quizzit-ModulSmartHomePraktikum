@@ -7,7 +7,7 @@ import (
 
 	log "github.com/sirupsen/logrus"
 	"gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/configuration"
-	"gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/generated-sources/swagger"
+	dto "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/generated-sources/swagger"
 	apibase "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/http/api/base"
 )
 
@@ -52,7 +52,7 @@ func (h SettingsEndpoint) Get(w http.ResponseWriter, r *http.Request) {
 
 // Patch handles the PATCH requests
 func (h SettingsEndpoint) Patch(w http.ResponseWriter, r *http.Request) {
-	settings := &swagger.Settings{}
+	settings := &dto.Settings{}
 	if err := json.NewDecoder(r.Body).Decode(settings); err != nil {
 		h.SendBadRequest(w)
 		return
