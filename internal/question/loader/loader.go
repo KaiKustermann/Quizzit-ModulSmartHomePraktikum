@@ -1,4 +1,4 @@
-package questionmanager
+package questionloader
 
 import (
 	"encoding/json"
@@ -13,10 +13,10 @@ import (
 	questionvalidator "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/question/validator"
 )
 
-// loadQuestions attempts to load the questions from the configured path
+// LoadQuestions attempts to load the questions from the configured path
 //
 // @See [QuizzitConfig]
-func loadQuestions() (questions []questionmodel.Question) {
+func LoadQuestions() (questions []questionmodel.Question) {
 	opts := configuration.GetQuizzitConfig()
 	relPath := opts.Game.QuestionsPath
 	questions, err := loadQuestionsFromFile(relPath)

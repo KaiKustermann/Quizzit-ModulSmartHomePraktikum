@@ -7,6 +7,7 @@ import (
 
 	"gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/category"
 	"gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/generated-sources/asyncapi"
+	questionloader "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/question/loader"
 	questionmodel "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/question/model"
 )
 
@@ -23,7 +24,7 @@ type QuestionManager struct {
 func NewQuestionManager() *QuestionManager {
 	log.Infof("Constructing new QuestionManager")
 	qm := &QuestionManager{}
-	qm.questions = loadQuestions()
+	qm.questions = questionloader.LoadQuestions()
 	return qm
 }
 
