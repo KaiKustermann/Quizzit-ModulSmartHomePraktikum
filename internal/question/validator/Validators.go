@@ -1,13 +1,14 @@
-package question
+package questionvalidator
 
 import (
 	"fmt"
 
 	"gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/category"
+	questionmodel "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/question/model"
 )
 
 // Validates that the field Id contains a reasonable value
-func (question Question) validateId() (ok bool, error ValidationError) {
+func validateId(question questionmodel.Question) (ok bool, error ValidationError) {
 	ok = true
 	if question.Id == "" {
 		ok = false
@@ -19,7 +20,7 @@ func (question Question) validateId() (ok bool, error ValidationError) {
 }
 
 // Validates that the field Query contains a reasonable value
-func (question Question) validateQuery() (ok bool, error ValidationError) {
+func validateQuery(question questionmodel.Question) (ok bool, error ValidationError) {
 	ok = true
 	if question.Query == "" {
 		ok = false
@@ -31,7 +32,7 @@ func (question Question) validateQuery() (ok bool, error ValidationError) {
 }
 
 // Validates that for one answer the flag IsCorrect is true and for the others it is false
-func (question Question) validateCorrectAnswerCount() (ok bool, error ValidationError) {
+func validateCorrectAnswerCount(question questionmodel.Question) (ok bool, error ValidationError) {
 	ok = true
 	isCorrectCount := 0
 	for _, answer := range question.Answers {
@@ -55,7 +56,7 @@ func (question Question) validateCorrectAnswerCount() (ok bool, error Validation
 }
 
 // Validates that all the Ids of all answers are unique
-func (question Question) validateAnswerIdUniqueness() (ok bool, error ValidationError) {
+func validateAnswerIdUniqueness(question questionmodel.Question) (ok bool, error ValidationError) {
 	ok = true
 	answerIdSet := make(map[string]bool)
 	for _, answer := range question.Answers {
@@ -71,7 +72,7 @@ func (question Question) validateAnswerIdUniqueness() (ok bool, error Validation
 }
 
 // Validates that the Id of all given questions is unique
-func validateIdUniqueness(questions []Question) (ok bool, errors []ValidationError) {
+func validateIdUniqueness(questions []questionmodel.Question) (ok bool, errors []ValidationError) {
 	ok = true
 	questionIdSet := make(map[string]bool)
 	for _, question := range questions {
@@ -88,7 +89,7 @@ func validateIdUniqueness(questions []Question) (ok bool, errors []ValidationErr
 }
 
 // Validates that the category of a given question is part of the supported categories of the game
-func (question Question) validateCategory() (ok bool, error ValidationError) {
+func validateCategory(question questionmodel.Question) (ok bool, error ValidationError) {
 	ok = true
 	categorySupported := false
 	supportedCategories := category.GetSupportedQuestionCategories()
@@ -107,7 +108,7 @@ func (question Question) validateCategory() (ok bool, error ValidationError) {
 }
 
 // Validates that there is at least one question for a given supported category
-func validateCategoryVariety(questions []Question) (ok bool, errors []ValidationError) {
+func validateCategoryVariety(questions []questionmodel.Question) (ok bool, errors []ValidationError) {
 	ok = true
 	supportedCategories := category.GetSupportedQuestionCategories()
 	for _, category := range supportedCategories {
@@ -130,26 +131,26 @@ func validateCategoryVariety(questions []Question) (ok bool, errors []Validation
 // validates the questions with a set of validators;
 // ok = true => no errors found
 // ok = false => errors field contains the validation errors
-func ValidateQuestions(questions []Question) (ok bool, errors []ValidationError) {
+func ValidateQuestions(questions []questionmodel.Question) (ok bool, errors []ValidationError) {
 	ok = true
 	for _, question := range questions {
-		if _ok, err := question.validateId(); !_ok {
+		if _ok, err := validateId(question); !_ok {
 			ok = false
 			errors = append(errors, err)
 		}
-		if _ok, err := question.validateAnswerIdUniqueness(); !_ok {
+		if _ok, err := validateAnswerIdUniqueness(question); !_ok {
 			ok = false
 			errors = append(errors, err)
 		}
-		if _ok, err := question.validateCorrectAnswerCount(); !_ok {
+		if _ok, err := validateCorrectAnswerCount(question); !_ok {
 			ok = false
 			errors = append(errors, err)
 		}
-		if _ok, err := question.validateQuery(); !_ok {
+		if _ok, err := validateQuery(question); !_ok {
 			ok = false
 			errors = append(errors, err)
 		}
-		if _ok, err := question.validateCategory(); !_ok {
+		if _ok, err := validateCategory(question); !_ok {
 			ok = false
 			errors = append(errors, err)
 		}

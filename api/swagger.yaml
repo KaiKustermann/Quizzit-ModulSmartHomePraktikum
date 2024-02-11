@@ -1,17 +1,19 @@
 openapi: 3.0.3
 info:
-  title: Quizzit - OpenAPI 3.0
+  title: Quizzit REST
   description: |-
-    This is the first draft of the Quizzit REST API specification.
+    Quizzit REST API specification.
     We also provide a Websocket interface for certain information, refer to the asyncapi.yml for these definitions.
     
     Some useful links:
     - [Quizzit repository](https://gitlab.mi.hdm-stuttgart.de/quizzit)
   contact:
+    name: "H3rby7"
     email: "H3rby7@users.noreply.github.com"
+    url: "https://github.com/h3rby7"
   license:
     name: Unlicensed
-  version: 0.1.0
+  version: 0.2.0
 servers:
   - url: http://localhost:8080
     description: Local development
@@ -59,11 +61,42 @@ components:
       description: Game Settings
       type: object
       properties:
-        pointsToWin:
+        scored-points-to-win:
+          description: How many points a player needs to win the game, values below '1' are ignored.
           type: integer
+          default: -1
+        questions:
+          description: Filepath to the questions catalog to use, leave empty to make no change
+          type: string
+          default: ""
+    Enabled:
+      description: Is Enabled, leave empty to make no change
+      type: string
+      default: ""
+      enum: 
+       - ""
+       - "ENABLED"
+       - "DISABLED"
+    HybridDie:
+      description: Hybrid-Die Settings
+      type: object
+      properties:
+        enabled:
+          $ref: "#/components/schemas/Enabled"
+        search:
+          description: Settings related to searching a hybrid-die
+          type: object
+          properties:
+            timeout:
+              description: Timeout as GOLANG duration string, leave empty to make no change
+              type: string
+              default: ""
+        
     Settings:
       description: Quizzit Settings
       type: object
       properties:
         game:
           $ref: '#/components/schemas/Game'
+        hybrid-die:
+          $ref: '#/components/schemas/HybridDie'

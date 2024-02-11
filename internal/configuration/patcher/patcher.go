@@ -29,6 +29,10 @@ func patchScoredPointsToWin(conf *configmodel.GameConfig, pointsToWin *int) {
 		log.Debug("ScoredPointsToWin is nil, not patching")
 		return
 	}
+	if *pointsToWin < 1 {
+		log.Debugf("ScoredPointsToWin '%v' is smaller than '1', not patching", *pointsToWin)
+		return
+	}
 	conf.ScoredPointsToWin = *pointsToWin
 }
 
@@ -38,6 +42,10 @@ func patchScoredPointsToWin(conf *configmodel.GameConfig, pointsToWin *int) {
 func patchQuestionsPath(conf *configmodel.GameConfig, questionsPath *string) {
 	if questionsPath == nil {
 		log.Debug("QuestionsPath is nil, not patching")
+		return
+	}
+	if *questionsPath == "" {
+		log.Debug("QuestionsPath is empty, not patching")
 		return
 	}
 	conf.QuestionsPath = *questionsPath
@@ -109,10 +117,10 @@ func patchHybridDie(conf *configmodel.HybridDieConfig, file *configyaml.HybridDi
 		return
 	}
 	patchHybridDieSearch(&conf.Search, file.Search)
-	if file.Disabled == nil {
+	if file.Enabled == nil {
 		log.Debug("HybridDie Disabled is nil, not patching")
 	} else {
-		conf.Disabled = *file.Disabled
+		conf.Enabled = *file.Enabled
 	}
 }
 

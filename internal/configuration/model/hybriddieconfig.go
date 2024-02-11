@@ -3,6 +3,6 @@ package configmodel
 
 // HybridDieConfig is a container for hybrid-die related options
 type HybridDieConfig struct {
-	Disabled bool
-	Search   HybridDieSearchConfig
+	Enabled bool
+	Search  HybridDieSearchConfig
 }

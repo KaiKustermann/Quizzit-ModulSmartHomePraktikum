@@ -1,11 +1,14 @@
-package question
+package questionvalidator
 
-import log "github.com/sirupsen/logrus"
+import (
+	log "github.com/sirupsen/logrus"
+	questionmodel "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/question/model"
+)
 
 // Container for validation errors concerning Question
 type ValidationError struct {
 	Problem  string
-	Question Question
+	Question questionmodel.Question
 }
 
 // Convenience function, iterates through a list of validation errors and logs them as errors

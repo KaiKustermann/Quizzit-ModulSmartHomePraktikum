@@ -7,18 +7,23 @@ tags:
   - name: "sender:client"
     description: Event sent by the client (e.G. 'player')
 info:
-  title: Quizzit
-  description: A quiz game for nursery homes
+  title: Quizzit Websocket
+  description: |-
+    Quizzit Websocket API specification.
+    We also provide a REST interface for certain information, refer to the swagger.yaml for these definitions.
+    
+    Some useful links:
+    - [Quizzit repository](https://gitlab.mi.hdm-stuttgart.de/quizzit)
   version: 1.0.0
   license:
-    name: not licensed
+    name: Unlicensed
   contact:
     name: "H3rby7"
     email: "H3rby7@users.noreply.github.com"
     url: "https://github.com/h3rby7"
 servers:
   local:
-    url: localhost:8080/ws
+    url: http://localhost:8080/ws
     protocol: websocket
     description: Local development
 channels:

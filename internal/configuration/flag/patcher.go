@@ -17,7 +17,7 @@ func PatchwithFlags(conf *configmodel.QuizzitConfig) {
 	patchLogLevel(&conf.Log, fl.LogLevel)
 	patchLogLevelFile(&conf.Log, fl.LogFileLevel)
 	patchHttpPort(&conf.Http, fl.HttpPort)
-	patchHybridDieDisabled(&conf.HybridDie, fl.DieDisabled)
+	patchHybridDieEnabled(&conf.HybridDie, fl.DieEnabled)
 	patchHybridDieSearch(&conf.HybridDie, fl.HybridDieSearchTimeout)
 }
 
@@ -54,23 +54,23 @@ func patchHttpPort(conf *configmodel.HttpConfig, port *int) {
 	conf.Port = *port
 }
 
-// patchLogLevel patches the LogConfig field
+// patchHybridDieEnabled patches the HybridDieConfig field
 //
 // Only applies the patch, if the value of the 'flag' config is not nil
-func patchHybridDieDisabled(conf *configmodel.HybridDieConfig, flag *string) {
+func patchHybridDieEnabled(conf *configmodel.HybridDieConfig, flag *string) {
 	if flag == nil {
-		log.Debug("Hybrid die disabled is nil, not patching")
+		log.Debug("Hybrid die enabled is nil, not patching")
 		return
 	}
 	if *flag == "yes" {
-		conf.Disabled = true
+		conf.Enabled = true
 		return
 	}
 	if *flag == "no" {
-		conf.Disabled = false
+		conf.Enabled = false
 		return
 	}
-	log.Warnf("Flag 'die-disable' has unsupported value %s, please use 'yes' or 'no'", *flag)
+	log.Warnf("Flag 'die-enable' has unsupported value %s, please use 'yes' or 'no'", *flag)
 }
 
 // patchHybridDieSearch patches the HybridDieConfig field

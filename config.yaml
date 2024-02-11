@@ -4,9 +4,9 @@
 #   level: info
 #   file-level: info
 hybrid-die:
-#   disabled: yes
+#   enabled: no
   search:
     timeout: 5s
-# game:
-#   scored-points-to-win: 5
-#   questions: "./questions.json"
+game:
+  scored-points-to-win: 3
+  questions: "./questions.json"
