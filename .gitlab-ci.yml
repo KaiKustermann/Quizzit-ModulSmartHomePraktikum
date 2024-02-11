@@ -102,7 +102,9 @@ generate_openapi_golang_models:
   stage: api
   image: 
     name: openapitools/openapi-generator-cli:v7.3.0
-    entrypoint: ["/bin/bash", "-c"]
+    entrypoint: ["/bin/sh", "-c"]
+  script:
+    - echo Hello
   artifacts:
     when: on_success
     expire_in: "1 hour"
