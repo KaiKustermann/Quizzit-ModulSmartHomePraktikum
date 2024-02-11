@@ -5,6 +5,7 @@
   "scripts": {
     "tsc": "tsc",
     "cross-os": "cross-os",
+    "regenerate:all": "npm run regenerate:typescript && npm run regenerate:golang",
     "clear:typescript": "rm -rf ./api/typescript/src",
     "generate:typescript": "npm run generate:typescript:asyncapi && npm run generate:typescript:swagger",
     "generate:typescript:asyncapi": "npm run generate:typescript:asyncapi:files && npm run generate:typescript:asyncapi:index",
