@@ -61,11 +61,32 @@ components:
       description: Game Settings
       type: object
       properties:
-        pointsToWin:
+        scored-points-to-win:
+          description: How many points a player needs to win the game
           type: integer
+        questions:
+          description: Filepath to the questions catalog to use
+          type: string
+    HybridDie:
+      description: Hybrid-Die Settings
+      type: object
+      properties:
+        disabled:
+          description: Disable Hybrid-Die (will not search)
+          type: boolean
+        search:
+          description: Settings related to searching a hybrid-die
+          type: object
+          properties:
+            timeout:
+              description: Timeout as GOLANG duration string
+              type: string
+        
     Settings:
       description: Quizzit Settings
       type: object
       properties:
         game:
           $ref: '#/components/schemas/Game'
+        hybrid-die:
+          $ref: '#/components/schemas/HybridDie'
