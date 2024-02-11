@@ -5,6 +5,7 @@
   "author": "joka",
   "description": "Typescript types for quizzit",
   "scripts": {
-    "module": "tsc ./index.ts -d --skipLibCheck --lib esnext --outDir ./dist"
+    "tsc": "tsc",
+    "module": "tsc ./index.ts -d --skipLibCheck --outDir ./dist"
   }
 }
