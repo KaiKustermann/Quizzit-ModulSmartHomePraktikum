@@ -4,7 +4,7 @@ package settingsapi
 import (
 	configmodel "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/configuration/model"
 	configyaml "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/configuration/yaml"
-	dto "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/generated-sources/swagger"
+	dto "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/generated-sources/openapi"
 	apibase "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/http/api/base"
 )
 

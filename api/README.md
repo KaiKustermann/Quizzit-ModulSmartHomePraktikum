@@ -20,17 +20,17 @@ A detailed overview of the gameloop and communication via websockets is also ava
 
 Before the game starts we need no realtime duplex communication, so we can use REST.
 
-The API ist described in [swagger.yaml](./swagger.yaml). You can use the website [swagger](https://editor.swagger.io/) to visualize the api document (copy and paste it in).
+The API ist described in [openapi.yaml](./openapi.yaml). You can use the [swagger editor](https://editor.swagger.io/) to visualize the api document (copy and paste it in).
 
 ### Swagger UI
 
 Windwos:
 
-    docker run --rm -p 8000:8080 -e SWAGGER_JSON=/local/api/swagger.yaml -v %CD%:/local swaggerapi/swagger-ui
+    docker run --rm -p 8000:8080 -e SWAGGER_JSON=/local/api/openapi.yaml -v %CD%:/local swaggerapi/swagger-ui
 
 Linux:
 
-    docker run --rm -p 8000:8080 -e SWAGGER_JSON=/local/api/swagger.yaml -v $PWD:/local swaggerapi/swagger-ui
+    docker run --rm -p 8000:8080 -e SWAGGER_JSON=/local/api/openapi.yaml -v $PWD:/local swaggerapi/swagger-ui
 
 # Futher Reading
 

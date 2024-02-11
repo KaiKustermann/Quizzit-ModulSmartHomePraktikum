@@ -10,7 +10,7 @@ info:
   title: Quizzit Websocket
   description: |-
     Quizzit Websocket API specification.
-    We also provide a REST interface for certain information, refer to the swagger.yaml for these definitions.
+    We also provide a REST interface for certain information, refer to the openapi.yaml for these definitions.
     
     Some useful links:
     - [Quizzit repository](https://gitlab.mi.hdm-stuttgart.de/quizzit)

@@ -7,30 +7,30 @@
     "cross-os": "cross-os",
     "regenerate:all": "npm run regenerate:typescript && npm run regenerate:golang",
     "clear:typescript": "rm -rf ./api/typescript/src",
-    "generate:typescript": "npm run generate:typescript:asyncapi && npm run generate:typescript:swagger",
+    "generate:typescript": "npm run generate:typescript:asyncapi && npm run generate:typescript:openapi",
     "generate:typescript:asyncapi": "npm run generate:typescript:asyncapi:files && npm run generate:typescript:asyncapi:index",
     "generate:typescript:asyncapi:files": "asyncapi generate models typescript ./api/websocket-asyncapi.yaml -o ./api/typescript/src/asyncapi --tsModuleSystem=CJS --tsExportType=named --tsEnumType=enum --tsModelType=interface",
     "generate:typescript:asyncapi:index": "ls api/typescript/src/asyncapi | grep -v \"index.ts\" | sed \"s/.ts//g\" | sed \"s/^/export * from '.\\//\" | sed \"s/$/';/\" > api/typescript/src/asyncapi/index.ts",
-    "generate:typescript:swagger": "cross-os generate:typescript:swagger && mv ./api/typescript/src/tmp/models ./api/typescript/src/swagger && rm -rf ./api/typescript/src/tmp",
+    "generate:typescript:openapi": "cross-os generate:typescript:openapi && mv ./api/typescript/src/tmp/models ./api/typescript/src/openapi && rm -rf ./api/typescript/src/tmp",
     "regenerate:typescript": "npm run clear:typescript && npm run generate:typescript",
     "clear:golang": "rm -rf ./internal/generated-sources",
-    "generate:golang": "npm run generate:golang:asyncapi && npm run generate:golang:swagger",
+    "generate:golang": "npm run generate:golang:asyncapi && npm run generate:golang:openapi",
     "generate:golang:asyncapi": "asyncapi generate models golang ./api/websocket-asyncapi.yaml -o ./internal/generated-sources/asyncapi --packageName=asyncapi",
-    "generate:golang:swagger": "cross-os generate:golang:swagger && cross-os mkdir:golang:swagger && mv ./internal/generated-sources/tmp/model_*.go ./internal/generated-sources/swagger/ && rm -rf ./internal/generated-sources/tmp",
+    "generate:golang:openapi": "cross-os generate:golang:openapi && cross-os mkdir:golang:openapi && mv ./internal/generated-sources/tmp/model_*.go ./internal/generated-sources/openapi/ && rm -rf ./internal/generated-sources/tmp",
     "regenerate:golang": "npm run clear:golang && npm run generate:golang"
   },
   "cross-os": {
-    "generate:golang:swagger": {
-      "win32": "docker run --rm -v %CD%:/local swaggerapi/swagger-codegen-cli-v3:3.0.46 generate -i /local/api/swagger.yaml -l go -o /local/internal/generated-sources/tmp",
-      "linux": "docker run --rm -v $PWD:/local swaggerapi/swagger-codegen-cli-v3:3.0.46 generate -i /local/api/swagger.yaml -l go -o /local/internal/generated-sources/tmp"
+    "generate:golang:openapi": {
+      "win32": "docker run --rm -v %CD%:/local swaggerapi/swagger-codegen-cli-v3:3.0.46 generate -i /local/api/openapi.yaml -l go -o /local/internal/generated-sources/tmp",
+      "linux": "docker run --rm -v $PWD:/local swaggerapi/swagger-codegen-cli-v3:3.0.46 generate -i /local/api/openapi.yaml -l go -o /local/internal/generated-sources/tmp"
     },
-    "mkdir:golang:swagger": {
-      "win32": "mkdir internal\\generated-sources\\swagger",
-      "linux": "mkdir -p internal/generated-sources/swagger"
+    "mkdir:golang:openapi": {
+      "win32": "mkdir internal\\generated-sources\\openapi",
+      "linux": "mkdir -p internal/generated-sources/openapi"
     },
-    "generate:typescript:swagger": {
-      "win32": "docker run --rm -v %CD%:/local swaggerapi/swagger-codegen-cli-v3:3.0.46 generate -i /local/api/swagger.yaml -l typescript-axios -o /local/api/typescript/src/tmp",
-      "linux": "docker run --rm -v $PWD:/local swaggerapi/swagger-codegen-cli-v3:3.0.46 generate -i /local/api/swagger.yaml -l typescript-axios -o /local/api/typescript/src/tmp"
+    "generate:typescript:openapi": {
+      "win32": "docker run --rm -v %CD%:/local swaggerapi/swagger-codegen-cli-v3:3.0.46 generate -i /local/api/openapi.yaml -l typescript-axios -o /local/api/typescript/src/tmp",
+      "linux": "docker run --rm -v $PWD:/local swaggerapi/swagger-codegen-cli-v3:3.0.46 generate -i /local/api/openapi.yaml -l typescript-axios -o /local/api/typescript/src/tmp"
     }
   },
   "devDependencies": {

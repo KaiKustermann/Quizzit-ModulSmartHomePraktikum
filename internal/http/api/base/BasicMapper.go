@@ -2,7 +2,7 @@
 package apibase
 
 import (
-	dto "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/generated-sources/swagger"
+	dto "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/generated-sources/openapi"
 )
 
 // BasicMapper provides common utility functions for mapping

@@ -7,7 +7,7 @@ import (
 
 	log "github.com/sirupsen/logrus"
 	"gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/configuration"
-	dto "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/generated-sources/swagger"
+	dto "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/generated-sources/openapi"
 	apibase "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/http/api/base"
 )
 
