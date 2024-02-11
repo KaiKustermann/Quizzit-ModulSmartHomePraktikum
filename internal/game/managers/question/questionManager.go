@@ -10,7 +10,7 @@ import (
 	question "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/question"
 )
 
-// Statefully handle the catalog of [Question]s and the active [Question] and category
+// QuestionManager statefully handles the catalog of [Question]s and the active [Question] and category
 type QuestionManager struct {
 	questions      []question.Question
 	activeQuestion *question.Question

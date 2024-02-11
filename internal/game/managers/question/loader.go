@@ -12,7 +12,9 @@ import (
 	question "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/question"
 )
 
-// Attempt to load the questions from multiple locations
+// loadQuestions attempts to load the questions from the configured path
+//
+// @See [QuizzitConfig]
 func loadQuestions() (questions []question.Question) {
 	opts := configuration.GetQuizzitConfig()
 	relPath := opts.Game.QuestionsPath
@@ -28,7 +30,7 @@ func loadQuestions() (questions []question.Question) {
 	return
 }
 
-// Call validators on the list of questions, log errors and panic if validation fails.
+// validateQuestions calls validators on the list of questions, log errors and panic if validation fails.
 func validateQuestions(questions []question.Question) {
 	if ok, errors := question.ValidateQuestions(questions); !ok {
 		question.LogValidationErrors(errors)
@@ -37,7 +39,9 @@ func validateQuestions(questions []question.Question) {
 	log.Debug("Validation of questions succeeded")
 }
 
-// Attempt loading questions from location as defined by QuizzitOptions
+// loadQuestionsFromFile attempts to load questions from the configured location
+//
+// @See [QuizzitConfig]
 func loadQuestionsFromFile(relPath string) (questions []question.Question, err error) {
 	log.Debugf("Loading questions from '%s' ", relPath)
 
