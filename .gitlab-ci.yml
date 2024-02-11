@@ -25,6 +25,14 @@ validate_asyncapi:
   script:
     - asyncapi validate api/websocket-asyncapi.yaml
 
+validate_openapi:
+  stage: validate
+  image:
+    name: openapitools/openapi-generator-cli:v7.3.0
+    entrypoint: [""]
+  script:
+    - docker-entrypoint.sh validate -i ./api/openapi.yaml
+
 generate_asyncapi_typescript_packages:
   stage: api
   image: docker.io/hdmstuttgartquizzit/asyncapi-generator:0.2.0
@@ -41,7 +49,7 @@ generate_asyncapi_typescript_packages:
 
 generate_openapi_typescript_models:
   stage: api
-  image: 
+  image:
     name: openapitools/openapi-generator-cli:v7.3.0
     entrypoint: [""]
   script:
@@ -101,7 +109,7 @@ generate_asyncapi_golang_models:
 
 generate_openapi_golang_models:
   stage: api
-  image: 
+  image:
     name: openapitools/openapi-generator-cli:v7.3.0
     entrypoint: [""]
   script:
