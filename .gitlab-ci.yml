@@ -100,17 +100,9 @@ generate_asyncapi_golang_models:
 
 generate_openapi_golang_models:
   stage: api
-  image: 
-    name: docker.io/hdmstuttgartquizzit/asyncapi-generator:0.1.0
-    entrypoint: ["/bin/sh", "-c"]
+  image: docker.io/hdmstuttgartquizzit/asyncapi-generator:0.1.0
   script:
     - echo Hello
-  artifacts:
-    when: on_success
-    expire_in: "1 hour"
-    paths:
-      - "internal/generated-sources/openapi/model_*.go"
-      - "internal/generated-sources/openapi/utils.go"
 
 # https://go.dev/doc/install/source#environment
 build_go:
