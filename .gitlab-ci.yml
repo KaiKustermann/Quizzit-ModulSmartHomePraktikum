@@ -104,7 +104,7 @@ generate_openapi_golang_models:
     name: openapitools/openapi-generator-cli:v7.3.0
     entrypoint: ["/bin/bash", "-c"]
   script:
-    # - echo "Generating GOLANG Source Code from OPENAPI specifications"
+    - echo "Generating GOLANG Source Code from OPENAPI specifications"
     - java -jar /opt/openapi-generator/modules/openapi-generator-cli/target/openapi-generator-cli.jar generate -i ./api/openapi.yaml -g go -o ./internal/generated-sources/openapi
   artifacts:
     when: on_success
