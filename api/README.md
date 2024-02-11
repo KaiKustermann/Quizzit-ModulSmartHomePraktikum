@@ -20,7 +20,7 @@ A detailed overview of the gameloop and communication via websockets is also ava
 
 Before the game starts we need no realtime duplex communication, so we can use REST.
 
-The API ist described in [openapi.yaml](./openapi.yaml). You can use the [swagger editor](https://editor.swagger.io/) to visualize the api document (copy and paste it in).
+The API ist described in [openapi.yaml](./openapi.yaml). You can use the [swagger editor](https://editor-next.swagger.io/) to visualize the api document (copy and paste it in).
 
 ### Swagger UI
 

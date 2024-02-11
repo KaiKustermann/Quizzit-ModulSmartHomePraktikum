@@ -16,7 +16,8 @@ info:
     - [Quizzit repository](https://gitlab.mi.hdm-stuttgart.de/quizzit)
   version: 1.0.0
   license:
-    name: Unlicensed
+    name: MIT
+    url: https://choosealicense.com/licenses/mit/
   contact:
     name: "H3rby7"
     email: "H3rby7@users.noreply.github.com"

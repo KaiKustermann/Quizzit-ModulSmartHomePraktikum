@@ -21,16 +21,16 @@
   },
   "cross-os": {
     "generate:golang:openapi": {
-      "win32": "docker run --rm -v %CD%:/local swaggerapi/swagger-codegen-cli-v3:3.0.46 generate -i /local/api/openapi.yaml -l go -o /local/internal/generated-sources/tmp",
-      "linux": "docker run --rm -v $PWD:/local swaggerapi/swagger-codegen-cli-v3:3.0.46 generate -i /local/api/openapi.yaml -l go -o /local/internal/generated-sources/tmp"
+      "win32": "docker run --rm -v %CD%:/local openapitools/openapi-generator-cli:v7.3.0 generate -i /local/api/openapi.yaml -g go -o /local/internal/generated-sources/tmp",
+      "linux": "docker run --rm -v $PWD:/local openapitools/openapi-generator-cli:v7.3.0 generate -i /local/api/openapi.yaml -g go -o /local/internal/generated-sources/tmp"
     },
     "mkdir:golang:openapi": {
       "win32": "mkdir internal\\generated-sources\\openapi",
       "linux": "mkdir -p internal/generated-sources/openapi"
     },
     "generate:typescript:openapi": {
-      "win32": "docker run --rm -v %CD%:/local swaggerapi/swagger-codegen-cli-v3:3.0.46 generate -i /local/api/openapi.yaml -l typescript-axios -o /local/api/typescript/src/tmp",
-      "linux": "docker run --rm -v $PWD:/local swaggerapi/swagger-codegen-cli-v3:3.0.46 generate -i /local/api/openapi.yaml -l typescript-axios -o /local/api/typescript/src/tmp"
+      "win32": "docker run --rm -v %CD%:/local openapitools/openapi-generator-cli:v7.3.0 generate -i /local/api/openapi.yaml -g typescript-rxjs -o /local/api/typescript/src/tmp",
+      "linux": "docker run --rm -v $PWD:/local openapitools/openapi-generator-cli:v7.3.0 generate -i /local/api/openapi.yaml -g typescript-rxjs -o /local/api/typescript/src/tmp"
     }
   },
   "devDependencies": {
