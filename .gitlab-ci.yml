@@ -64,6 +64,7 @@ bundle_typescript_package:
   script:
     - echo "TYPESCRIPT - Entering api/typescript DIR"
     - cd ./api/typescript
+    - npm i --production
     - echo "TYPESCRIPT - Compiling to js and .d.ts files"
     - npm run module
   artifacts:
