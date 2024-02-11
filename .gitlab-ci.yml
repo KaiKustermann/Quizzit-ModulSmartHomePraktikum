@@ -21,7 +21,7 @@ variables:
 
 validate_asyncapi:
   stage: validate
-  image: docker.io/hdmstuttgartquizzit/asyncapi-generator:0.2.0
+  image: docker.io/hdmstuttgartquizzit/asyncapi-generator:0.3.0
   script:
     - asyncapi validate api/websocket-asyncapi.yaml
 
@@ -35,7 +35,7 @@ validate_openapi:
 
 generate_asyncapi_typescript_packages:
   stage: api
-  image: docker.io/hdmstuttgartquizzit/asyncapi-generator:0.2.0
+  image: docker.io/hdmstuttgartquizzit/asyncapi-generator:0.3.0
   script:
     - asyncapi --version
     - tsc --version
@@ -68,7 +68,7 @@ bundle_typescript_package:
   dependencies:
     - "generate_asyncapi_typescript_packages"
     - "generate_openapi_typescript_models"
-  image: docker.io/hdmstuttgartquizzit/asyncapi-generator:0.2.0
+  image: docker.io/hdmstuttgartquizzit/asyncapi-generator:0.3.0
   script:
     - echo "TYPESCRIPT - Entering api/typescript DIR"
     - cd ./api/typescript
@@ -85,7 +85,7 @@ publish_typescript_package:
   stage: publish-api
   dependencies:
     - "bundle_typescript_package"
-  image: docker.io/hdmstuttgartquizzit/asyncapi-generator:0.2.0
+  image: docker.io/hdmstuttgartquizzit/asyncapi-generator:0.3.0
   script:
     - cd api/typescript
     - echo "TYPESCRIPT - Publishing Module"
@@ -97,7 +97,7 @@ publish_typescript_package:
 
 generate_asyncapi_golang_models:
   stage: api
-  image: docker.io/hdmstuttgartquizzit/asyncapi-generator:0.1.0
+  image: docker.io/hdmstuttgartquizzit/asyncapi-generator:0.3.0
   script:
     - echo "Generating GOLANG Source Code from ASYNC-API specifications"
     - npm run generate:golang:asyncapi

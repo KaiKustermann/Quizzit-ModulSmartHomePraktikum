@@ -3,7 +3,7 @@
   "version": "0.10.0",
   "description": "",
   "scripts": {
-    "tsc": "tsc",
+    "asyncapi": "asyncapi",
     "cross-os": "cross-os",
     "regenerate:all": "npm run regenerate:typescript && npm run regenerate:golang",
     "clear:typescript": "rm -rf ./api/typescript/src",
@@ -42,7 +42,7 @@
     }
   },
   "devDependencies": {
-    "@asyncapi/cli": "^0.37.2",
+    "@asyncapi/cli": "^1.5.2",
     "cross-os": "^1.5.0"
   },
   "author": "",

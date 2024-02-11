@@ -19,7 +19,7 @@ type Question struct {
 
 // ConvertToDTO converts this object to a asyncapi.Question
 func (q Question) ConvertToDTO() *asyncapi.Question {
-	var answers []interface{}
+	var answers = make([]asyncapi.PossibleAnswer, 0, len(q.Answers))
 	for _, a := range q.Answers {
 		answers = append(answers, a.ConvertToDTO())
 	}
@@ -29,13 +29,7 @@ func (q Question) ConvertToDTO() *asyncapi.Question {
 // QuestionFromDTO creates a [Question] from the DTO [Question]
 func QuestionFromDTO(in asyncapi.Question) Question {
 	var answerSlice []Answer
-	for _, v := range in.Answers {
-		answer, ok := v.(asyncapi.PossibleAnswer)
-		if !ok {
-			// Handle the case where the conversion fails
-			log.Warn("Unable to convert to PossibleAnswer type")
-			continue
-		}
+	for _, answer := range in.Answers {
 		answerSlice = append(answerSlice, AnswerFromDTO(answer))
 	}
 	return Question{Id: in.Id, Query: in.Query, Answers: answerSlice, Category: in.Category}
@@ -49,7 +43,8 @@ func (q Question) GetCorrectnessFeedback() (fb asyncapi.CorrectnessFeedback) {
 	}
 	for _, a := range q.Answers {
 		if a.IsCorrect {
-			fb.CorrectAnswer = a.ConvertToDTO()
+			dto := a.ConvertToDTO()
+			fb.CorrectAnswer = &dto
 			if a.IsSelected {
 				fb.SelectedAnswerIsCorrect = true
 				fb.SelectedAnswer = fb.CorrectAnswer
@@ -57,7 +52,8 @@ func (q Question) GetCorrectnessFeedback() (fb asyncapi.CorrectnessFeedback) {
 			}
 		}
 		if a.IsSelected {
-			fb.SelectedAnswer = a.ConvertToDTO()
+			dto := a.ConvertToDTO()
+			fb.SelectedAnswer = &dto
 		}
 	}
 	return
