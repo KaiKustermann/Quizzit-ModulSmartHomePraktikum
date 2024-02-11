@@ -6,6 +6,7 @@ import (
 	log "github.com/sirupsen/logrus"
 
 	"gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/category"
+	"gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/configuration"
 	"gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/generated-sources/asyncapi"
 	questionloader "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/question/loader"
 	questionmodel "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/question/model"
@@ -19,13 +20,24 @@ type QuestionManager struct {
 }
 
 // NewQuestionManager constructs a new QuestionManager
-//
-// Also loads the questions from file
 func NewQuestionManager() *QuestionManager {
 	log.Infof("Constructing new QuestionManager")
 	qm := &QuestionManager{}
-	qm.questions = questionloader.LoadQuestions()
 	return qm
+}
+
+// LoadQuestions loads the [Question]s from the configured path
+//
+// See [QuizzitConfig]
+func (qm *QuestionManager) LoadQuestions() (err error) {
+	log.Infof("Loading Questions")
+	opts := configuration.GetQuizzitConfig()
+	questions, err := questionloader.LoadQuestions(opts.Game.QuestionsPath)
+	if err != nil {
+		return
+	}
+	qm.questions = questions
+	return nil
 }
 
 // GetActiveQuestion retrieves the currently active [Question]
