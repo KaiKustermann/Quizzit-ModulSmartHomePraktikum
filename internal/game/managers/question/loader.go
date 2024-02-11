@@ -9,13 +9,14 @@ import (
 	log "github.com/sirupsen/logrus"
 
 	configuration "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/configuration"
-	question "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/question"
+	questionmodel "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/question/model"
+	questionvalidator "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/question/validator"
 )
 
 // loadQuestions attempts to load the questions from the configured path
 //
 // @See [QuizzitConfig]
-func loadQuestions() (questions []question.Question) {
+func loadQuestions() (questions []questionmodel.Question) {
 	opts := configuration.GetQuizzitConfig()
 	relPath := opts.Game.QuestionsPath
 	questions, err := loadQuestionsFromFile(relPath)
@@ -31,9 +32,9 @@ func loadQuestions() (questions []question.Question) {
 }
 
 // validateQuestions calls validators on the list of questions, log errors and panic if validation fails.
-func validateQuestions(questions []question.Question) {
-	if ok, errors := question.ValidateQuestions(questions); !ok {
-		question.LogValidationErrors(errors)
+func validateQuestions(questions []questionmodel.Question) {
+	if ok, errors := questionvalidator.ValidateQuestions(questions); !ok {
+		questionvalidator.LogValidationErrors(errors)
 		panic("Validation of questions failed")
 	}
 	log.Debug("Validation of questions succeeded")
@@ -42,7 +43,7 @@ func validateQuestions(questions []question.Question) {
 // loadQuestionsFromFile attempts to load questions from the configured location
 //
 // @See [QuizzitConfig]
-func loadQuestionsFromFile(relPath string) (questions []question.Question, err error) {
+func loadQuestionsFromFile(relPath string) (questions []questionmodel.Question, err error) {
 	log.Debugf("Loading questions from '%s' ", relPath)
 
 	absPath, err := filepath.Abs(relPath)

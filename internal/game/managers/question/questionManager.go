@@ -7,13 +7,13 @@ import (
 
 	"gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/category"
 	"gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/generated-sources/asyncapi"
-	question "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/question"
+	questionmodel "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/question/model"
 )
 
 // QuestionManager statefully handles the catalog of [Question]s and the active [Question] and category
 type QuestionManager struct {
-	questions      []question.Question
-	activeQuestion *question.Question
+	questions      []questionmodel.Question
+	activeQuestion *questionmodel.Question
 	activeCategory string
 }
 
@@ -28,12 +28,12 @@ func NewQuestionManager() *QuestionManager {
 }
 
 // GetActiveQuestion retrieves the currently active [Question]
-func (qm *QuestionManager) GetActiveQuestion() question.Question {
+func (qm *QuestionManager) GetActiveQuestion() questionmodel.Question {
 	return *qm.activeQuestion
 }
 
 // MoveToNextQuestion drafts a new question of the given category and sets it as active [Question]
-func (qm *QuestionManager) MoveToNextQuestion() question.Question {
+func (qm *QuestionManager) MoveToNextQuestion() questionmodel.Question {
 	log.Debugf("Moving to the next question of category %s", qm.activeCategory)
 	nextQuestion := qm.getRandomQuestionOfActiveCategory()
 	nextQuestion.Used = true
@@ -86,7 +86,7 @@ func (qm *QuestionManager) RefreshAllQuestions() {
 }
 
 // setActiveQuestion sets the active [Question]
-func (qm *QuestionManager) setActiveQuestion(question *question.Question) {
+func (qm *QuestionManager) setActiveQuestion(question *questionmodel.Question) {
 	log.Debugf("Setting question %s as active question", question.Id)
 	qm.activeQuestion = question
 }
@@ -94,9 +94,9 @@ func (qm *QuestionManager) setActiveQuestion(question *question.Question) {
 // getRandomQuestionOfActiveCategory retrieves a random question of the active category, that has not been used yet.
 //
 // If all questions of the category have been used, calls refreshQuestionsOfActiveCategory and tries again.
-func (qm *QuestionManager) getRandomQuestionOfActiveCategory() *question.Question {
+func (qm *QuestionManager) getRandomQuestionOfActiveCategory() *questionmodel.Question {
 	log.Tracef("Building an array of unused questions for category %s", qm.activeCategory)
-	var draftableQuestions []*question.Question
+	var draftableQuestions []*questionmodel.Question
 	for i := range qm.questions {
 		question := &qm.questions[i]
 		if question.Category == qm.activeCategory && !question.Used {

@@ -1,4 +1,4 @@
-package question
+package questionmodel
 
 import (
 	"fmt"
@@ -24,6 +24,21 @@ func (q Question) ConvertToDTO() *asyncapi.Question {
 		answers = append(answers, a.ConvertToDTO())
 	}
 	return &asyncapi.Question{Id: q.Id, Query: q.Query, Answers: answers, Category: string(q.Category)}
+}
+
+// QuestionFromDTO creates a [Question] from the DTO [Question]
+func QuestionFromDTO(in asyncapi.Question) Question {
+	var answerSlice []Answer
+	for _, v := range in.Answers {
+		answer, ok := v.(asyncapi.PossibleAnswer)
+		if !ok {
+			// Handle the case where the conversion fails
+			log.Warn("Unable to convert to PossibleAnswer type")
+			continue
+		}
+		answerSlice = append(answerSlice, AnswerFromDTO(answer))
+	}
+	return Question{Id: in.Id, Query: in.Query, Answers: answerSlice, Category: in.Category}
 }
 
 // GetCorrectnessFeedback returns feedback for the currently selected answer

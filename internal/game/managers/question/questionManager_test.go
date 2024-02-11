@@ -4,11 +4,11 @@ import (
 	"reflect"
 	"testing"
 
-	"gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/question"
+	questionmodel "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/question/model"
 )
 
-func makeQuestion(id string, category string) (q question.Question) {
-	q.Answers = []question.Answer{
+func makeQuestion(id string, category string) (q questionmodel.Question) {
+	q.Answers = []questionmodel.Answer{
 		{Id: "A", Answer: "text A"},
 		{Id: "B", Answer: "text B"},
 		{Id: "C", Answer: "text C"},
@@ -43,7 +43,7 @@ func TestGetActiveQuestion(t *testing.T) {
 func TestQuestionRotation(t *testing.T) {
 	activeCategory := "Geschichte"
 	qm := QuestionManager{
-		questions: []question.Question{
+		questions: []questionmodel.Question{
 			makeQuestion("question A", activeCategory),
 			makeQuestion("question B", activeCategory),
 			makeQuestion("question C", activeCategory),
