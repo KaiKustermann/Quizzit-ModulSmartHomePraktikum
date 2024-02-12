@@ -60,7 +60,7 @@ components:
       description: Game Settings
       type: object
       properties:
-        scored-points-to-win:
+        scoredPointsToWin:
           description: How many points a player needs to win the game, values below '1' are ignored.
           type: integer
           default: -1
@@ -96,7 +96,7 @@ components:
       properties:
         game:
           $ref: '#/components/schemas/Game'
-        hybrid-die:
+        hybridDie:
           $ref: '#/components/schemas/HybridDie'
   requestBodies:
     UserSettings:
