@@ -74,5 +74,6 @@ func (h UserSettingsEndpoint) Options(w http.ResponseWriter) {
 		e.Add("Access-Control-Allow-Methods", v)
 	}
 	e.Add("Access-Control-Allow-Headers", "content-type")
+	e.Add("Access-Control-Allow-Headers", "x-requested-with")
 	w.WriteHeader(http.StatusOK)
 }
