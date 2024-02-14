@@ -6,11 +6,10 @@ import (
 
 	log "github.com/sirupsen/logrus"
 	configflag "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/configuration/flag"
-	configmodel "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/configuration/model"
 	model "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/configuration/model"
-	configpatcher "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/configuration/patcher"
 	configfilewriter "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/configuration/writer"
 	configyaml "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/configuration/yaml"
+	configyamlmerger "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/configuration/yaml/merger"
 	"gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/pkg/util"
 )
 
@@ -24,19 +23,19 @@ func GetQuizzitConfig() model.QuizzitConfig {
 
 // ChangeUserConfig writes the given userconfig to the user-config file and applies its values as patches to [QuizzitConfig]
 func ChangeUserConfig(config configyaml.UserConfigYAML) (err error) {
-	log.Debugf("Changing UserConfig to: %s", util.JsonString(config))
+	log.Infof("Changing UserConfig to: %s", util.JsonString(config))
 	flags := configflag.GetAppFlags()
 	err = configfilewriter.WriteConfigurationFile(config, flags.UserConfigFile)
 	if err != nil {
 		log.Errorf("Failed to change user config, not reloading configuration.")
 		return err
 	}
-	setConfig(configpatcher.MergeConfigWithUserConfig(configInstance, config))
+	setConfig(configyamlmerger.MergeConfigWithUserConfig(configInstance, config))
 	return
 }
 
 // setConfig updates the local configInstance and calls the change handlers
-func setConfig(newConfig configmodel.QuizzitConfig) {
+func setConfig(newConfig model.QuizzitConfig) {
 	configInstance = newConfig
 	callChangeHandlers()
 }
@@ -46,9 +45,9 @@ func setConfig(newConfig configmodel.QuizzitConfig) {
 func ReloadConfig() {
 	flags := configflag.GetAppFlags()
 	conf := createDefaultConfig()
-	conf = configpatcher.LoadSystemConfigYAMLAndMerge(conf, flags.ConfigFile)
-	conf = configflag.MergewithFlags(conf)
-	conf = configpatcher.LoadUserConfigYAMLAndMerge(conf, flags.UserConfigFile)
+	conf = configyamlmerger.LoadSystemConfigYAMLAndMerge(conf, flags.ConfigFile)
+	conf = configflag.FlagMerger{}.MergeAll(conf)
+	conf = configyamlmerger.LoadUserConfigYAMLAndMerge(conf, flags.UserConfigFile)
 	log.Infof("New config loaded: %s", util.JsonString(conf))
 	setConfig(conf)
 }

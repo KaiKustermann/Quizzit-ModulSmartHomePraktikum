@@ -1,5 +1,5 @@
-// Package configpatcher provides the means to patch the config model with [configyaml] models
-package configpatcher
+// Package configyamlmerger provides the means to patch the config model with [configyaml] models
+package configyamlmerger
 
 import (
 	log "github.com/sirupsen/logrus"
@@ -19,9 +19,10 @@ func LoadSystemConfigYAMLAndMerge(conf configmodel.QuizzitConfig, relPath string
 		log.Warnf("Not using system config file -> %e", err)
 		return conf
 	}
-	conf.Http = mergeHttp(conf.Http, fileConf.Http)
-	conf.Game = mergeGame(conf.Game, fileConf.Game)
-	conf.Log = mergeLog(conf.Log, fileConf.Log)
-	conf.HybridDie = mergeHybridDie(conf.HybridDie, fileConf.HybridDie)
+	merger := YAMLMerger{Source: "System-Config"}
+	conf.Http = merger.mergeHttp(conf.Http, fileConf.Http)
+	conf.Game = merger.mergeGame(conf.Game, fileConf.Game)
+	conf.Log = merger.mergeLog(conf.Log, fileConf.Log)
+	conf.HybridDie = merger.mergeHybridDie(conf.HybridDie, fileConf.HybridDie)
 	return conf
 }

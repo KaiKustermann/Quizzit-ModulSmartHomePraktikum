@@ -1,5 +1,5 @@
-// Package configpatcher provides the means to patch the config model with [configyaml] models
-package configpatcher
+// Package configyamlmerger provides the means to patch the config model with [configyaml] models
+package configyamlmerger
 
 import (
 	log "github.com/sirupsen/logrus"
@@ -24,7 +24,8 @@ func LoadUserConfigYAMLAndMerge(conf configmodel.QuizzitConfig, relPath string) 
 
 func MergeConfigWithUserConfig(conf configmodel.QuizzitConfig, userConf configyaml.UserConfigYAML) configmodel.QuizzitConfig {
 	log.Infof("Patching Config with UserConfig")
-	conf.Game = mergeGame(conf.Game, userConf.Game)
-	conf.HybridDie = mergeHybridDie(conf.HybridDie, userConf.HybridDie)
+	merger := YAMLMerger{Source: "User-Config"}
+	conf.Game = merger.mergeGame(conf.Game, userConf.Game)
+	conf.HybridDie = merger.mergeHybridDie(conf.HybridDie, userConf.HybridDie)
 	return conf
 }
