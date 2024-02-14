@@ -8,17 +8,20 @@ import (
 	configyaml "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/configuration/yaml"
 )
 
-// LoadSystemConfigYAMLAndPatchConfig reads the system config file and apply values to 'conf'
-// Attempts to read the config file from 'relPath'
-// If succeeding, changes the values in 'conf' to any set value of the config file.
-func LoadSystemConfigYAMLAndPatchConfig(conf *configmodel.QuizzitConfig, relPath string) {
+// LoadSystemConfigYAMLAndMerge reads the system config file and merges it with 'conf'
+//
+// Attempts to read the config file from 'relPath'.
+// If succeeding, merges the values in 'conf' with any set value of the config file.
+// The config file is dominant
+func LoadSystemConfigYAMLAndMerge(conf configmodel.QuizzitConfig, relPath string) configmodel.QuizzitConfig {
 	fileConf, err := configfileloader.LoadConfigurationFile[configyaml.SystemConfigYAML](relPath)
 	if err != nil {
 		log.Warnf("Not using system config file -> %e", err)
-		return
+		return conf
 	}
-	patchHttp(&conf.Http, fileConf.Http)
-	patchGame(&conf.Game, fileConf.Game)
-	patchLog(&conf.Log, fileConf.Log)
-	patchHybridDie(&conf.HybridDie, fileConf.HybridDie)
+	conf.Http = mergeHttp(conf.Http, fileConf.Http)
+	conf.Game = mergeGame(conf.Game, fileConf.Game)
+	conf.Log = mergeLog(conf.Log, fileConf.Log)
+	conf.HybridDie = mergeHybridDie(conf.HybridDie, fileConf.HybridDie)
+	return conf
 }

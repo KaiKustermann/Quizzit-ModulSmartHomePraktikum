@@ -8,20 +8,23 @@ import (
 	configyaml "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/configuration/yaml"
 )
 
-// LoadUserConfigYAMLAndPatchConfig reads the system config file and apply values to 'conf'
-// Attempts to read the config file from 'relPath'
-// If succeeding, changes the values in 'conf' to any set value of the config file.
-func LoadUserConfigYAMLAndPatchConfig(conf *configmodel.QuizzitConfig, relPath string) {
+// LoadUserConfigYAMLAndMerge reads the user config file and merges it with 'conf'
+//
+// Attempts to read the config file from 'relPath'.
+// If succeeding, merges the values in 'conf' with any set value of the config file.
+// The config file is dominant
+func LoadUserConfigYAMLAndMerge(conf configmodel.QuizzitConfig, relPath string) configmodel.QuizzitConfig {
 	fileConf, err := configfileloader.LoadConfigurationFile[configyaml.UserConfigYAML](relPath)
 	if err != nil {
 		log.Warnf("Not using user config file -> %e", err)
-		return
+		return conf
 	}
-	PatchConfigWithUserConfig(conf, fileConf)
+	return MergeConfigWithUserConfig(conf, fileConf)
 }
 
-func PatchConfigWithUserConfig(conf *configmodel.QuizzitConfig, userConf configyaml.UserConfigYAML) {
+func MergeConfigWithUserConfig(conf configmodel.QuizzitConfig, userConf configyaml.UserConfigYAML) configmodel.QuizzitConfig {
 	log.Infof("Patching Config with UserConfig")
-	patchGame(&conf.Game, userConf.Game)
-	patchHybridDie(&conf.HybridDie, userConf.HybridDie)
+	conf.Game = mergeGame(conf.Game, userConf.Game)
+	conf.HybridDie = mergeHybridDie(conf.HybridDie, userConf.HybridDie)
+	return conf
 }

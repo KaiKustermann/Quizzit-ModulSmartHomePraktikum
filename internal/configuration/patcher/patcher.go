@@ -9,78 +9,93 @@ import (
 	configyaml "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/configuration/yaml"
 )
 
-// patchGame patches the GameConfig field
+// mergeGame merges the GameConfig field
 //
-// Only applies patches, if the value of the 'game' config is not nil
-func patchGame(conf *configmodel.GameConfig, game *configyaml.GameYAML) {
+// Takes the first parameter as base and merges it with the second parameter.
+//
+// The second parameter is dominant, if present
+func mergeGame(conf configmodel.GameConfig, game *configyaml.GameYAML) configmodel.GameConfig {
 	if game == nil {
-		log.Debug("Game is nil, not patching")
-		return
+		log.Debug("Game is nil, not overriding")
+		return conf
 	}
-	patchScoredPointsToWin(conf, game.ScoredPointsToWin)
-	patchQuestionsPath(conf, game.QuestionsPath)
+	conf.ScoredPointsToWin = mergeScoredPointsToWin(conf, game.ScoredPointsToWin)
+	conf.QuestionsPath = mergeQuestionsPath(conf, game.QuestionsPath)
+	return conf
 }
 
-// patchScoredPointsToWin patches the ScoredPointsToWin field
+// mergeScoredPointsToWin merges the ScoredPointsToWin field
 //
-// Only applies the patch, if 'pointsToWin' is not nil
-func patchScoredPointsToWin(conf *configmodel.GameConfig, pointsToWin *int32) {
+// Takes the first parameter as base and merges it with the second parameter.
+//
+// The second parameter is dominant, if present
+func mergeScoredPointsToWin(conf configmodel.GameConfig, pointsToWin *int32) int32 {
 	if pointsToWin == nil {
-		log.Debug("ScoredPointsToWin is nil, not patching")
-		return
+		log.Debug("ScoredPointsToWin is nil, not overriding")
+		return conf.ScoredPointsToWin
 	}
 	if *pointsToWin < 1 {
-		log.Debugf("ScoredPointsToWin '%v' is smaller than '1', not patching", *pointsToWin)
-		return
+		log.Debugf("ScoredPointsToWin '%v' is smaller than '1', not overriding", *pointsToWin)
+		return conf.ScoredPointsToWin
 	}
-	conf.ScoredPointsToWin = *pointsToWin
+	return *pointsToWin
 }
 
-// patchQuestionsPath patches the QuestionsPath field
+// mergeQuestionsPath merges the QuestionsPath field
 //
-// Only applies the patch, if 'questionsPath' is not nil
-func patchQuestionsPath(conf *configmodel.GameConfig, questionsPath *string) {
+// Takes the first parameter as base and merges it with the second parameter.
+//
+// The second parameter is dominant, if present
+func mergeQuestionsPath(conf configmodel.GameConfig, questionsPath *string) string {
 	if questionsPath == nil {
-		log.Debug("QuestionsPath is nil, not patching")
-		return
+		log.Debug("QuestionsPath is nil, not overriding")
+		return conf.QuestionsPath
 	}
 	if *questionsPath == "" {
-		log.Debug("QuestionsPath is empty, not patching")
-		return
+		log.Debug("QuestionsPath is empty, not overriding")
+		return conf.QuestionsPath
 	}
-	conf.QuestionsPath = *questionsPath
+	return *questionsPath
 }
 
-// patchHttp patches the HttpConfig field
+// mergeHttp merges the HttpConfig field
 //
-// Only applies the patch, if the value of the 'file' config is not nil
-func patchHttp(conf *configmodel.HttpConfig, file *configyaml.HttpYAML) {
+// Takes the first parameter as base and merges it with the second parameter.
+//
+// The second parameter is dominant, if present
+func mergeHttp(conf configmodel.HttpConfig, file *configyaml.HttpYAML) configmodel.HttpConfig {
 	if file == nil || file.Port == nil {
-		log.Debug("Port is nil, not patching")
-		return
+		log.Debug("Port is nil, not overriding")
+		return conf
 	}
 	conf.Port = *file.Port
+	return conf
 }
 
-// patchLog patches the LogConfig field
+// mergeLog merges the LogConfig field
 //
-// Only applies the patch, if the value of the 'file' config is not nil
-func patchLog(conf *configmodel.LogConfig, file *configyaml.LogYAML) {
+// Takes the first parameter as base and merges it with the second parameter.
+//
+// The second parameter is dominant, if present
+func mergeLog(conf configmodel.LogConfig, file *configyaml.LogYAML) configmodel.LogConfig {
 	if file == nil {
-		log.Debug("Log is nil, not patching")
-		return
+		log.Debug("Log is nil, not overriding")
+		return conf
 	}
-	patchLogLevel(conf, file.Level)
-	patchLogFileLevel(conf, file.FileLevel)
+	conf.Level = mergeLogLevel(conf, file.Level)
+	conf.FileLevel = mergeLogFileLevel(conf, file.FileLevel)
+	return conf
 }
 
-// patchLogLevel patches the LogConfig.Level field
+// mergeLogLevel merges the LogConfig.Level field
 //
-// Only applies the patch, if the value of the 'file' config is not nil
-func patchLogLevel(conf *configmodel.LogConfig, file *string) {
+// Takes the first parameter as base and merges it with the second parameter.
+//
+// The second parameter is dominant, if present
+func mergeLogLevel(conf configmodel.LogConfig, file *string) log.Level {
 	if file == nil {
-		log.Debug("Log Level is nil, not patching")
-		return
+		log.Debug("Log Level is nil, not overriding")
+		return conf.Level
 	}
 	lvl, err := log.ParseLevel(*file)
 	if err == nil {
@@ -88,15 +103,18 @@ func patchLogLevel(conf *configmodel.LogConfig, file *string) {
 	} else {
 		log.Warnf("Failed parsing Log Level %e", err)
 	}
+	return conf.Level
 }
 
-// patchLogFileLevel patches the LogConfig.FileLevel field
+// mergeLogFileLevel merges the LogConfig.FileLevel field
 //
-// Only applies the patch, if the value of the 'file' config is not nil
-func patchLogFileLevel(conf *configmodel.LogConfig, file *string) {
+// Takes the first parameter as base and merges it with the second parameter.
+//
+// The second parameter is dominant, if present
+func mergeLogFileLevel(conf configmodel.LogConfig, file *string) log.Level {
 	if file == nil {
-		log.Debug("Log FileLevel is nil, not patching")
-		return
+		log.Debug("Log FileLevel is nil, not overriding")
+		return conf.FileLevel
 	}
 	lvl, err := log.ParseLevel(*file)
 	if err == nil {
@@ -104,35 +122,38 @@ func patchLogFileLevel(conf *configmodel.LogConfig, file *string) {
 	} else {
 		log.Warnf("Failed parsing Log Level %e", err)
 	}
+	return conf.FileLevel
 }
 
-// patchHybridDie patches the HybridDieConfig field
+// mergeHybridDie merges the HybridDieConfig field
 //
-// The duration, given by the 'file' config is parsed.
+// Takes the first parameter as base and merges it with the second parameter.
 //
-// Only applies the patch, if the value of the 'file' config is not nil and a valid duration was provided
-func patchHybridDie(conf *configmodel.HybridDieConfig, file *configyaml.HybridDieYAML) {
+// The second parameter is dominant, if present.
+func mergeHybridDie(conf configmodel.HybridDieConfig, file *configyaml.HybridDieYAML) configmodel.HybridDieConfig {
 	if file == nil {
-		log.Debug("HybridDie YAML is nil, not patching")
-		return
+		log.Debug("HybridDie YAML is nil, not overriding")
+		return conf
 	}
-	patchHybridDieSearch(&conf.Search, file.Search)
+	conf.Search = mergeHybridDieSearch(conf.Search, file.Search)
 	if file.Enabled == nil {
-		log.Debug("HybridDie Disabled is nil, not patching")
+		log.Debug("HybridDie Disabled is nil, not overriding")
 	} else {
 		conf.Enabled = *file.Enabled
 	}
+	return conf
 }
 
-// patchHybridDieSearch patches the HybridDieSearchConfig field
+// mergeHybridDieSearch merges the HybridDieSearchConfig field
 //
-// The duration, given by the 'file' config is parsed.
+// Takes the first parameter as base and merges it with the second parameter.
 //
-// Only applies the patch, if the value of the 'file' config is not nil and a valid duration was provided
-func patchHybridDieSearch(conf *configmodel.HybridDieSearchConfig, file *configyaml.HybridDieSearchYAML) {
+// The second parameter is dominant, if present.
+// The timeout duration is parsed.
+func mergeHybridDieSearch(conf configmodel.HybridDieSearchConfig, file *configyaml.HybridDieSearchYAML) configmodel.HybridDieSearchConfig {
 	if file == nil || file.Timeout == nil {
-		log.Debug("Search Timeout is nil, not patching")
-		return
+		log.Debug("Search Timeout is nil, not overriding")
+		return conf
 	}
 	dur, err := time.ParseDuration(*file.Timeout)
 	if err == nil {
@@ -140,4 +161,5 @@ func patchHybridDieSearch(conf *configmodel.HybridDieSearchConfig, file *configy
 	} else {
 		log.Warnf("Failed parsing Hybrid Die Search Timeout '%s' %e", *file.Timeout, err)
 	}
+	return conf
 }

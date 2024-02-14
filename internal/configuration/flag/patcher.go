@@ -10,76 +10,86 @@ import (
 	configmodel "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/configuration/model"
 )
 
-// PatchWithYAMLFile applies flag values to 'conf'
+// MergewithFlags applies flag values to 'conf'
 // Changes the values in 'conf' to any set value via flags.
-func PatchwithFlags(conf *configmodel.QuizzitConfig) {
+func MergewithFlags(conf configmodel.QuizzitConfig) configmodel.QuizzitConfig {
 	fl := GetAppFlags()
-	patchLogLevel(&conf.Log, fl.LogLevel)
-	patchLogLevelFile(&conf.Log, fl.LogFileLevel)
-	patchHttpPort(&conf.Http, fl.HttpPort)
-	patchHybridDieEnabled(&conf.HybridDie, fl.DieEnabled)
-	patchHybridDieSearch(&conf.HybridDie, fl.HybridDieSearchTimeout)
+	conf.Log.Level = mergeLogLevel(conf.Log, fl.LogLevel)
+	conf.Log.FileLevel = mergeLogLevelFile(conf.Log, fl.LogFileLevel)
+	conf.Http.Port = mergeHttpPort(conf.Http, fl.HttpPort)
+	conf.HybridDie.Enabled = mergeHybridDieEnabled(conf.HybridDie, fl.DieEnabled)
+	conf.HybridDie.Search.Timeout = mergeHybridDieSearch(conf.HybridDie, fl.HybridDieSearchTimeout)
+	return conf
 }
 
-// patchLogLevel patches the LogConfig Level field
+// mergeLogLevel merges the LogConfig Level field
 //
-// Only applies the patch, if the value of the 'flag' config is not nil
-func patchLogLevel(conf *configmodel.LogConfig, flag *log.Level) {
+// Takes the first parameter as base and merges it with the second parameter.
+//
+// The second parameter is dominant, if present
+func mergeLogLevel(conf configmodel.LogConfig, flag *log.Level) log.Level {
 	if flag == nil {
-		log.Debug("Log Level is nil, not patching")
-		return
+		log.Debug("Log Level is nil, not overriding")
+		return conf.Level
 	}
-	conf.Level = *flag
+	return *flag
 }
 
-// patchLogLevelFile patches the LogConfig FileLevel field
+// patchLogLevelFile merges the LogConfig FileLevel field
 //
-// Only applies the patch, if the value of the 'flag' config is not nil
-func patchLogLevelFile(conf *configmodel.LogConfig, flag *log.Level) {
+// Takes the first parameter as base and merges it with the second parameter.
+//
+// The second parameter is dominant, if present
+func mergeLogLevelFile(conf configmodel.LogConfig, flag *log.Level) log.Level {
 	if flag == nil {
-		log.Debug("Log File Level is nil, not patching")
-		return
+		log.Debug("Log File Level is nil, not overriding")
+		return conf.FileLevel
 	}
-	conf.FileLevel = *flag
+	return *flag
 }
 
-// patchHttpPort patches the HttpConfig field
+// mergeHttpPort merges the HttpConfig field
 //
-// Only applies the patch, if the value of the 'port' is not nil
-func patchHttpPort(conf *configmodel.HttpConfig, port *int) {
+// Takes the first parameter as base and merges it with the second parameter.
+//
+// The second parameter is dominant, if present
+func mergeHttpPort(conf configmodel.HttpConfig, port *int) int {
 	if port == nil {
-		log.Debug("HTTP Port is nil, not patching")
-		return
+		log.Debug("HTTP Port is nil, not overriding")
+		return conf.Port
 	}
-	conf.Port = *port
+	return *port
 }
 
-// patchHybridDieEnabled patches the HybridDieConfig field
+// mergeHybridDieEnabled merges the HybridDieConfig field
 //
-// Only applies the patch, if the value of the 'flag' config is not nil
-func patchHybridDieEnabled(conf *configmodel.HybridDieConfig, flag *string) {
+// Takes the first parameter as base and merges it with the second parameter.
+//
+// The second parameter is dominant, if present
+func mergeHybridDieEnabled(conf configmodel.HybridDieConfig, flag *string) bool {
 	if flag == nil {
-		log.Debug("Hybrid die enabled is nil, not patching")
-		return
+		log.Debug("Hybrid die enabled is nil, not overriding")
+		return conf.Enabled
 	}
 	if *flag == "yes" {
-		conf.Enabled = true
-		return
+		return true
 	}
 	if *flag == "no" {
-		conf.Enabled = false
-		return
+		return false
 	}
 	log.Warnf("Flag 'die-enable' has unsupported value %s, please use 'yes' or 'no'", *flag)
+	return conf.Enabled
 }
 
-// patchHybridDieSearch patches the HybridDieConfig field
+// patchHybridDieSearch merges the HybridDieConfig field
 //
-// Only applies the patch, if the 'duration' config is not nil
-func patchHybridDieSearch(conf *configmodel.HybridDieConfig, duration *time.Duration) {
+// Takes the first parameter as base and merges it with the second parameter.
+//
+// The second parameter is dominant, if present
+func mergeHybridDieSearch(conf configmodel.HybridDieConfig, duration *time.Duration) time.Duration {
 	if duration == nil {
-		log.Debug("Search Timeout is nil, not patching")
-		return
+		log.Debug("Search Timeout is nil, not overriding")
+		return conf.Search.Timeout
 	}
-	conf.Search.Timeout = *duration
+	return *duration
 }

@@ -6,6 +6,7 @@ import (
 
 	log "github.com/sirupsen/logrus"
 	configflag "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/configuration/flag"
+	configmodel "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/configuration/model"
 	model "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/configuration/model"
 	configpatcher "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/configuration/patcher"
 	configfilewriter "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/configuration/writer"
@@ -30,8 +31,14 @@ func ChangeUserConfig(config configyaml.UserConfigYAML) (err error) {
 		log.Errorf("Failed to change user config, not reloading configuration.")
 		return err
 	}
-	configpatcher.PatchConfigWithUserConfig(&configInstance, config)
+	setConfig(configpatcher.MergeConfigWithUserConfig(configInstance, config))
 	return
+}
+
+// setConfig updates the local configInstance and calls the change handlers
+func setConfig(newConfig configmodel.QuizzitConfig) {
+	configInstance = newConfig
+	callChangeHandlers()
 }
 
 // ReloadConfig recreates the configuration by starting with the default config
@@ -39,11 +46,11 @@ func ChangeUserConfig(config configyaml.UserConfigYAML) (err error) {
 func ReloadConfig() {
 	flags := configflag.GetAppFlags()
 	conf := createDefaultConfig()
-	configpatcher.LoadSystemConfigYAMLAndPatchConfig(&conf, flags.ConfigFile)
-	configflag.PatchwithFlags(&conf)
-	configpatcher.LoadUserConfigYAMLAndPatchConfig(&conf, flags.UserConfigFile)
+	conf = configpatcher.LoadSystemConfigYAMLAndMerge(conf, flags.ConfigFile)
+	conf = configflag.MergewithFlags(conf)
+	conf = configpatcher.LoadUserConfigYAMLAndMerge(conf, flags.UserConfigFile)
 	log.Infof("New config loaded: %s", util.JsonString(conf))
-	configInstance = conf
+	setConfig(conf)
 }
 
 // createDefaultConfig creates a config instance with all default options as base and fallback.
