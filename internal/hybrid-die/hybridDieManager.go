@@ -3,6 +3,7 @@ package hybriddie
 import (
 	log "github.com/sirupsen/logrus"
 	"gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/configuration"
+	configmodel "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/configuration/model"
 )
 
 // High-Level Access to HybridDie
@@ -27,6 +28,8 @@ func NewHybridDieManager() *HybridDieManager {
 	hd.connected = false
 	hd.finder = &finder
 	hd.controller = &controller
+
+	configuration.RegisterOnChangeHandler(hd.configChangeHandler)
 	return hd
 }
 
@@ -65,14 +68,25 @@ func (hd *HybridDieManager) Find() {
 		log.Info("Skipping find a hybrid die, because the hybrid die is disabled in config.")
 		return
 	}
-	log.Infof("Connecting a hybrid die")
 	go hd.controller.Listen()
 	go hd.finder.Start()
 }
 
-// Stop finding a hybrid die
-// Stops reading from hybrid die
+// Stop stops hybrid die discovery
+//
+// Stops discovery broadcasting and shuts down the receiver
 func (hd *HybridDieManager) Stop() {
 	hd.finder.Stop()
 	hd.controller.Stop()
+}
+
+// configChangeHandler handles changes to [QuizzitConfig]
+//
+// If the hybrid-die is enabled, calls 'Find', else calls 'Stop'
+func (hd *HybridDieManager) configChangeHandler(newConfig configmodel.QuizzitConfig) {
+	if newConfig.HybridDie.Enabled {
+		hd.Find()
+	} else {
+		hd.Stop()
+	}
 }
