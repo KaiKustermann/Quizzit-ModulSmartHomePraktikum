@@ -6,11 +6,10 @@ import (
 	"gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/game/loop/steps"
 )
 
+// welcomeStep is stored separately, so we can use it to reset the Game
 var welcomeStep = &steps.WelcomeStep{}
 
 // constructLoop initializes all the GameSteps and links them by adding their transitions
-//
-// Also prints out the gameloop once on DEBUG
 func (game *Game) constructLoop() *Game {
 	gameloopprinter.NewGameLoopPrinter()
 	// INSTANTIATE ALL GAME STEPS
