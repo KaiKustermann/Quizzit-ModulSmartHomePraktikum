@@ -19,7 +19,7 @@ type YAMLMerger struct {
 // mergeGame returns the patched [GameConfig]
 func (m YAMLMerger) mergeGame(conf configmodel.GameConfig, game *configyaml.GameYAML) configmodel.GameConfig {
 	if game == nil {
-		log.Debug("%s > Game is nil, not overriding", m.Source)
+		log.Debugf("%s > Game is nil, not overriding", m.Source)
 		return conf
 	}
 	conf.ScoredPointsToWin = m.mergeScoredPointsToWin(conf, game.ScoredPointsToWin)
