@@ -3,7 +3,6 @@
 - [API Definitions](#api-definitions)
   - [Communication in game (Websockets)](#communication-in-game-websockets)
   - [Communications Settings (HTTP/REST)](#communications-settings-httprest)
-    - [Swagger UI](#swagger-ui)
 - [Futher Reading](#futher-reading)
 
 The API definitions are used to generate the interface-describing code for both client and backend.
@@ -22,15 +21,7 @@ Before the game starts we need no realtime duplex communication, so we can use R
 
 The API ist described in [openapi.yaml](./openapi.yaml). You can use the [swagger editor](https://editor-next.swagger.io/) to visualize the api document (copy and paste it in).
 
-### Swagger UI
-
-Windows:
-
-    docker run --rm -p 8000:8080 -e SWAGGER_JSON=/local/api/openapi.yaml -v %CD%:/local swaggerapi/swagger-ui
-
-Linux:
-
-    docker run --rm -p 8000:8080 -e SWAGGER_JSON=/local/api/openapi.yaml -v $PWD:/local swaggerapi/swagger-ui
+The tool can also be used to send requests to the backend.
 
 # Futher Reading
 
