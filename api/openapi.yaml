@@ -14,10 +14,12 @@ info:
   license:
     name: MIT
     identifier: https://choosealicense.com/licenses/mit/
-  version: 0.2.0
+  version: 0.3.0
 servers:
   - url: http://localhost:8080
     description: Local development
+  - url: http://quizzit.local
+    description: RaspberryPi in local network
 paths:
   /health:
     get:
@@ -53,6 +55,15 @@ paths:
       responses:
         '200':
           description: 'patch applied'
+  /game/stop:
+    post:
+      tags:
+        - game
+      summary: Stop Quizzit
+      description: Reset all points, questions and go back to Welcome Screen
+      responses:
+        '200':
+          description: Successfully stopped the game
 
 components:
   schemas:

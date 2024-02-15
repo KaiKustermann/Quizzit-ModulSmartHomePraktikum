@@ -6,13 +6,14 @@ import (
 	"gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/game/loop/steps"
 )
 
+// welcomeStep is stored separately, so we can use it to reset the Game
+var welcomeStep = &steps.WelcomeStep{}
+
 // constructLoop initializes all the GameSteps and links them by adding their transitions
-//
-// Also prints out the gameloop once on DEBUG
 func (game *Game) constructLoop() *Game {
 	gameloopprinter.NewGameLoopPrinter()
 	// INSTANTIATE ALL GAME STEPS
-	gsWelcome := &steps.WelcomeStep{}
+	// welcomeStep is already instantiated
 	gsSetup := &steps.SetupStep{}
 	gsSearchHybridDie := &steps.HybridDieSearchStep{Send: game.forwardToGameLoop}
 	gsHybridDieConnected := &steps.HybridDieConnectedStep{}
@@ -35,7 +36,7 @@ func (game *Game) constructLoop() *Game {
 
 	// LINK THEM TOGETHER
 
-	gsWelcome.AddSetupTransition(gsSetup)
+	welcomeStep.AddSetupTransition(gsSetup)
 	gsSetup.AddTransitions(gsPlayerTurnStart, gsSearchHybridDie)
 	gsSearchHybridDie.AddTransitionToHybridDieConnected(gsHybridDieConnected)
 	gsSearchHybridDie.AddTransitionToHybridDieNotFound(gsHybridDieNotFound)
@@ -58,10 +59,10 @@ func (game *Game) constructLoop() *Game {
 	gsAnswerWrong.AddPlayerTurnEnd(gsPlayerTurnEnd)
 	gsPlayerTurnEnd.AddTransitions(gsPlayerWon, gsRemindPlayerColor, gsPlayerTurnStart)
 	gsRemindPlayerColor.AddTransitionToNextPlayer(gsPlayerTurnStart)
-	gsPlayerWon.AddWelcomeTransition(gsWelcome)
+	gsPlayerWon.AddWelcomeTransition(welcomeStep)
 
 	// Set an initial GameStep
-	game.TransitionToGameStep(gsWelcome)
+	game.TransitionToGameStep(welcomeStep)
 	log.Debug(gameloopprinter.GetOutput())
 	return game
 }

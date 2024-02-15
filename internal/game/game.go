@@ -24,22 +24,50 @@ type Game struct {
 	managers     *managers.GameObjectManagers
 }
 
-// NewGame constructs and injects a new Game instance
-func NewGame() (game Game) {
+// gameInstance is the local instance of our [Game]
+var gameInstance *Game
+
+// GetGame returns the current [Game]
+//
+// If no game had been initialized, calls InitializeGame
+func GetGame() *Game {
+	if gameInstance == nil {
+		return InitializeGame()
+	}
+	return gameInstance
+}
+
+// InitializeGame constructs a new [Game] and sets it as `gameInstance`.
+//
+// Returns `gameInstance` for convenience.
+// If a `gameInstance` already exists, does nothing, except for returning it.
+func InitializeGame() *Game {
+	if gameInstance != nil {
+		log.Warn("Game already initialized!")
+		return gameInstance
+	}
+	log.Info("Initializing new Game")
+	gameInstance = &Game{}
 	settingsManager := settingsmanager.NewSettingsManager()
-	game.managers = &managers.GameObjectManagers{
+	gameInstance.managers = &managers.GameObjectManagers{
 		PlayerManager:    player.NewPlayerManager(settingsManager),
 		QuestionManager:  questionmanager.NewQuestionManager(),
 		HybridDieManager: hybriddie.NewHybridDieManager(),
 	}
-	game.registerHybridDieCallbacks()
-	game.managers.HybridDieManager.Find()
-	game.constructLoop().registerHandlers()
-	return
+	gameInstance.registerHybridDieCallbacks()
+	gameInstance.managers.HybridDieManager.Find()
+	gameInstance.constructLoop().registerHandlers()
+	return gameInstance
 }
 
-// Stop/End the game, call any resource stops necessary
-func (game *Game) Stop() {
+// Reset sets the Gameloop back to 'Welcome'
+func (game *Game) Reset() {
+	log.Info("Resetting Game to 'Welcome'")
+	game.TransitionToGameStep(welcomeStep)
+}
+
+// Shutdown the game, call any resource stops necessary
+func (game *Game) Shutdown() {
 	game.managers.HybridDieManager.Stop()
 }
 

@@ -31,9 +31,7 @@ func main() {
 	log.SetLevel(configuration.GetQuizzitConfig().Log.Level)
 	fileLoggingHook.SetLevel(configuration.GetQuizzitConfig().Log.FileLevel)
 
-	log.Debug("Creating Game")
-	gameInstance := game.NewGame()
-	defer gameInstance.Stop()
+	defer game.InitializeGame().Shutdown()
 
 	quizzithttp.RunHttpServer()
 }

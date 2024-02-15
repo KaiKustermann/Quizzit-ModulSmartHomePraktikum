@@ -5,6 +5,7 @@ import (
 	"net/http"
 
 	"gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/configuration"
+	gameapi "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/http/api/game"
 	healthapi "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/http/api/health"
 	"gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/http/api/usersettingsapi"
 	ws "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/websockets"
@@ -17,6 +18,7 @@ func RunHttpServer() {
 	log.Debug("Setting up HTTP handlers")
 	http.HandleFunc("/health", healthapi.HealthCheckHttp)
 	http.Handle("/settings", usersettingsapi.NewUserSettingsEndpoint())
+	http.Handle("/game/stop", gameapi.NewGameEndpoint())
 	http.HandleFunc("/ws", ws.WebsocketEndpoint)
 
 	log.Debug("Creating HTTP server")
