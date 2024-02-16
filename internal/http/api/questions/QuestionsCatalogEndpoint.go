@@ -17,7 +17,7 @@ type QuestionsCatalogEndpoint struct {
 
 // NewQuestionsCatalogEndpoint constructs a new [QuestionsEndpoint]
 func NewQuestionsCatalogEndpoint() QuestionsCatalogEndpoint {
-	log.Debug("Creating new QuestionsEndpoint")
+	log.Debug("Creating new QuestionsCatalogEndpoint")
 	return QuestionsCatalogEndpoint{}
 }
 
