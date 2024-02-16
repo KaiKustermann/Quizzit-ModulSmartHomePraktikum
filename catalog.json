@@ -1,0 +1,9 @@
+{
+  "entries": [
+    {
+      "path": "./questions.json",
+      "name": "Development",
+      "description": "Kleiner Fragenkatalog zur Benutzung bei der Weiterentwicklung von Quizzit"
+    }
+  ]
+}
