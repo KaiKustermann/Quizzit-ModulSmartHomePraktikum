@@ -23,6 +23,8 @@ func (m FlagMerger) MergeAll(conf configmodel.QuizzitConfig) configmodel.Quizzit
 	conf.Http.Port = m.mergeHttpPort(conf.Http, fl.HttpPort)
 	conf.HybridDie.Enabled = m.mergeHybridDieEnabled(conf.HybridDie, fl.DieEnabled)
 	conf.HybridDie.Search.Timeout = m.mergeHybridDieSearch(conf.HybridDie, fl.HybridDieSearchTimeout)
+	conf.CatalogPath = m.mergeString("CatalogPath", conf.CatalogPath, fl.CatalogPath)
+	conf.Game.QuestionsPath = m.mergeString("QuestionsPath", conf.Game.QuestionsPath, fl.QuestionsPath)
 	return conf
 }
 
@@ -76,4 +78,15 @@ func (m FlagMerger) mergeHybridDieSearch(conf configmodel.HybridDieConfig, durat
 		return conf.Search.Timeout
 	}
 	return *duration
+}
+
+// mergeString returns the patched string
+//
+// Provide `fieldName` for proper logging
+func (m FlagMerger) mergeString(fieldName string, conf string, other *string) string {
+	if other == nil {
+		log.Debugf("%s is nil, not overriding", fieldName)
+		return conf
+	}
+	return *other
 }

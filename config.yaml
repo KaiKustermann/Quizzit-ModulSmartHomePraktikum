@@ -10,3 +10,4 @@ hybrid-die:
 game:
   scored-points-to-win: 3
   questions: "./questions.json"
+# catalogPath: "./catalog.json"

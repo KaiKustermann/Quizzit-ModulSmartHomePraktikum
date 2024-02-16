@@ -6,6 +6,7 @@ import (
 
 	log "github.com/sirupsen/logrus"
 	catalogloader "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/catalog/loader"
+	"gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/configuration"
 	apibase "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/http/api/base"
 )
 
@@ -37,7 +38,8 @@ func (h QuestionsCatalogEndpoint) ServeHTTP(w http.ResponseWriter, r *http.Reque
 
 // Get handles the GET requests
 func (h QuestionsCatalogEndpoint) Get(w http.ResponseWriter, r *http.Request) {
-	catalog, err := catalogloader.LoadCatalog("./catalog.json")
+	opts := configuration.GetQuizzitConfig()
+	catalog, err := catalogloader.LoadCatalog(opts.CatalogPath)
 	if err != nil {
 		h.SendServerError(w, err)
 		return

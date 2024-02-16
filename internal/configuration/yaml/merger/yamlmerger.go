@@ -133,3 +133,14 @@ func (m YAMLMerger) mergeHybridDieSearch(conf configmodel.HybridDieSearchConfig,
 	}
 	return conf
 }
+
+// mergeString returns the patched string
+//
+// Provide `fieldName` for proper logging
+func (m YAMLMerger) mergeString(fieldName string, conf string, other *string) string {
+	if other == nil {
+		log.Debugf("%s is nil, not overriding", fieldName)
+		return conf
+	}
+	return *other
+}

@@ -25,7 +25,7 @@ func GetQuizzitConfig() model.QuizzitConfig {
 func ChangeUserConfig(config configyaml.UserConfigYAML) (err error) {
 	log.Infof("Changing UserConfig to: %s", util.JsonString(config))
 	flags := configflag.GetAppFlags()
-	err = configfilewriter.WriteConfigurationFile(config, flags.UserConfigFile)
+	err = configfilewriter.WriteConfigurationFile(config, flags.UserConfigPath)
 	if err != nil {
 		log.Errorf("Failed to change user config, not reloading configuration.")
 		return err
@@ -45,9 +45,9 @@ func setConfig(newConfig model.QuizzitConfig) {
 func ReloadConfig() {
 	flags := configflag.GetAppFlags()
 	conf := createDefaultConfig()
-	conf = configyamlmerger.LoadSystemConfigYAMLAndMerge(conf, flags.ConfigFile)
+	conf = configyamlmerger.LoadSystemConfigYAMLAndMerge(conf, flags.ConfigPath)
 	conf = configflag.FlagMerger{}.MergeAll(conf)
-	conf = configyamlmerger.LoadUserConfigYAMLAndMerge(conf, flags.UserConfigFile)
+	conf = configyamlmerger.LoadUserConfigYAMLAndMerge(conf, flags.UserConfigPath)
 	log.Infof("New config loaded: %s", util.JsonString(conf))
 	setConfig(conf)
 }
@@ -72,5 +72,6 @@ func createDefaultConfig() model.QuizzitConfig {
 			ScoredPointsToWin: 5,
 			QuestionsPath:     "./questions.json",
 		},
+		CatalogPath: "./catalog.json",
 	}
 }
