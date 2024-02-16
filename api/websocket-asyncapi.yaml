@@ -14,7 +14,7 @@ info:
     
     Some useful links:
     - [Quizzit repository](https://gitlab.mi.hdm-stuttgart.de/quizzit)
-  version: 1.0.1
+  version: 1.1.0
   license:
     name: MIT
     url: https://choosealicense.com/licenses/mit/
@@ -133,6 +133,7 @@ components:
       description: Sent by client(s) -> Identifies the type of the message
       type: string
       # POSSIBLE CONTENTS:
+      #   - "health/ping"
       #   - "player/question/SubmitAnswer"
       #   - "player/question/SelectAnswer"
       #   - "player/question/UseJoker"

@@ -20,6 +20,7 @@ func RunHttpServer() {
 	http.Handle("/settings", usersettingsapi.NewUserSettingsEndpoint())
 	http.Handle("/game/stop", gameapi.NewGameEndpoint())
 	http.HandleFunc("/ws", ws.WebsocketEndpoint)
+	ws.RegisterMessageHandler("health/ping", ws.HealthPingHandler)
 
 	log.Debug("Creating HTTP server")
 	port := configuration.GetQuizzitConfig().Http.Port

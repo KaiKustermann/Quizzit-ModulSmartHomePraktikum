@@ -78,7 +78,6 @@ func WebsocketEndpoint(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		log.Error(err)
 	}
-	go ContinuouslySendHealth(ws)
 	onConnect(ws)
 	go listen(ws)
 }
