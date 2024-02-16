@@ -7,7 +7,7 @@ import (
 	"gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/configuration"
 	gameapi "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/http/api/game"
 	healthapi "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/http/api/health"
-	"gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/http/api/usersettingsapi"
+	usersettingsapi "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/http/api/usersettings"
 	ws "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/websockets"
 
 	log "github.com/sirupsen/logrus"
