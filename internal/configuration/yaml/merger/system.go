@@ -24,5 +24,6 @@ func LoadSystemConfigYAMLAndMerge(conf configmodel.QuizzitConfig, relPath string
 	conf.Game = merger.mergeGame(conf.Game, fileConf.Game)
 	conf.Log = merger.mergeLog(conf.Log, fileConf.Log)
 	conf.HybridDie = merger.mergeHybridDie(conf.HybridDie, fileConf.HybridDie)
+	conf.CatalogPath = merger.mergeString("CatalogPath", conf.CatalogPath, fileConf.CatalogPath)
 	return conf
 }

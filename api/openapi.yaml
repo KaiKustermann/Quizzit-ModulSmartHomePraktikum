@@ -14,7 +14,7 @@ info:
   license:
     name: MIT
     identifier: https://choosealicense.com/licenses/mit/
-  version: 0.3.1
+  version: 0.4.0
 servers:
   - url: http://localhost:8080
     description: Local development
@@ -58,6 +58,20 @@ paths:
       responses:
         '200':
           description: 'patch applied'
+  /questions/catalog:
+    get:
+      operationId: questionsCatalogGet
+      tags:
+        - questions
+      summary: Retrieve Question catalog
+      description: Get the available question lists
+      responses:
+        '200':
+          description: Successfully retrieved catalog
+          content:
+            application/json:
+              schema:
+                  $ref: '#/components/schemas/QuestionCatalog'
   /game/stop:
     post:
       operationId: gameStopPost
@@ -113,6 +127,35 @@ components:
           $ref: '#/components/schemas/Game'
         hybridDie:
           $ref: '#/components/schemas/HybridDie'
+    QuestionCatalogEntry:
+      description: Entry in QuestionCatalog
+      type: object
+      properties:
+        path:
+          description: Path to the file containing the actual questions (and answers)
+          type: string
+        name:
+          description: A name for this list of Questions
+          type: string
+        description:
+          description: A short description for this list of questions
+          type: string
+      required:
+        - path
+        - name
+        - description
+      examples:
+        - path: "./questions.json"
+          name: "Example"
+          description: "A fictional list of questions"
+    QuestionCatalog:
+      description: Catalog for Questions
+      type: object
+      properties:
+        entries:
+          type: array
+          items:
+            $ref: '#/components/schemas/QuestionCatalogEntry'
   requestBodies:
     UserSettings:
       content:

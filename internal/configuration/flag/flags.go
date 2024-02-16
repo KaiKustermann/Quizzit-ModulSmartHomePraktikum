@@ -12,9 +12,10 @@ import (
 
 // AppFlags serves as container to hold all flags in one spot.
 type AppFlags struct {
-	ConfigFile             string
-	UserConfigFile         string
-	QuestionsFile          *string
+	ConfigPath             string
+	UserConfigPath         string
+	CatalogPath            *string
+	QuestionsPath          *string
 	HttpPort               *int
 	DieEnabled             *string
 	HybridDieSearchTimeout *time.Duration
@@ -27,9 +28,10 @@ var flags = AppFlags{}
 
 // InitFlags defines the application's flags, parses them and reads them into our AppFlags struct.
 func InitFlags() {
-	configFile := flag.String("config", "./config.yaml", "Relative path to the system config file")
-	userConfigFile := flag.String("user-config", "./user-config.yaml", "Relative path to the user config file")
-	questionsFile := flag.String("questions", "", "Relative path to the questions file. Leave empty for default")
+	configPath := flag.String("config", "./config.yaml", "Relative path to the system config file")
+	userConfigPath := flag.String("user-config", "./user-config.yaml", "Relative path to the user config file")
+	catalogPath := flag.String("catalog", "", "Relative path to the catalog file. Leave empty for default")
+	questionsPath := flag.String("questions", "", "Relative path to the questions file. Leave empty for default")
 	httpPort := flag.Int("http-port", 0, "Port for the HTTP Server. Put '0' for default")
 	dieEnabled := flag.String("die-enabled", "", "Disable any hybrid-die functionality. Use 'yes' and 'no'. Leave empty for default")
 	// TODO: could maybe do duration as flag type
@@ -37,11 +39,15 @@ func InitFlags() {
 	logLevel := flag.String("log-level", "", "Granularity of log output, see logrus.ParseLevel. Leave empty for default")
 	logFileLevel := flag.String("log-file-level", "", "Granularity of log output for logfile, see logrus.ParseLevel. Leave empty for default")
 	flag.Parse()
-	flags.ConfigFile = *configFile
-	flags.UserConfigFile = *userConfigFile
+	flags.ConfigPath = *configPath
+	flags.UserConfigPath = *userConfigPath
 
-	if *questionsFile != "" {
-		flags.QuestionsFile = questionsFile
+	if *catalogPath != "" {
+		flags.CatalogPath = catalogPath
+	}
+
+	if *questionsPath != "" {
+		flags.QuestionsPath = questionsPath
 	}
 
 	if *httpPort != 0 {

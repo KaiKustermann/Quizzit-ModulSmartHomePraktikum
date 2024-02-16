@@ -3,8 +3,9 @@ package configmodel
 
 // QuizzitConfig is the root description of the config file
 type QuizzitConfig struct {
-	Http      HttpConfig
-	Log       LogConfig
-	HybridDie HybridDieConfig
-	Game      GameConfig
+	Http        HttpConfig
+	Log         LogConfig
+	HybridDie   HybridDieConfig
+	Game        GameConfig
+	CatalogPath string
 }
