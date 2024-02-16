@@ -17,6 +17,12 @@ func (h BasicHandler) SendOK(w http.ResponseWriter) {
 	w.WriteHeader(http.StatusOK)
 }
 
+// SendServerError answers the Request with '500' and error information.
+func (h BasicHandler) SendServerError(w http.ResponseWriter, err error) {
+	w.WriteHeader(http.StatusOK)
+	w.Write([]byte(err.Error()))
+}
+
 // SendJSON encodes the givena value 'v' as JSON and answers the Request with it.
 //
 // Does not apply any headers, like 'content-type'!
