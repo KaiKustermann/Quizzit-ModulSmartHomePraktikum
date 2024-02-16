@@ -29,6 +29,8 @@ func (h QuestionsCatalogEndpoint) ServeHTTP(w http.ResponseWriter, r *http.Reque
 	w.Header().Set("Content-Type", "application/json")
 	w.Header().Add("Access-Control-Allow-Origin", "*")
 	switch r.Method {
+	case http.MethodOptions:
+		h.Options(w)
 	case http.MethodGet:
 		h.Get(w, r)
 	default:
@@ -45,4 +47,16 @@ func (h QuestionsCatalogEndpoint) Get(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	h.SendJSON(w, catalog.ConvertToDTO())
+}
+
+// Options handles the OPTIONS requests
+func (h QuestionsCatalogEndpoint) Options(w http.ResponseWriter) {
+	allowed := []string{http.MethodOptions, http.MethodGet}
+	e := w.Header()
+	for _, v := range allowed {
+		e.Add("Allow", v)
+		e.Add("Access-Control-Allow-Methods", v)
+	}
+	e.Add("Access-Control-Allow-Headers", "x-requested-with")
+	w.WriteHeader(http.StatusOK)
 }
