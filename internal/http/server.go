@@ -17,10 +17,10 @@ import (
 // RunHttpServer registers HTTP Handlers and starts the server
 func RunHttpServer() {
 	log.Debug("Setting up HTTP handlers")
-	http.Handle("/health", healthapi.NewHealthEndpoint())
-	http.Handle("/settings", usersettingsapi.NewUserSettingsEndpoint())
-	http.Handle("/questions/catalog", questionsapi.NewQuestionsCatalogEndpoint())
-	http.Handle("/game/stop", gameapi.NewGameEndpoint())
+	http.Handle("/api/health", healthapi.NewHealthEndpoint())
+	http.Handle("/api/settings", usersettingsapi.NewUserSettingsEndpoint())
+	http.Handle("/api/questions/catalog", questionsapi.NewQuestionsCatalogEndpoint())
+	http.Handle("/api/game/stop", gameapi.NewGameEndpoint())
 	http.HandleFunc("/ws", ws.WebsocketEndpoint)
 	ws.RegisterMessageHandler("health/ping", ws.HealthPingHandler)
 
