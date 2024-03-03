@@ -33,7 +33,7 @@ func (h BasicHandler) SendJSON(w http.ResponseWriter, v any) error {
 
 // LogIncoming logs the incoming request on DEBUG
 func (h BasicHandler) LogIncoming(r http.Request) {
-	log.Debugf("[%s] '%s' --- Headers: %v", r.Method, r.URL, r.Header)
+	log.Debugf("%s [%s] '%s' --- Headers: %v", r.RemoteAddr, r.Method, r.URL, r.Header)
 }
 
 // SendMethodNotAllowed answers the Request METHOD_NOT_ALLOWED
