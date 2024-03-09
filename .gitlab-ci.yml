@@ -65,7 +65,7 @@ generate_openapi_typescript_models:
 
 bundle_typescript_package:
   stage: bundle-api
-  dependencies:
+  needs:
     - "generate_asyncapi_typescript_packages"
     - "generate_openapi_typescript_models"
   image: docker.io/hdmstuttgartquizzit/asyncapi-generator:0.3.0
@@ -83,7 +83,7 @@ bundle_typescript_package:
 
 publish_typescript_package:
   stage: publish-api
-  dependencies:
+  needs:
     - "bundle_typescript_package"
   image: docker.io/hdmstuttgartquizzit/asyncapi-generator:0.3.0
   script:
