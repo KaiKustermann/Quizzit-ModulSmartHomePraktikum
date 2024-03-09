@@ -111,7 +111,7 @@ sudo tshark -i wlan0 -o data.show_as_text:TRUE -T fields -f "port 7778" -e data.
 
 ## Test
 
-    go test ./test
+    go test ./...
 
 ## Build
 

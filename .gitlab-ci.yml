@@ -133,7 +133,7 @@ build_go:
     - echo "Setting up ..."
     - go mod download
     - echo "Running tests ..."
-    - go test ./test
+    - go test ./...
     - echo "Building for Linux AMD64"
     - GOOS=linux GOARCH=amd64 go build -o build/${LINUX_AMD64_BINARY} cmd/quizzit/quizzit.go
     - echo "Building for Linux arm"
