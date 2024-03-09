@@ -40,6 +40,38 @@ func TestGetActiveQuestion(t *testing.T) {
 	}
 }
 
+func TestRefreshingAll(t *testing.T) {
+	usedQuestion := makeQuestion("question A", "Geschichte")
+	usedQuestion.Used = true
+	qm := QuestionManager{
+		questions:      []questionmodel.Question{usedQuestion},
+		activeCategory: "Heimat",
+	}
+	qm.RefreshAllQuestions()
+	for _, q := range qm.questions {
+		if q.Used {
+			t.Errorf("Expected question to be unused")
+		}
+	}
+}
+
+func TestRefreshingActiveCategory(t *testing.T) {
+	activeCategory := "Geschichte"
+	usedQuestion := makeQuestion("question A", activeCategory)
+	usedQuestion.Used = true
+	qm := QuestionManager{
+		questions:      []questionmodel.Question{usedQuestion},
+		activeCategory: activeCategory,
+	}
+
+	qm.refreshQuestionsOfActiveCategory()
+	for _, q := range qm.questions {
+		if q.Used {
+			t.Errorf("Expected question to be unused")
+		}
+	}
+}
+
 func TestQuestionRotation(t *testing.T) {
 	activeCategory := "Geschichte"
 	qm := QuestionManager{

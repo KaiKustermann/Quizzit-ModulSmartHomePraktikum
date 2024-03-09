@@ -134,7 +134,7 @@ func (qm *QuestionManager) getRandomQuestionOfActiveCategory() *questionmodel.Qu
 func (qm *QuestionManager) refreshQuestionsOfActiveCategory() {
 	log.Infof("Marking questions of category %s as unused", qm.activeCategory)
 	for i := range qm.questions {
-		question := qm.questions[i]
+		question := &qm.questions[i]
 		if question.Category == qm.activeCategory {
 			log.Tracef("Marking question with ID %s as 'used'=false", question.Id)
 			question.Used = false
