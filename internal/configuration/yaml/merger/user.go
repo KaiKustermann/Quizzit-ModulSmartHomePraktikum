@@ -24,8 +24,8 @@ func LoadUserConfigYAMLAndMerge(conf configmodel.QuizzitConfig, relPath string) 
 
 func MergeConfigWithUserConfig(conf configmodel.QuizzitConfig, userConf configyaml.UserConfigYAML) configmodel.QuizzitConfig {
 	log.Infof("Patching Config with UserConfig")
-	merger := YAMLMerger{Source: "User-Config"}
-	conf.Game = merger.mergeGame(conf.Game, userConf.Game)
+	merger := YamlIntoConfigModelMerger{Source: "User-Config"}
+	conf.Game = merger.MergeGame(conf.Game, userConf.Game)
 	conf.HybridDie = merger.mergeHybridDie(conf.HybridDie, userConf.HybridDie)
 	return conf
 }

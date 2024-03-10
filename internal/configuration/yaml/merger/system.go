@@ -19,9 +19,9 @@ func LoadSystemConfigYAMLAndMerge(conf configmodel.QuizzitConfig, relPath string
 		log.Warnf("Not using system config file -> %e", err)
 		return conf
 	}
-	merger := YAMLMerger{Source: "System-Config"}
+	merger := YamlIntoConfigModelMerger{Source: "System-Config"}
 	conf.Http = merger.mergeHttp(conf.Http, fileConf.Http)
-	conf.Game = merger.mergeGame(conf.Game, fileConf.Game)
+	conf.Game = merger.MergeGame(conf.Game, fileConf.Game)
 	conf.Log = merger.mergeLog(conf.Log, fileConf.Log)
 	conf.HybridDie = merger.mergeHybridDie(conf.HybridDie, fileConf.HybridDie)
 	conf.CatalogPath = merger.mergeString("CatalogPath", conf.CatalogPath, fileConf.CatalogPath)

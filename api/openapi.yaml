@@ -1,3 +1,4 @@
+# PASTE me here: https://editor-next.swagger.io/
 openapi: 3.1.0
 info:
   title: Quizzit REST
@@ -14,7 +15,7 @@ info:
   license:
     name: MIT
     identifier: https://choosealicense.com/licenses/mit/
-  version: 0.4.1
+  version: 1.0.0
 servers:
   - url: http://localhost:8080/api
     description: Local development
@@ -33,31 +34,81 @@ paths:
           description: is healthy
         '500':
           description: something is off
-  /settings:
+  /settings/ui:
     get:
-      operationId: settingsGet
+      operationId: settingsUiGet
       tags:
         - settings
-      summary: Retrieve Settings
-      description: Get the current settings
+      summary: Retrieve UI Settings
+      description: Get the current UI Settings
       responses:
         '200':
           description: Successfully retrieved settings
           content:
             application/json:
               schema:
-                  $ref: '#/components/schemas/UserSettings'
+                  $ref: '#/components/schemas/UI'
     patch:
-      operationId: settingsPatch
+      operationId: settingsUiPatch
       tags:
         - settings
       summary: Update Settings
       description: Update Settings with new values
       requestBody:
-        $ref: '#/components/requestBodies/UserSettings'
+        $ref: '#/components/requestBodies/UI'
       responses:
         '200':
           description: 'patch applied'
+  /settings/die:
+    get:
+      operationId: settingsDieGet
+      tags:
+        - settings
+      summary: Retrieve Hybrid Die Settings
+      description: Get the current Hybrid Die Settings
+      responses:
+        '200':
+          description: Successfully retrieved settings
+          content:
+            application/json:
+              schema:
+                  $ref: '#/components/schemas/HybridDie'
+    post:
+      operationId: settingsDiePost
+      tags:
+        - settings
+      summary: Set Hybrid Die Settings
+      description: Set Hybrid Die Settings, like search timeout or if enabled
+      requestBody:
+        $ref: '#/components/requestBodies/HybridDie'
+      responses:
+        '200':
+          description: 'patch applied'
+  /settings/game:
+    get:
+      operationId: settingsGameGet
+      tags:
+        - settings
+      summary: Retrieve Game Settings
+      description: Get current game related settings like question catalog or points
+      responses:
+        '200':
+          description: Successfully retrieved settings
+          content:
+            application/json:
+              schema:
+                  $ref: '#/components/schemas/Game'
+    post:
+      operationId: settingsGamePost
+      tags:
+        - settings
+      summary: Set Game Settings
+      description: Set game related settings like question catalog or points
+      requestBody:
+        $ref: '#/components/requestBodies/Game'
+      responses:
+        '200':
+          description: 'Settings applied'
   /questions/catalog:
     get:
       operationId: questionsCatalogGet
@@ -97,20 +148,14 @@ components:
           description: Filepath to the questions catalog to use, leave empty to make no change
           type: string
           default: ""
-    Enabled:
-      description: Is Enabled, leave empty to make no change
-      type: string
-      default: ""
-      enum: 
-       - ""
-       - "ENABLED"
-       - "DISABLED"
     HybridDie:
       description: Hybrid-Die Settings
       type: object
       properties:
         enabled:
-          $ref: "#/components/schemas/Enabled"
+          description: Is the Hybrid-Die enabled?
+          type: boolean
+          default: true
         search:
           description: Settings related to searching a hybrid-die
           type: object
@@ -119,14 +164,15 @@ components:
               description: Timeout as GOLANG duration string, leave empty to make no change
               type: string
               default: ""
-    UserSettings:
-      description: UserSettings
+    UI:
+      description: Settings that affect only the UI and do nothing to the backend
       type: object
-      properties:
-        game:
-          $ref: '#/components/schemas/Game'
-        hybridDie:
-          $ref: '#/components/schemas/HybridDie'
+      additionalProperties:
+        type: string
+      examples:
+        - "show-menu-button": "yes"
+          "show-settings-button-in-menu": "no"
+          "master-volume": "80"
     QuestionCatalogEntry:
       description: Entry in QuestionCatalog
       type: object
@@ -157,8 +203,18 @@ components:
           items:
             $ref: '#/components/schemas/QuestionCatalogEntry'
   requestBodies:
-    UserSettings:
+    UI:
       content:
         "application/json":
           schema:
-            $ref: '#/components/schemas/UserSettings'
+            $ref: '#/components/schemas/UI'
+    Game:
+      content:
+        "application/json":
+          schema:
+            $ref: '#/components/schemas/Game'
+    HybridDie:
+      content:
+        "application/json":
+          schema:
+            $ref: '#/components/schemas/HybridDie'

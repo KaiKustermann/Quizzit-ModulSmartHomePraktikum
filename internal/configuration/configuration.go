@@ -7,8 +7,6 @@ import (
 	log "github.com/sirupsen/logrus"
 	configflag "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/configuration/flag"
 	model "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/configuration/model"
-	configfilewriter "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/configuration/writer"
-	configyaml "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/configuration/yaml"
 	configyamlmerger "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/configuration/yaml/merger"
 	"gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/pkg/util"
 )
@@ -19,19 +17,6 @@ var configInstance = model.QuizzitConfig{}
 // GetQuizzitConfig returns the current [QuizzitConfig]
 func GetQuizzitConfig() model.QuizzitConfig {
 	return configInstance
-}
-
-// ChangeUserConfig writes the given userconfig to the user-config file and applies its values as patches to [QuizzitConfig]
-func ChangeUserConfig(config configyaml.UserConfigYAML) (err error) {
-	log.Infof("Changing UserConfig to: %s", util.JsonString(config))
-	flags := configflag.GetAppFlags()
-	err = configfilewriter.WriteConfigurationFile(config, flags.UserConfigPath)
-	if err != nil {
-		log.Errorf("Failed to change user config, not reloading configuration.")
-		return err
-	}
-	setConfig(configyamlmerger.MergeConfigWithUserConfig(configInstance, config))
-	return
 }
 
 // setConfig updates the local configInstance and calls the change handlers

@@ -1,3 +1,4 @@
+# PASTE me here: https://studio.asyncapi.com/
 asyncapi: 2.6.0
 id: "https://quizzit.hdm-stuttgart.de"
 defaultContentType: application/json
@@ -359,6 +360,12 @@ components:
       additionalProperties: false
       required:
         - scoredPointsToWin
+    UISettings:
+      title: UI Settings
+      description: Contains settings for the UI.
+      type: object
+      additionalProperties:
+        type: string
     # *************************************************************************
     # **** END OPTION SCHEMAS *************************************************
     # *************************************************************************

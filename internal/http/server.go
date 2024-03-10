@@ -8,7 +8,8 @@ import (
 	gameapi "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/http/api/game"
 	healthapi "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/http/api/health"
 	questionsapi "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/http/api/questions"
-	usersettingsapi "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/http/api/usersettings"
+	hybriddiesettingsapi "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/http/api/settings/die"
+	gamesettingsapi "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/http/api/settings/game"
 	ws "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/websockets"
 
 	log "github.com/sirupsen/logrus"
@@ -18,7 +19,8 @@ import (
 func RunHttpServer() {
 	log.Debug("Setting up HTTP handlers")
 	http.Handle("/api/health", healthapi.NewHealthEndpoint())
-	http.Handle("/api/settings", usersettingsapi.NewUserSettingsEndpoint())
+	http.Handle("/api/settings/game", gamesettingsapi.NewGameSettingsEndpoint())
+	http.Handle("/api/settings/die", hybriddiesettingsapi.NewHybridDieSettingsEndpoint())
 	http.Handle("/api/questions/catalog", questionsapi.NewQuestionsCatalogEndpoint())
 	http.Handle("/api/game/stop", gameapi.NewGameEndpoint())
 	http.HandleFunc("/ws", ws.WebsocketEndpoint)

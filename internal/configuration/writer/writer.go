@@ -9,7 +9,7 @@ import (
 	"gopkg.in/yaml.v3"
 )
 
-// WriteConfigurationFile works like [WriteFromAbsolutePath], however takes a relative path
+// WriteConfigurationFile writes the given config file to the given path
 func WriteConfigurationFile[K configyaml.SystemConfigYAML | configyaml.UserConfigYAML](config K, path string) error {
 	cL := log.WithField("filename", path)
 	cL.Debugf("Marshalling to YAML...")

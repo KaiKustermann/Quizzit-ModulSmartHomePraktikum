@@ -1,5 +1,5 @@
-// Package usersettingsapi defines endpoints to handle requests related to UserSettings
-package usersettingsapi
+// Package hybriddiesettingsapi defines endpoints to handle requests related to the Hybrid Die Settings
+package hybriddiesettingsapi
 
 import (
 	"encoding/json"
@@ -11,24 +11,24 @@ import (
 	apibase "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/http/api/base"
 )
 
-// UserSettingsEndpoint implements http.[Handler]
-type UserSettingsEndpoint struct {
+// HybridDieSettingsEndpoint implements http.[Handler]
+type HybridDieSettingsEndpoint struct {
 	apibase.BasicHandler
-	mapper UserSettingsMapper
+	mapper HybridDieSettingsMapper
 }
 
-// NewSettingsEndpoint constructs a new [UserSettingsEndpoint]
-func NewUserSettingsEndpoint() UserSettingsEndpoint {
-	log.Debug("Creating new UserSettingsEndpoint")
-	return UserSettingsEndpoint{
-		mapper: UserSettingsMapper{},
+// NewSettingsEndpoint constructs a new [HybridDieSettingsEndpoint]
+func NewHybridDieSettingsEndpoint() HybridDieSettingsEndpoint {
+	log.Debug("Creating new HybridDieSettingsEndpoint")
+	return HybridDieSettingsEndpoint{
+		mapper: HybridDieSettingsMapper{},
 	}
 }
 
 // ServeHTTP implements http.[Handler]
 //
 // Defines all reactions to requests of all http-methods
-func (h UserSettingsEndpoint) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+func (h HybridDieSettingsEndpoint) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	h.LogIncoming(*r)
 	w.Header().Set("Content-Type", "application/json")
 	w.Header().Add("Access-Control-Allow-Origin", "*")
@@ -37,28 +37,28 @@ func (h UserSettingsEndpoint) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 		h.Options(w)
 	case http.MethodGet:
 		h.Get(w, r)
-	case http.MethodPatch:
-		h.Patch(w, r)
+	case http.MethodPost:
+		h.Post(w, r)
 	default:
 		h.SendMethodNotAllowed(w)
 	}
 }
 
 // Get handles the GET requests
-func (h UserSettingsEndpoint) Get(w http.ResponseWriter, r *http.Request) {
-	dto := h.mapper.mapToSettingsDTO(configuration.GetQuizzitConfig())
+func (h HybridDieSettingsEndpoint) Get(w http.ResponseWriter, r *http.Request) {
+	dto := h.mapper.mapToHybridDieDTO(configuration.GetQuizzitConfig().HybridDie)
 	h.SendJSON(w, dto)
 }
 
-// Patch handles the PATCH requests
-func (h UserSettingsEndpoint) Patch(w http.ResponseWriter, r *http.Request) {
-	settings := &dto.UserSettings{}
-	if err := json.NewDecoder(r.Body).Decode(settings); err != nil {
+// Post handles the POST requests
+func (h HybridDieSettingsEndpoint) Post(w http.ResponseWriter, r *http.Request) {
+	hdSettings := &dto.HybridDie{}
+	if err := json.NewDecoder(r.Body).Decode(hdSettings); err != nil {
 		h.SendBadRequest(w)
 		return
 	}
-	userConfig := *h.mapper.mapToUserConfigYAML(*settings)
-	if err := configuration.ChangeUserConfig(userConfig); err != nil {
+	dieYAML := *h.mapper.mapToHybridDieYAML(hdSettings)
+	if err := configuration.PatchUserSettings(dieYAML); err != nil {
 		h.SendBadRequest(w)
 		return
 	}
@@ -66,7 +66,7 @@ func (h UserSettingsEndpoint) Patch(w http.ResponseWriter, r *http.Request) {
 }
 
 // Options handles the OPTIONS requests
-func (h UserSettingsEndpoint) Options(w http.ResponseWriter) {
+func (h HybridDieSettingsEndpoint) Options(w http.ResponseWriter) {
 	allowed := []string{http.MethodOptions, http.MethodGet, http.MethodPatch}
 	e := w.Header()
 	for _, v := range allowed {
