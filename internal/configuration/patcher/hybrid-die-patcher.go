@@ -15,6 +15,9 @@ func (m YAMLPatcher) PatchHybridDie(conf configyaml.UserConfigYAML, die *configy
 	if conf.HybridDie == nil {
 		conf.HybridDie = &configyaml.HybridDieYAML{}
 	}
+	if conf.HybridDie.Search == nil {
+		conf.HybridDie.Search = &configyaml.HybridDieSearchYAML{}
+	}
 	conf.HybridDie.Search = m.mergeHybridDieSearch(*conf.HybridDie.Search, die.Search)
 	if die.Enabled == nil {
 		log.Debugf("%s > HybridDie Disabled is nil, not overriding", m.Source)
