@@ -3,7 +3,7 @@ package configfilepatcher
 
 import (
 	log "github.com/sirupsen/logrus"
-	configyaml "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/configuration/yaml"
+	configyaml "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/configuration/file/model"
 )
 
 // PatchGame returns the patched [UserConfigYAML]

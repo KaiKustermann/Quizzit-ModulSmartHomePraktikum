@@ -3,9 +3,9 @@ package configyamlmerger
 
 import (
 	log "github.com/sirupsen/logrus"
-	configfileloader "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/configuration/loader"
-	configmodel "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/configuration/model"
-	configyaml "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/configuration/yaml"
+	configfileloader "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/configuration/file/loader"
+	configyaml "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/configuration/file/model"
+	configmodel "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/configuration/runtime/model"
 )
 
 // LoadSystemConfigYAMLAndMerge reads the system config file and merges it with 'conf'

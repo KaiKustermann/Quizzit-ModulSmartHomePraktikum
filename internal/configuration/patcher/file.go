@@ -3,8 +3,8 @@ package configfilepatcher
 
 import (
 	log "github.com/sirupsen/logrus"
-	configfileloader "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/configuration/loader"
-	configyaml "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/configuration/yaml"
+	configfileloader "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/configuration/file/loader"
+	configyaml "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/configuration/file/model"
 )
 
 // GetUserConfigurationFileAndPatch ...

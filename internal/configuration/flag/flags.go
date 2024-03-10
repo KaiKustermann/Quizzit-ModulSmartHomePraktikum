@@ -10,19 +10,6 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
-// AppFlags serves as container to hold all flags in one spot.
-type AppFlags struct {
-	ConfigPath             string
-	UserConfigPath         string
-	CatalogPath            *string
-	QuestionsPath          *string
-	HttpPort               *int
-	DieEnabled             *string
-	HybridDieSearchTimeout *time.Duration
-	LogLevel               *log.Level
-	LogFileLevel           *log.Level
-}
-
 // flags is our local instance holding our settings
 var flags = AppFlags{}
 
