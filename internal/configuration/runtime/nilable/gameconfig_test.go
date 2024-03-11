@@ -122,3 +122,32 @@ func Test_GameNilable_MergeWithNonNils(t *testing.T) {
 		t.Errorf("Expected QuestionsPath to be '%s', but was '%s'", qpA, *ba.QuestionsPath)
 	}
 }
+
+func Test_GameNilable_MergePartials(t *testing.T) {
+	ptwA := int32(3)
+	qpB := "./path/to/b"
+	a := &GameNilable{ScoredPointsToWin: &ptwA}
+	b := &GameNilable{QuestionsPath: &qpB}
+
+	ab := a.Merge(b)
+	if ab == nil {
+		t.Fatal("Expected result NOT to be 'nil'")
+	}
+	if *ab.ScoredPointsToWin != ptwA {
+		t.Errorf("Expected ScoredPointsToWin to be '%d', but was '%d'", ptwA, *ab.ScoredPointsToWin)
+	}
+	if *ab.QuestionsPath != qpB {
+		t.Errorf("Expected QuestionsPath to be '%s', but was '%s'", qpB, *ab.QuestionsPath)
+	}
+
+	ba := b.Merge(a)
+	if ba == nil {
+		t.Fatal("Expected result NOT to be 'nil'")
+	}
+	if *ba.ScoredPointsToWin != ptwA {
+		t.Errorf("Expected ScoredPointsToWin to be '%d', but was '%d'", ptwA, *ba.ScoredPointsToWin)
+	}
+	if *ba.QuestionsPath != qpB {
+		t.Errorf("Expected QuestionsPath to be '%s', but was '%s'", qpB, *ba.QuestionsPath)
+	}
+}

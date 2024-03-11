@@ -124,3 +124,32 @@ func Test_LogNilable_MergeWithNonNils(t *testing.T) {
 		t.Errorf("Expected FileLevel to be '%s', but was '%s'", lvlFileA, *ba.FileLevel)
 	}
 }
+
+func Test_LogNilable_MergeWithPartials(t *testing.T) {
+	lvlFileA := logrus.InfoLevel
+	lvlStdOutB := logrus.TraceLevel
+	a := &LogNilable{FileLevel: &lvlFileA}
+	b := &LogNilable{Level: &lvlStdOutB}
+
+	ab := a.Merge(b)
+	if ab == nil {
+		t.Fatal("Expected result NOT to be 'nil'")
+	}
+	if *ab.Level != lvlStdOutB {
+		t.Errorf("Expected Level to be '%d', but was '%d'", lvlStdOutB, *ab.Level)
+	}
+	if *ab.FileLevel != lvlFileA {
+		t.Errorf("Expected FileLevel to be '%s', but was '%s'", lvlFileA, *ab.FileLevel)
+	}
+
+	ba := b.Merge(a)
+	if ba == nil {
+		t.Fatal("Expected result NOT to be 'nil'")
+	}
+	if *ba.Level != lvlStdOutB {
+		t.Errorf("Expected Level to be '%d', but was '%d'", lvlStdOutB, *ba.Level)
+	}
+	if *ba.FileLevel != lvlFileA {
+		t.Errorf("Expected FileLevel to be '%s', but was '%s'", lvlFileA, *ba.FileLevel)
+	}
+}
