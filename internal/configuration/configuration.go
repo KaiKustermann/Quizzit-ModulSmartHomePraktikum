@@ -12,6 +12,11 @@ import (
 	"gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/pkg/util"
 )
 
+type ConfigChangeHook = func(newConfig model.QuizzitConfig)
+
+// Hooks to run when the config changes
+var onChangeHooks []ConfigChangeHook
+
 // configInstance is the local instance of our [QuizzitConfig]
 var configInstance = model.QuizzitConfig{}
 
@@ -50,6 +55,18 @@ func ReloadConfig() {
 
 	log.Infof("New config loaded: %s", util.JsonString(conf))
 	setConfig(conf)
+}
+
+// RegisterOnChangeHandler adds a handler that gets invoked when the configuration changes
+func RegisterOnChangeHandler(handler ConfigChangeHook) {
+	onChangeHooks = append(onChangeHooks, handler)
+}
+
+// callChangeHandlers invokes all hooks with the new config
+func callChangeHandlers() {
+	for _, v := range onChangeHooks {
+		v(GetQuizzitConfig())
+	}
 }
 
 // createDefaultConfig creates a config instance with all default options as base and fallback.

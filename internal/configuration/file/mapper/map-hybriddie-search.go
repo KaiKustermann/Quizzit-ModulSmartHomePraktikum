@@ -12,7 +12,7 @@ import (
 // HybridDieSearchToNilables from YAML to nillable RUNTIME
 func (m YamlNilableConfigMapper) HybridDieSearchToNilable(in *file.HybridDieSearchYAML) *nilable.HybridDieSearchNilable {
 	out := &nilable.HybridDieSearchNilable{}
-	if in == nil {
+	if in == nil || in.Timeout == nil {
 		return out
 	}
 	dur, err := time.ParseDuration(*in.Timeout)

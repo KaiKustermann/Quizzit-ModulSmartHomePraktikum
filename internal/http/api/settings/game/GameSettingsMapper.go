@@ -2,8 +2,8 @@
 package gamesettingsapi
 
 import (
-	configyaml "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/configuration/file/model"
 	configmodel "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/configuration/runtime/model"
+	confignilable "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/configuration/runtime/nilable"
 	dto "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/generated-sources/openapi"
 	apibase "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/http/api/base"
 )
@@ -22,12 +22,12 @@ func (m GameSettingsMapper) mapToGameDTO(conf configmodel.GameConfig) *dto.Game 
 	}
 }
 
-// mapToGameYAML maps from DTO [Game] to MODEL [GameYAML]
-func (m GameSettingsMapper) mapToGameYAML(in *dto.Game) *configyaml.GameYAML {
+// ToNilable maps from DTO [Game] to [GameNilable]
+func (m GameSettingsMapper) ToNilable(in *dto.Game) *confignilable.GameNilable {
 	if in == nil {
 		return nil
 	}
-	game := configyaml.GameYAML{}
+	game := confignilable.GameNilable{}
 	if in.ScoredPointsToWin != nil && *in.ScoredPointsToWin > 0 {
 		game.ScoredPointsToWin = in.ScoredPointsToWin
 	}

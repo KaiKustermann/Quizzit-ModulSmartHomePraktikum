@@ -22,3 +22,11 @@ func LoadGameConfigFile() *confignilable.GameNilable {
 	}
 	return configyamlmapper.YamlNilableConfigMapper{}.GameToNilable(&fileConf)
 }
+
+// SaveGameConfigFile writes the game config back to file
+func SaveGameConfigFile(config *confignilable.GameNilable) (err error) {
+	asYAML := configyamlmapper.YamlNilableConfigMapper{}.GameToYAML(config)
+	flags := configflag.GetAppFlags()
+	path := flags.UserConfigDir + "/" + GAME_CONFIG_FILE_NAME
+	return writeConfigurationFile(asYAML, path)
+}

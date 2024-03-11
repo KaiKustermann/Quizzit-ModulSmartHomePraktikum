@@ -57,8 +57,8 @@ func (h GameSettingsEndpoint) Post(w http.ResponseWriter, r *http.Request) {
 		h.SendBadRequest(w)
 		return
 	}
-	gameYAML := *h.mapper.mapToGameYAML(gameSettings)
-	if err := configuration.PatchUserSettings(gameYAML); err != nil {
+	nilable := h.mapper.ToNilable(gameSettings)
+	if err := configuration.PatchGameConfig(nilable); err != nil {
 		h.SendBadRequest(w)
 		return
 	}

@@ -22,3 +22,11 @@ func LoadHybridDieConfigFile() *confignilable.HybridDieNilable {
 	}
 	return configyamlmapper.YamlNilableConfigMapper{}.HybridDieToNilable(&fileConf)
 }
+
+// SaveHybridDieConfigFile writes the game config back to file
+func SaveHybridDieConfigFile(config *confignilable.HybridDieNilable) (err error) {
+	asYAML := configyamlmapper.YamlNilableConfigMapper{}.HybridDieToYAML(config)
+	flags := configflag.GetAppFlags()
+	path := flags.UserConfigDir + "/" + HYBRID_DIE_CONFIG_FILE_NAME
+	return writeConfigurationFile(asYAML, path)
+}

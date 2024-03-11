@@ -2,8 +2,12 @@
 package hybriddiesettingsapi
 
 import (
-	configyaml "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/configuration/file/model"
+	"time"
+
+	log "github.com/sirupsen/logrus"
+
 	configmodel "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/configuration/runtime/model"
+	confignilable "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/configuration/runtime/nilable"
 	dto "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/generated-sources/openapi"
 	apibase "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/http/api/base"
 )
@@ -22,25 +26,28 @@ func (m HybridDieSettingsMapper) mapToHybridDieDTO(conf configmodel.HybridDieCon
 	}
 }
 
-// mapToHybridDieYAML maps from DTO [HybridDie] to MODEL [HybridDieYAML]
-func (m HybridDieSettingsMapper) mapToHybridDieYAML(in *dto.HybridDie) *configyaml.HybridDieYAML {
+// ToNilable maps from DTO [HybridDie] to [HybridDieNilable]
+func (m HybridDieSettingsMapper) ToNilable(in *dto.HybridDie) *confignilable.HybridDieNilable {
 	if in == nil {
 		return nil
 	}
-	hd := configyaml.HybridDieYAML{}
+	hd := confignilable.HybridDieNilable{}
 	hd.Enabled = in.Enabled
-	hd.Search = m.mapToHybridDieSearchYAML(in.Search)
+	hd.Search = m.ToHybridDieSearchNilable(in.Search)
 	return &hd
 }
 
 // mapToHybridDieSearchYAML maps from DTO [HybridDieSearch] to MODEL [HybridDieSearchYAML]
-func (m HybridDieSettingsMapper) mapToHybridDieSearchYAML(in *dto.HybridDieSearch) *configyaml.HybridDieSearchYAML {
-	if in == nil {
-		return nil
+func (m HybridDieSettingsMapper) ToHybridDieSearchNilable(in *dto.HybridDieSearch) *confignilable.HybridDieSearchNilable {
+	out := confignilable.HybridDieSearchNilable{}
+	if in == nil || in.Timeout == nil {
+		return &out
 	}
-	search := configyaml.HybridDieSearchYAML{}
-	if in.Timeout != nil && *in.Timeout != "" {
-		search.Timeout = in.Timeout
+	dur, err := time.ParseDuration(*in.Timeout)
+	if err != nil {
+		log.Warnf("Failed parsing Timeout '%s' %e", *in.Timeout, err)
+	} else {
+		out.Timeout = &dur
 	}
-	return &search
+	return &out
 }

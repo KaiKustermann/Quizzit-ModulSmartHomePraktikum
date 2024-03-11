@@ -57,8 +57,8 @@ func (h HybridDieSettingsEndpoint) Post(w http.ResponseWriter, r *http.Request) 
 		h.SendBadRequest(w)
 		return
 	}
-	dieYAML := *h.mapper.mapToHybridDieYAML(hdSettings)
-	if err := configuration.PatchUserSettings(dieYAML); err != nil {
+	dieYAML := h.mapper.ToNilable(hdSettings)
+	if err := configuration.PatchHybridDieConfig(dieYAML); err != nil {
 		h.SendBadRequest(w)
 		return
 	}
