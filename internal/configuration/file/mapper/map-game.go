@@ -7,7 +7,7 @@ import (
 )
 
 // GameToNilables from YAML to nillable RUNTIME
-func (m YamlRuntimeConfigMapper) GameToNilable(in *file.GameYAML) *nilable.GameNilable {
+func (m YamlNilableConfigMapper) GameToNilable(in *file.GameYAML) *nilable.GameNilable {
 	out := &nilable.GameNilable{}
 	if in == nil {
 		return out
@@ -18,7 +18,7 @@ func (m YamlRuntimeConfigMapper) GameToNilable(in *file.GameYAML) *nilable.GameN
 }
 
 // GameToYAML from nillable RUNTIME to YAML
-func (m YamlRuntimeConfigMapper) GameToYAML(in *nilable.GameNilable) *file.GameYAML {
+func (m YamlNilableConfigMapper) GameToYAML(in *nilable.GameNilable) *file.GameYAML {
 	out := &file.GameYAML{}
 	if in == nil {
 		return out

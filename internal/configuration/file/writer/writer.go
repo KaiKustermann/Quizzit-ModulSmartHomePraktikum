@@ -5,12 +5,11 @@ import (
 	"os"
 
 	log "github.com/sirupsen/logrus"
-	configyaml "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/configuration/file/model"
 	"gopkg.in/yaml.v3"
 )
 
 // WriteConfigurationFile writes the given config file to the given path
-func WriteConfigurationFile[K configyaml.SystemConfigYAML | configyaml.UserConfigYAML](config K, path string) error {
+func WriteConfigurationFile[K any](config K, path string) error {
 	cL := log.WithField("filename", path)
 	cL.Debugf("Marshalling to YAML...")
 	bytes, err := yaml.Marshal(config)

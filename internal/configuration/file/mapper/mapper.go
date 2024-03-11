@@ -1,4 +1,4 @@
-// Package configyamlmappers between YAML and RUNTIME config representations
+// Package configyamlmappers between YAML and NILABLE config representations
 package configyamlmapper
 
 import (
@@ -6,11 +6,11 @@ import (
 	nilable "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/configuration/runtime/nilable"
 )
 
-// YamlRuntimeConfigMappers between YAML and RUNTIME config representations
-type YamlRuntimeConfigMapper struct{}
+// YamlRuntimeConfigMappers between YAML and NILABLE config representations
+type YamlNilableConfigMapper struct{}
 
-// ToNilables from YAML to nillable RUNTIME
-func (m YamlRuntimeConfigMapper) ToNilable(in *file.SystemConfigYAML) *nilable.QuizzitNilable {
+// ToNilables from YAML to nillable NILABLE
+func (m YamlNilableConfigMapper) ToNilable(in *file.SystemConfigYAML) *nilable.QuizzitNilable {
 	out := &nilable.QuizzitNilable{}
 	if in == nil {
 		return out
@@ -23,8 +23,8 @@ func (m YamlRuntimeConfigMapper) ToNilable(in *file.SystemConfigYAML) *nilable.Q
 	return out
 }
 
-// ToYAML from nillable RUNTIME to YAML
-func (m YamlRuntimeConfigMapper) ToYAML(in *nilable.QuizzitNilable) *file.SystemConfigYAML {
+// ToYAML from nillable NILABLE to YAML
+func (m YamlNilableConfigMapper) ToYAML(in *nilable.QuizzitNilable) *file.SystemConfigYAML {
 	out := &file.SystemConfigYAML{}
 	if in == nil {
 		return out

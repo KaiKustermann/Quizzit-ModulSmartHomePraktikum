@@ -2,8 +2,6 @@
 package configpatcher
 
 import (
-	"time"
-
 	log "github.com/sirupsen/logrus"
 	configmodel "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/configuration/runtime/model"
 	confignilable "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/configuration/runtime/nilable"
@@ -26,12 +24,7 @@ func (m ConfigPatcher) patchHybridDieSearch(conf configmodel.HybridDieConfig, ni
 		log.Debugf("%s > Search Timeout is nil, not overriding", m.Source)
 		return conf.Search
 	}
-	dur, err := time.ParseDuration(*nilable.Timeout)
-	if err != nil {
-		log.Warnf("Failed parsing Hybrid Die Search Timeout '%s' %e", *nilable.Timeout, err)
-		return conf.Search
-	}
-	return configmodel.HybridDieSearchConfig{Timeout: dur}
+	return configmodel.HybridDieSearchConfig{Timeout: *nilable.Timeout}
 }
 
 // patchEnabled returns the patched [bool]

@@ -1,9 +1,11 @@
 // Package confignilable provides a nilable representation of the internal configmodel
 package confignilable
 
+import "time"
+
 // HybridDieSearchNilable holds options related to the hybrid die search
 type HybridDieSearchNilable struct {
-	Timeout *string
+	Timeout *time.Duration
 }
 
 // Merge two instances into a new one, where values from B take precedence

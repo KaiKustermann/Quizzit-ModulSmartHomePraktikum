@@ -2,6 +2,7 @@ package confignilable
 
 import (
 	"testing"
+	"time"
 )
 
 func Test_HybridDieNilable_MergeNilAndNil(t *testing.T) {
@@ -41,7 +42,7 @@ func Test_HybridDieNilable_MergePortsAreNilAndNil(t *testing.T) {
 }
 
 func Test_HybridDieNilable_MergeWithNil(t *testing.T) {
-	timeout := "5s"
+	timeout := 5 * time.Second
 	search := HybridDieSearchNilable{Timeout: &timeout}
 	enabled := true
 	a := &HybridDieNilable{Search: &search, Enabled: &enabled}
@@ -106,10 +107,10 @@ func Test_HybridDieNilable_MergeWithNil(t *testing.T) {
 }
 
 func Test_HybridDieNilable_MergeWithNonNils(t *testing.T) {
-	timeoutA := "5s"
+	timeoutA := 5 * time.Second
 	searchA := HybridDieSearchNilable{Timeout: &timeoutA}
 	enabledA := true
-	timeoutB := "1s"
+	timeoutB := 1 * time.Second
 	searchB := HybridDieSearchNilable{Timeout: &timeoutB}
 	enabledB := true
 	a := &HybridDieNilable{Search: &searchA, Enabled: &enabledA}

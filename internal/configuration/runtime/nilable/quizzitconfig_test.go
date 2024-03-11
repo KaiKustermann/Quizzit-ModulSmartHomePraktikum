@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"reflect"
 	"testing"
+	"time"
 
 	"github.com/sirupsen/logrus"
 	"gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/pkg/util"
@@ -16,8 +17,8 @@ func Test_SystemConfigNilable_Merge(t *testing.T) {
 	qpB := "./path/to/questions/B"
 	yes := true
 	no := false
-	timeoutA := "5s"
-	timeoutB := "10s"
+	timeoutA := 5 * time.Second
+	timeoutB := 10 * time.Second
 	portA := 8080
 	portB := 443
 	pointsA := int32(5)

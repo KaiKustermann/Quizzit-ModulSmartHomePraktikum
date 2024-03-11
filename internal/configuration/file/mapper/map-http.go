@@ -7,7 +7,7 @@ import (
 )
 
 // HttpToNilables from YAML to nillable RUNTIME
-func (m YamlRuntimeConfigMapper) HttpToNilable(in *file.HttpYAML) *nilable.HttpNilable {
+func (m YamlNilableConfigMapper) HttpToNilable(in *file.HttpYAML) *nilable.HttpNilable {
 	out := &nilable.HttpNilable{}
 	if in == nil {
 		return out
@@ -17,7 +17,7 @@ func (m YamlRuntimeConfigMapper) HttpToNilable(in *file.HttpYAML) *nilable.HttpN
 }
 
 // HttpToYAML from nillable RUNTIME to YAML
-func (m YamlRuntimeConfigMapper) HttpToYAML(in *nilable.HttpNilable) *file.HttpYAML {
+func (m YamlNilableConfigMapper) HttpToYAML(in *nilable.HttpNilable) *file.HttpYAML {
 	out := &file.HttpYAML{}
 	if in == nil {
 		return out

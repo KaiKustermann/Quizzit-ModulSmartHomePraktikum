@@ -7,7 +7,7 @@ import (
 )
 
 // HybridDieToNilables from YAML to nillable RUNTIME
-func (m YamlRuntimeConfigMapper) HybridDieToNilable(in *file.HybridDieYAML) *nilable.HybridDieNilable {
+func (m YamlNilableConfigMapper) HybridDieToNilable(in *file.HybridDieYAML) *nilable.HybridDieNilable {
 	out := &nilable.HybridDieNilable{}
 	if in == nil {
 		return out
@@ -18,7 +18,7 @@ func (m YamlRuntimeConfigMapper) HybridDieToNilable(in *file.HybridDieYAML) *nil
 }
 
 // HybridDieToYAML from nillable RUNTIME to YAML
-func (m YamlRuntimeConfigMapper) HybridDieToYAML(in *nilable.HybridDieNilable) *file.HybridDieYAML {
+func (m YamlNilableConfigMapper) HybridDieToYAML(in *nilable.HybridDieNilable) *file.HybridDieYAML {
 	out := &file.HybridDieYAML{}
 	if in == nil {
 		return out

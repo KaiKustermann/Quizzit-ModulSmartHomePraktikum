@@ -5,9 +5,11 @@ import (
 	"time"
 
 	log "github.com/sirupsen/logrus"
+	configfileloader "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/configuration/file/loader"
 	configyamlmerger "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/configuration/file/merger"
 	configflag "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/configuration/flag"
 	model "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/configuration/runtime/model"
+	configpatcher "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/configuration/runtime/patcher"
 	"gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/pkg/util"
 )
 
@@ -30,7 +32,10 @@ func setConfig(newConfig model.QuizzitConfig) {
 func ReloadConfig() {
 	flags := configflag.GetAppFlags()
 	conf := createDefaultConfig()
-	conf = configyamlmerger.LoadSystemConfigYAMLAndMerge(conf, flags.ConfigPath)
+
+	fileConfig := configfileloader.LoadQuizzitConfigFile(flags.ConfigPath)
+	conf = configpatcher.ConfigPatcher{Source: "Quizzit-File-Config"}.PatchAll(conf, fileConfig)
+
 	conf = configflag.FlagMerger{}.MergeAll(conf)
 	conf = configyamlmerger.LoadUserConfigYAMLAndMerge(conf, flags.UserConfigPath)
 	log.Infof("New config loaded: %s", util.JsonString(conf))
