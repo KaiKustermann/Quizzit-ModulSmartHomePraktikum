@@ -12,11 +12,11 @@ import (
 // AppFlags serves as container to hold all flags in one spot.
 type AppFlags struct {
 	ConfigPath             string
-	UserConfigPath         string
+	UserConfigDir          string
 	CatalogPath            *string
 	QuestionsPath          *string
 	HttpPort               *int
-	DieEnabled             *string
+	DieEnabled             *bool
 	HybridDieSearchTimeout *time.Duration
 	LogLevel               *log.Level
 	LogFileLevel           *log.Level

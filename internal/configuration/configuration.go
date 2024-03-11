@@ -5,8 +5,7 @@ import (
 	"time"
 
 	log "github.com/sirupsen/logrus"
-	configfileloader "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/configuration/file/loader"
-	configyamlmerger "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/configuration/file/merger"
+	configfileio "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/configuration/file/io"
 	configflag "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/configuration/flag"
 	model "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/configuration/runtime/model"
 	configpatcher "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/configuration/runtime/patcher"
@@ -30,14 +29,25 @@ func setConfig(newConfig model.QuizzitConfig) {
 // ReloadConfig recreates the configuration by starting with the default config
 // and applying the file config as patch, before applying any patches made by flags.
 func ReloadConfig() {
-	flags := configflag.GetAppFlags()
 	conf := createDefaultConfig()
+	patcher := configpatcher.ConfigPatcher{}
 
-	fileConfig := configfileloader.LoadQuizzitConfigFile(flags.ConfigPath)
-	conf = configpatcher.ConfigPatcher{Source: "Quizzit-File-Config"}.PatchAll(conf, fileConfig)
+	patcher.Source = "Quizzit-File-Config"
+	fileConfig := configfileio.LoadQuizzitConfigFile()
+	conf = patcher.PatchAll(conf, fileConfig)
 
-	conf = configflag.FlagMerger{}.MergeAll(conf)
-	conf = configyamlmerger.LoadUserConfigYAMLAndMerge(conf, flags.UserConfigPath)
+	patcher.Source = "Flags-Config"
+	flagConfig := configflag.FlagMapper{}.ToNilable(configflag.GetAppFlags())
+	conf = patcher.PatchAll(conf, flagConfig)
+
+	patcher.Source = "Game-File-Config"
+	gameConfig := configfileio.LoadGameConfigFile()
+	conf.Game = patcher.PatchGame(conf.Game, gameConfig)
+
+	patcher.Source = "HybridDie-File-Config"
+	hybridDieConfig := configfileio.LoadHybridDieConfigFile()
+	conf.HybridDie = patcher.PatchHybridDie(conf.HybridDie, hybridDieConfig)
+
 	log.Infof("New config loaded: %s", util.JsonString(conf))
 	setConfig(conf)
 }

@@ -35,7 +35,7 @@ func callChangeHandlers() {
 func PatchUserSettings[T configyaml.GameYAML | configyaml.HybridDieYAML](patch T) (err error) {
 	log.Infof("Patching Settings with: %s", util.JsonString(patch))
 	flags := configflag.GetAppFlags()
-	config, err := configfilepatcher.GetUserConfigurationFileAndPatch(patch, flags.UserConfigPath)
+	config, err := configfilepatcher.GetUserConfigurationFileAndPatch(patch, flags.UserConfigDir)
 	if err != nil {
 		log.Errorf("Failed to read user config for patching, not applying configuration.")
 		return
@@ -47,7 +47,7 @@ func PatchUserSettings[T configyaml.GameYAML | configyaml.HybridDieYAML](patch T
 func changeUserConfig(config configyaml.UserConfigYAML) (err error) {
 	log.Infof("Changing UserConfig to: %s", util.JsonString(config))
 	flags := configflag.GetAppFlags()
-	err = configfilewriter.WriteConfigurationFile(config, flags.UserConfigPath)
+	err = configfilewriter.WriteConfigurationFile(config, flags.UserConfigDir)
 	if err != nil {
 		log.Errorf("Failed to change user config, not reloading configuration.")
 		return err

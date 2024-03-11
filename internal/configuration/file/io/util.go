@@ -1,5 +1,5 @@
-// Package configfileloader provides the means to load a config from file
-package configfileloader
+// Package configfileio provides the means to load/write a config from/to file
+package configfileio
 
 import (
 	"io"
@@ -50,4 +50,16 @@ func loadFromAbsolutePath[K any](absPath string) (config K, err error) {
 		cL.Debug("Successfully unmarshalled YAML into struct")
 	}
 	return
+}
+
+// writeConfigurationFile writes the given config file to the given path
+func writeConfigurationFile[K any](config K, path string) error {
+	cL := log.WithField("filename", path)
+	cL.Debugf("Marshalling to YAML...")
+	bytes, err := yaml.Marshal(config)
+	if err != nil {
+		return err
+	}
+	cL.Infof("Writing to file... ")
+	return os.WriteFile(path, bytes, 0666)
 }
