@@ -16,7 +16,7 @@ var flags = AppFlags{}
 // InitFlags defines the application's flags, parses them and reads them into our AppFlags struct.
 func InitFlags() {
 	configPath := flag.String("config", "./config.yaml", "Relative path to the system config file")
-	UserConfigDir := flag.String("user-config-dir", "./", "Relative path to the DIRectory for API-changeable config files")
+	UserConfigDir := flag.String("user-config-dir", "./", "Relative path (ending with a '/') to the DIRectory for API-changeable config files.")
 	catalogPath := flag.String("catalog", "", "Relative path to the catalog file. Leave empty for default")
 	questionsPath := flag.String("questions", "", "Relative path to the questions file. Leave empty for default")
 	httpPort := flag.Int("http-port", 0, "Port for the HTTP Server. Put '0' for default")

@@ -27,7 +27,7 @@ func (m YamlNilableConfigMapper) HybridDieSearchToNilable(in *file.HybridDieSear
 // HybridDieSearchToYAML from nillable RUNTIME to YAML
 func (m YamlNilableConfigMapper) HybridDieSearchToYAML(in *nilable.HybridDieSearchNilable) *file.HybridDieSearchYAML {
 	out := &file.HybridDieSearchYAML{}
-	if in == nil {
+	if in == nil || in.Timeout == nil {
 		return out
 	}
 	durationString := in.Timeout.String()

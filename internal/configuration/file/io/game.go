@@ -14,7 +14,7 @@ const GAME_CONFIG_FILE_NAME = "game-config.yaml"
 // LoadGameConfigFile reads the game config file and maps it to [GameNilable]
 func LoadGameConfigFile() *confignilable.GameNilable {
 	flags := configflag.GetAppFlags()
-	path := flags.UserConfigDir + "/" + GAME_CONFIG_FILE_NAME
+	path := flags.UserConfigDir + GAME_CONFIG_FILE_NAME
 	fileConf, err := loadConfigurationFile[configyaml.GameYAML](path)
 	if err != nil {
 		log.WithField("path", path).Warnf("Not using game config file -> %e", err)
@@ -27,6 +27,6 @@ func LoadGameConfigFile() *confignilable.GameNilable {
 func SaveGameConfigFile(config *confignilable.GameNilable) (err error) {
 	asYAML := configyamlmapper.YamlNilableConfigMapper{}.GameToYAML(config)
 	flags := configflag.GetAppFlags()
-	path := flags.UserConfigDir + "/" + GAME_CONFIG_FILE_NAME
+	path := flags.UserConfigDir + GAME_CONFIG_FILE_NAME
 	return writeConfigurationFile(asYAML, path)
 }
