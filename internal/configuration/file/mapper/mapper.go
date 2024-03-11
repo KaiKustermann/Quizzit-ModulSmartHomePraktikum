@@ -10,8 +10,8 @@ import (
 type YamlRuntimeConfigMapper struct{}
 
 // ToNilables from YAML to nillable RUNTIME
-func (m YamlRuntimeConfigMapper) ToNilable(in *file.SystemConfigYAML) *nilable.SystemConfigNilable {
-	out := &nilable.SystemConfigNilable{}
+func (m YamlRuntimeConfigMapper) ToNilable(in *file.SystemConfigYAML) *nilable.QuizzitNilable {
+	out := &nilable.QuizzitNilable{}
 	if in == nil {
 		return out
 	}
@@ -24,7 +24,7 @@ func (m YamlRuntimeConfigMapper) ToNilable(in *file.SystemConfigYAML) *nilable.S
 }
 
 // ToYAML from nillable RUNTIME to YAML
-func (m YamlRuntimeConfigMapper) ToYAML(in *nilable.SystemConfigNilable) *file.SystemConfigYAML {
+func (m YamlRuntimeConfigMapper) ToYAML(in *nilable.QuizzitNilable) *file.SystemConfigYAML {
 	out := &file.SystemConfigYAML{}
 	if in == nil {
 		return out

@@ -1,8 +1,8 @@
 // Package confignilable provides a nilable representation of the internal configmodel
 package confignilable
 
-// SystemConfigNilable is the root description of the system config file
-type SystemConfigNilable struct {
+// QuizzitNilable is the root description of the system config file
+type QuizzitNilable struct {
 	Http        *HttpNilable
 	Log         *LogNilable
 	HybridDie   *HybridDieNilable
@@ -11,14 +11,14 @@ type SystemConfigNilable struct {
 }
 
 // Merge two instances into a new one, where values from B take precedence
-func (a *SystemConfigNilable) Merge(b *SystemConfigNilable) *SystemConfigNilable {
+func (a *QuizzitNilable) Merge(b *QuizzitNilable) *QuizzitNilable {
 	if a == nil {
 		return b
 	}
 	if b == nil {
 		return a
 	}
-	combined := &SystemConfigNilable{
+	combined := &QuizzitNilable{
 		Http:        a.Http,
 		Log:         a.Log,
 		HybridDie:   a.HybridDie,
