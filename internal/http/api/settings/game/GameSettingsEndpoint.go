@@ -54,12 +54,12 @@ func (h GameSettingsEndpoint) Get(w http.ResponseWriter, r *http.Request) {
 func (h GameSettingsEndpoint) Post(w http.ResponseWriter, r *http.Request) {
 	gameSettings := &dto.Game{}
 	if err := json.NewDecoder(r.Body).Decode(gameSettings); err != nil {
-		h.SendBadRequest(w)
+		h.SendBadRequest(w, err)
 		return
 	}
 	nilable := h.mapper.ToNilable(gameSettings)
 	if err := configuration.PatchGameConfig(nilable); err != nil {
-		h.SendBadRequest(w)
+		h.SendBadRequest(w, err)
 		return
 	}
 	h.SendOK(w)

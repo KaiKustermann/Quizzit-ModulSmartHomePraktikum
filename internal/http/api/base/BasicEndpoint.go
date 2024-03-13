@@ -3,6 +3,7 @@ package apibase
 
 import (
 	"encoding/json"
+	"fmt"
 	"net/http"
 
 	log "github.com/sirupsen/logrus"
@@ -42,6 +43,7 @@ func (h BasicHandler) SendMethodNotAllowed(w http.ResponseWriter) {
 }
 
 // SendMethodNotAllowed answers the Request BAD_REQUEST
-func (h BasicHandler) SendBadRequest(w http.ResponseWriter) {
-	http.Error(w, "Bad Request", http.StatusBadRequest)
+func (h BasicHandler) SendBadRequest(w http.ResponseWriter, err error) {
+	feedback := fmt.Sprintf("Bad Request, Reason >>> %s", err.Error())
+	http.Error(w, feedback, http.StatusBadRequest)
 }

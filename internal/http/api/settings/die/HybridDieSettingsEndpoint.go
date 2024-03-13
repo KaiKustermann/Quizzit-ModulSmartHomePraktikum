@@ -54,12 +54,12 @@ func (h HybridDieSettingsEndpoint) Get(w http.ResponseWriter, r *http.Request) {
 func (h HybridDieSettingsEndpoint) Post(w http.ResponseWriter, r *http.Request) {
 	hdSettings := &dto.HybridDie{}
 	if err := json.NewDecoder(r.Body).Decode(hdSettings); err != nil {
-		h.SendBadRequest(w)
+		h.SendBadRequest(w, err)
 		return
 	}
 	dieYAML := h.mapper.ToNilable(hdSettings)
 	if err := configuration.PatchHybridDieConfig(dieYAML); err != nil {
-		h.SendBadRequest(w)
+		h.SendBadRequest(w, err)
 		return
 	}
 	h.SendOK(w)
