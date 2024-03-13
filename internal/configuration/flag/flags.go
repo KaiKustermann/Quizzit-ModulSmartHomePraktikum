@@ -10,26 +10,13 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
-// AppFlags serves as container to hold all flags in one spot.
-type AppFlags struct {
-	ConfigPath             string
-	UserConfigPath         string
-	CatalogPath            *string
-	QuestionsPath          *string
-	HttpPort               *int
-	DieEnabled             *string
-	HybridDieSearchTimeout *time.Duration
-	LogLevel               *log.Level
-	LogFileLevel           *log.Level
-}
-
 // flags is our local instance holding our settings
 var flags = AppFlags{}
 
 // InitFlags defines the application's flags, parses them and reads them into our AppFlags struct.
 func InitFlags() {
 	configPath := flag.String("config", "./config.yaml", "Relative path to the system config file")
-	userConfigPath := flag.String("user-config", "./user-config.yaml", "Relative path to the user config file")
+	UserConfigDir := flag.String("user-config-dir", "./", "Relative path (ending with a '/') to the DIRectory for API-changeable config files.")
 	catalogPath := flag.String("catalog", "", "Relative path to the catalog file. Leave empty for default")
 	questionsPath := flag.String("questions", "", "Relative path to the questions file. Leave empty for default")
 	httpPort := flag.Int("http-port", 0, "Port for the HTTP Server. Put '0' for default")
@@ -40,7 +27,7 @@ func InitFlags() {
 	logFileLevel := flag.String("log-file-level", "", "Granularity of log output for logfile, see logrus.ParseLevel. Leave empty for default")
 	flag.Parse()
 	flags.ConfigPath = *configPath
-	flags.UserConfigPath = *userConfigPath
+	flags.UserConfigDir = *UserConfigDir
 
 	if *catalogPath != "" {
 		flags.CatalogPath = catalogPath
@@ -55,7 +42,15 @@ func InitFlags() {
 	}
 
 	if *dieEnabled != "" {
-		flags.DieEnabled = dieEnabled
+		if *dieEnabled == "yes" {
+			yes := true
+			flags.DieEnabled = &yes
+		} else if *dieEnabled == "no" {
+			no := false
+			flags.DieEnabled = &no
+		} else {
+			log.Warnf("Failed parsing Die-Enabled '%s', accepts only: 'yes' or 'no'", *dieEnabled)
+		}
 	}
 
 	if *dieSearchTimeout != "" {

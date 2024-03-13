@@ -7,12 +7,12 @@ import (
 
 type AppFlags = configflag.AppFlags
 
-// See [configflag.InitFlags]
+// InitFlags exposes [configflag.InitFlags]
 func InitFlags() {
 	configflag.InitFlags()
 }
 
-// See [configflag.GetAppFlags]
+// GetAppFlags exposes [configflag.GetAppFlags]
 func GetAppFlags() configflag.AppFlags {
 	return configflag.GetAppFlags()
 }

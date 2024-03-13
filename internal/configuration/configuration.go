@@ -5,13 +5,17 @@ import (
 	"time"
 
 	log "github.com/sirupsen/logrus"
+	configfileio "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/configuration/file/io"
 	configflag "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/configuration/flag"
-	model "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/configuration/model"
-	configfilewriter "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/configuration/writer"
-	configyaml "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/configuration/yaml"
-	configyamlmerger "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/configuration/yaml/merger"
+	model "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/configuration/runtime/model"
+	configpatcher "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/configuration/runtime/patcher"
 	"gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/pkg/util"
 )
+
+type ConfigChangeHook = func(newConfig model.QuizzitConfig)
+
+// Hooks to run when the config changes
+var onChangeHooks []ConfigChangeHook
 
 // configInstance is the local instance of our [QuizzitConfig]
 var configInstance = model.QuizzitConfig{}
@@ -19,19 +23,6 @@ var configInstance = model.QuizzitConfig{}
 // GetQuizzitConfig returns the current [QuizzitConfig]
 func GetQuizzitConfig() model.QuizzitConfig {
 	return configInstance
-}
-
-// ChangeUserConfig writes the given userconfig to the user-config file and applies its values as patches to [QuizzitConfig]
-func ChangeUserConfig(config configyaml.UserConfigYAML) (err error) {
-	log.Infof("Changing UserConfig to: %s", util.JsonString(config))
-	flags := configflag.GetAppFlags()
-	err = configfilewriter.WriteConfigurationFile(config, flags.UserConfigPath)
-	if err != nil {
-		log.Errorf("Failed to change user config, not reloading configuration.")
-		return err
-	}
-	setConfig(configyamlmerger.MergeConfigWithUserConfig(configInstance, config))
-	return
 }
 
 // setConfig updates the local configInstance and calls the change handlers
@@ -43,13 +34,39 @@ func setConfig(newConfig model.QuizzitConfig) {
 // ReloadConfig recreates the configuration by starting with the default config
 // and applying the file config as patch, before applying any patches made by flags.
 func ReloadConfig() {
-	flags := configflag.GetAppFlags()
 	conf := createDefaultConfig()
-	conf = configyamlmerger.LoadSystemConfigYAMLAndMerge(conf, flags.ConfigPath)
-	conf = configflag.FlagMerger{}.MergeAll(conf)
-	conf = configyamlmerger.LoadUserConfigYAMLAndMerge(conf, flags.UserConfigPath)
+	patcher := configpatcher.ConfigPatcher{}
+
+	patcher.Source = "Quizzit-File-Config"
+	fileConfig := configfileio.LoadQuizzitConfigFile()
+	conf = patcher.PatchAll(conf, fileConfig)
+
+	patcher.Source = "Flags-Config"
+	flagConfig := configflag.FlagMapper{}.ToNilable(configflag.GetAppFlags())
+	conf = patcher.PatchAll(conf, flagConfig)
+
+	patcher.Source = "Game-File-Config"
+	gameConfig := configfileio.LoadGameConfigFile()
+	conf.Game = patcher.PatchGame(conf.Game, gameConfig)
+
+	patcher.Source = "HybridDie-File-Config"
+	hybridDieConfig := configfileio.LoadHybridDieConfigFile()
+	conf.HybridDie = patcher.PatchHybridDie(conf.HybridDie, hybridDieConfig)
+
 	log.Infof("New config loaded: %s", util.JsonString(conf))
 	setConfig(conf)
+}
+
+// RegisterOnChangeHandler adds a handler that gets invoked when the configuration changes
+func RegisterOnChangeHandler(handler ConfigChangeHook) {
+	onChangeHooks = append(onChangeHooks, handler)
+}
+
+// callChangeHandlers invokes all hooks with the new config
+func callChangeHandlers() {
+	for _, v := range onChangeHooks {
+		v(GetQuizzitConfig())
+	}
 }
 
 // createDefaultConfig creates a config instance with all default options as base and fallback.

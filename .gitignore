@@ -35,4 +35,5 @@ quizzit
 logs
 
 # Quizzit runtime-generated files
-user-config.yaml
+game-config.yaml
+hybrid-die-config.yaml

@@ -5,6 +5,7 @@ package configyaml
 //
 // Provides a subset of configuration options to be set by the user
 type UserConfigYAML struct {
-	HybridDie *HybridDieYAML `yaml:"hybrid-die,omitempty"`
-	Game      *GameYAML      `yaml:"game,omitempty"`
+	HybridDie *HybridDieYAML     `yaml:"hybrid-die,omitempty"`
+	Game      *GameYAML          `yaml:"game,omitempty"`
+	UI        *map[string]string `yaml:"ui,omitempty"`
 }
