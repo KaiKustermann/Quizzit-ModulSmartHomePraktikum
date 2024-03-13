@@ -4,12 +4,15 @@ import (
 	"github.com/gorilla/websocket"
 	log "github.com/sirupsen/logrus"
 	"gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/category"
+	"gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/configuration"
+	configmodel "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/configuration/runtime/model"
 	gameloop "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/game/loop"
 	"gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/game/managers"
 	player "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/game/managers/player"
 	questionmanager "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/game/managers/question"
 	settingsmanager "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/game/managers/settings"
 	"gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/generated-sources/asyncapi"
+	helpers "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/helper-functions"
 	hybriddie "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/hybrid-die"
 	messagetypes "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/message-types"
 	ws "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/websockets"
@@ -55,6 +58,7 @@ func InitializeGame() *Game {
 		HybridDieManager: hybriddie.NewHybridDieManager(),
 	}
 	gameInstance.registerHybridDieCallbacks()
+	configuration.RegisterOnChangeHandler(gameInstance.onConfigChange)
 	gameInstance.managers.HybridDieManager.Find()
 	gameInstance.constructLoop().registerHandlers()
 	return gameInstance
@@ -167,4 +171,14 @@ func (game *Game) registerHybridDieCallbacks() *Game {
 	}
 
 	return game
+}
+
+// onConfigChange updates the game's stateMessage and re-broadcasts it
+// This way all clients receive a push with the new settings.
+func (game *Game) onConfigChange(nextConfig configmodel.QuizzitConfig) {
+	log.Debug("Updating game stateMessage due to config change")
+	settings := helpers.QuizzitConfigToGameSettings(nextConfig)
+	game.stateMessage.Settings = &settings
+	log.Debug("Broadcasting new stateMessage to Websocket Clients")
+	ws.BroadCast(game.stateMessage)
 }
