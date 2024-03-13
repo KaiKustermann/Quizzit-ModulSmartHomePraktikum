@@ -1,4 +1,5 @@
-package ws
+// Package wsrouter provides a messageType based routing functionality
+package wsrouter
 
 import (
 	"github.com/gorilla/websocket"

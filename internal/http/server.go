@@ -23,8 +23,8 @@ func RunHttpServer() {
 	http.Handle("/api/settings/die", hybriddiesettingsapi.NewHybridDieSettingsEndpoint())
 	http.Handle("/api/questions/catalog", questionsapi.NewQuestionsCatalogEndpoint())
 	http.Handle("/api/game/stop", gameapi.NewGameEndpoint())
-	http.HandleFunc("/ws", ws.WebsocketEndpoint)
-	ws.RegisterMessageHandler("health/ping", ws.HealthPingHandler)
+
+	ws.SetupWebsocket("/ws")
 
 	log.Debug("Creating HTTP server")
 	port := configuration.GetQuizzitConfig().Http.Port

@@ -6,8 +6,8 @@ import (
 	gameloopprinter "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/game/loop/printer"
 	"gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/game/managers"
 	"gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/generated-sources/asyncapi"
-	helpers "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/helper-functions"
 	messagetypes "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/message-types"
+	asyncapiutils "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/websockets/asyncapi-utils"
 )
 
 // QuestionStep displays the question to the players
@@ -29,7 +29,7 @@ func (s *QuestionStep) AddSelectAnswerTransition() {
 	var action ActionHandler = func(managers *managers.GameObjectManagers, msg asyncapi.WebsocketMessagePublish) (nextstep gameloop.GameStepIf, err error) {
 		selectedAnswer := asyncapi.SelectAnswer{}
 		log.Trace("Transforming message body to struct")
-		err = helpers.InterfaceToStruct(msg.Body, &selectedAnswer)
+		err = asyncapiutils.InterfaceToStruct(msg.Body, &selectedAnswer)
 		if err != nil {
 			return nil, err
 		}
@@ -49,7 +49,7 @@ func (s *QuestionStep) AddSubmitAnswerTransition(correctnessFeedbackStep *Correc
 	var action ActionHandler = func(managers *managers.GameObjectManagers, msg asyncapi.WebsocketMessagePublish) (nextstep gameloop.GameStepIf, err error) {
 		submittedAnswer := asyncapi.SubmitAnswer{}
 		log.Trace("Transforming message body to struct")
-		err = helpers.InterfaceToStruct(msg.Body, &submittedAnswer)
+		err = asyncapiutils.InterfaceToStruct(msg.Body, &submittedAnswer)
 		if err != nil {
 			return nil, err
 		}

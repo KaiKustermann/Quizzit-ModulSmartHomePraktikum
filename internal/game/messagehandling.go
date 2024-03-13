@@ -4,9 +4,10 @@ import (
 	"github.com/gorilla/websocket"
 	log "github.com/sirupsen/logrus"
 	"gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/generated-sources/asyncapi"
-	helpers "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/helper-functions"
 	msgType "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/message-types"
-	ws "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/websockets"
+	"gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/websockets/wshooks"
+	"gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/websockets/wsrouter"
+	"gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/websockets/wswriter"
 )
 
 // Generic handler for incoming messages
@@ -27,7 +28,7 @@ func (game *Game) handleMessage(conn *websocket.Conn, envelope asyncapi.Websocke
 // Send out the latest state to the new client
 // Use as 'onConnect'-hook
 func (game *Game) handleOnConnect(conn *websocket.Conn) {
-	err := helpers.WriteWebsocketMessage(conn, game.stateMessage)
+	err := wswriter.WriteWebsocketMessage(conn, game.stateMessage)
 	if err != nil {
 		log.Error("Could not send 'OnConnect' Message to client", err)
 	}
@@ -38,13 +39,13 @@ func (game *Game) registerHandlers() *Game {
 	log.Trace("Registering WS-Hooks for commands from tablet")
 	messageTypes := msgType.GetAllMessageTypePublish()
 	for i := 0; i < len(messageTypes); i++ {
-		ws.RegisterMessageHandler(string(messageTypes[i]), game.handleMessage)
+		wsrouter.RegisterMessageHandler(string(messageTypes[i]), game.handleMessage)
 	}
 
 	log.Trace("Registering WS-Hooks so frontend can fake hybrid die connected screen")
-	ws.RegisterMessageHandler(string(msgType.Game_Die_HybridDieConnected), game.handleMessage)
+	wsrouter.RegisterMessageHandler(string(msgType.Game_Die_HybridDieConnected), game.handleMessage)
 
 	log.Trace("Registering on-connect")
-	ws.RegisterOnConnectHandler(game.handleOnConnect)
+	wshooks.RegisterOnConnectHandler(game.handleOnConnect)
 	return game
 }

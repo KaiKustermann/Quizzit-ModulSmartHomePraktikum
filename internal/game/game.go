@@ -12,10 +12,10 @@ import (
 	questionmanager "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/game/managers/question"
 	settingsmanager "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/game/managers/settings"
 	"gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/generated-sources/asyncapi"
-	helpers "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/helper-functions"
 	hybriddie "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/hybrid-die"
 	messagetypes "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/message-types"
-	ws "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/websockets"
+	asyncapiutils "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/websockets/asyncapi-utils"
+	"gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/websockets/wsclients"
 )
 
 // Heart of the Game
@@ -142,7 +142,7 @@ func (game *Game) TransitionToGameStep(next gameloop.GameStepIf) (err error) {
 	game.currentStep = next
 	game.stateMessage = nextState
 	cLog.Debugf("Next gameState: %v ", nextState)
-	ws.BroadCast(nextState)
+	wsclients.BroadCast(nextState)
 	return
 }
 
@@ -177,8 +177,8 @@ func (game *Game) registerHybridDieCallbacks() *Game {
 // This way all clients receive a push with the new settings.
 func (game *Game) onConfigChange(nextConfig configmodel.QuizzitConfig) {
 	log.Debug("Updating game stateMessage due to config change")
-	settings := helpers.QuizzitConfigToGameSettings(nextConfig)
+	settings := asyncapiutils.QuizzitConfigToGameSettings(nextConfig)
 	game.stateMessage.Settings = &settings
 	log.Debug("Broadcasting new stateMessage to Websocket Clients")
-	ws.BroadCast(game.stateMessage)
+	wsclients.BroadCast(game.stateMessage)
 }
