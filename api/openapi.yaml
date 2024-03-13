@@ -48,8 +48,8 @@ paths:
             application/json:
               schema:
                   $ref: '#/components/schemas/UI'
-    patch:
-      operationId: settingsUiPatch
+    post:
+      operationId: settingsUiPost
       tags:
         - settings
       summary: Update Settings
