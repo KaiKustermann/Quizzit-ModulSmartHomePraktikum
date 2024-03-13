@@ -67,7 +67,7 @@ func (h GameSettingsEndpoint) Post(w http.ResponseWriter, r *http.Request) {
 
 // Options handles the OPTIONS requests
 func (h GameSettingsEndpoint) Options(w http.ResponseWriter) {
-	allowed := []string{http.MethodOptions, http.MethodGet, http.MethodPatch}
+	allowed := []string{http.MethodOptions, http.MethodGet, http.MethodPost}
 	e := w.Header()
 	for _, v := range allowed {
 		e.Add("Allow", v)

@@ -19,7 +19,7 @@ func (h BasicHandler) SendOK(w http.ResponseWriter) {
 
 // SendServerError answers the Request with '500' and error information.
 func (h BasicHandler) SendServerError(w http.ResponseWriter, err error) {
-	w.WriteHeader(http.StatusOK)
+	w.WriteHeader(http.StatusInternalServerError)
 	w.Write([]byte(err.Error()))
 }
 
