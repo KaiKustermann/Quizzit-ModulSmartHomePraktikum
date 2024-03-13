@@ -12,6 +12,11 @@ Configuration can be supplied by various sources:
 2. The (main) configuration file (for the path, run program with `--help`)
 3. Configuration through the user. This also creates files in the `userConfigDir` (for the path, run program with `--help`)
 
+All these sources are mapped to the ['nilable' configuration model](./runtime/nilable/).
+This model can be [patched](./runtime/patcher) onto the [live configuration model](./runtime/model/).
+
+The live configuration model is based off the default config and is ensured to provide a value for all its fields, making it easy to use.
+
 ## Configuration Precedence
 
 The program has a default config that ensures it can run without extra config.
