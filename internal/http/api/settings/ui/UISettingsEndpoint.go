@@ -42,11 +42,7 @@ func (h UISettingsEndpoint) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 // Get handles the GET requests
 func (h UISettingsEndpoint) Get(w http.ResponseWriter, r *http.Request) {
-	config, err := uiconfig.LoadUIConfig()
-	if err != nil {
-		h.SendServerError(w, err)
-		return
-	}
+	config := uiconfig.GetUIConfig()
 	h.SendJSON(w, config)
 }
 
@@ -57,7 +53,7 @@ func (h UISettingsEndpoint) Post(w http.ResponseWriter, r *http.Request) {
 		h.SendBadRequest(w, err)
 		return
 	}
-	if err := uiconfig.SaveUIConfigFile(config); err != nil {
+	if err := uiconfig.UpdateUIConfig(config); err != nil {
 		h.SendBadRequest(w, err)
 		return
 	}
