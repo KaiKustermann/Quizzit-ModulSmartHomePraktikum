@@ -4,7 +4,7 @@
 package configflag
 
 import (
-	confignilable "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/configuration/runtime/nilable"
+	confignilable "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/configuration/quizzit/runtime/nilable"
 )
 
 // FlagMapper handles mapping [AppFlags] to [QuizzitNilable]

@@ -6,7 +6,7 @@ import (
 	"net/http"
 
 	log "github.com/sirupsen/logrus"
-	"gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/configuration"
+	configuration "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/configuration/quizzit"
 	dto "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/generated-sources/openapi"
 	apibase "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/http/api/base"
 )

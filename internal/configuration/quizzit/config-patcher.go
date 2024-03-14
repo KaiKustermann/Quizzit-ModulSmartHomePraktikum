@@ -3,9 +3,9 @@ package configuration
 
 import (
 	log "github.com/sirupsen/logrus"
-	configfileio "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/configuration/file/io"
-	confignilable "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/configuration/runtime/nilable"
-	configpatcher "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/configuration/runtime/patcher"
+	configfileio "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/configuration/quizzit/file/io"
+	confignilable "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/configuration/quizzit/runtime/nilable"
+	configpatcher "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/configuration/quizzit/runtime/patcher"
 	"gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/pkg/util"
 )
 

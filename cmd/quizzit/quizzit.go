@@ -3,7 +3,7 @@
 package main
 
 import (
-	"gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/configuration"
+	configuration "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/configuration/quizzit"
 	game "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/game"
 	quizzithttp "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/http"
 	"gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/logging"

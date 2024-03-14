@@ -6,7 +6,7 @@ import (
 
 	log "github.com/sirupsen/logrus"
 	catalogloader "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/catalog/loader"
-	"gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/configuration"
+	configuration "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/configuration/quizzit"
 	apibase "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/http/api/base"
 )
 

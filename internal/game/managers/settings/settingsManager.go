@@ -2,7 +2,7 @@ package settingsmanager
 
 import (
 	log "github.com/sirupsen/logrus"
-	configuration "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/configuration"
+	configuration "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/configuration/quizzit"
 	"gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/generated-sources/asyncapi"
 	asyncapiutils "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/websockets/asyncapi-utils"
 )

@@ -2,7 +2,7 @@
 package configuration
 
 import (
-	configflag "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/configuration/flag"
+	configflag "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/configuration/quizzit/flag"
 )
 
 type AppFlags = configflag.AppFlags

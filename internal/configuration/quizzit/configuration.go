@@ -5,10 +5,10 @@ import (
 	"time"
 
 	log "github.com/sirupsen/logrus"
-	configfileio "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/configuration/file/io"
-	configflag "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/configuration/flag"
-	model "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/configuration/runtime/model"
-	configpatcher "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/configuration/runtime/patcher"
+	configfileio "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/configuration/quizzit/file/io"
+	configflag "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/configuration/quizzit/flag"
+	model "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/configuration/quizzit/runtime/model"
+	configpatcher "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/configuration/quizzit/runtime/patcher"
 	"gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/pkg/util"
 )
 

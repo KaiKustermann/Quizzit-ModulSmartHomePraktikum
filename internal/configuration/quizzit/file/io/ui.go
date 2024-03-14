@@ -4,7 +4,7 @@ package configfileio
 import (
 	"fmt"
 
-	configflag "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/configuration/flag"
+	configflag "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/configuration/quizzit/flag"
 )
 
 const UI_CONFIG_FILE_NAME = "ui-config.yaml"
