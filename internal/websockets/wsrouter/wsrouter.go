@@ -24,11 +24,7 @@ func RegisterMessageHandler(messageType string, handle RouteHandler) {
 //
 // Returns error, if any.
 func RouteByMessageType(conn *websocket.Conn, envelope asyncapi.WebsocketMessagePublish) (err error) {
-	cLog := log.WithFields(log.Fields{
-		// "body":          envelope.Body,
-		"correlationId": envelope.CorrelationId,
-		"messageType":   envelope.MessageType,
-	})
+	cLog := log.WithField("messageType", envelope.MessageType)
 	cLog.Trace("Attempting to route by message type ")
 	for _, v := range routes {
 		if v.messageType == envelope.MessageType {

@@ -7,7 +7,7 @@ import (
 	"gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/game/managers"
 	"gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/generated-sources/asyncapi"
 	messagetypes "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/message-types"
-	asyncapiutils "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/websockets/asyncapi-utils"
+	jsonutil "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/pkg/json"
 )
 
 // QuestionStep displays the question to the players
@@ -27,9 +27,8 @@ func (s *QuestionStep) GetMessageBody(managers *managers.GameObjectManagers) int
 // It will in any case return itself ([QuestionStep]) as the next step.
 func (s *QuestionStep) AddSelectAnswerTransition() {
 	var action ActionHandler = func(managers *managers.GameObjectManagers, msg asyncapi.WebsocketMessagePublish) (nextstep gameloop.GameStepIf, err error) {
-		selectedAnswer := asyncapi.SelectAnswer{}
 		log.Trace("Transforming message body to struct")
-		err = asyncapiutils.InterfaceToStruct(msg.Body, &selectedAnswer)
+		selectedAnswer, err := jsonutil.InterfaceToStruct[asyncapi.SelectAnswer](msg.Body)
 		if err != nil {
 			return nil, err
 		}
@@ -47,9 +46,8 @@ func (s *QuestionStep) AddSelectAnswerTransition() {
 // It will then move to [CorrectnessFeedbackStep] as next step.
 func (s *QuestionStep) AddSubmitAnswerTransition(correctnessFeedbackStep *CorrectnessFeedbackDelegate) {
 	var action ActionHandler = func(managers *managers.GameObjectManagers, msg asyncapi.WebsocketMessagePublish) (nextstep gameloop.GameStepIf, err error) {
-		submittedAnswer := asyncapi.SubmitAnswer{}
 		log.Trace("Transforming message body to struct")
-		err = asyncapiutils.InterfaceToStruct(msg.Body, &submittedAnswer)
+		submittedAnswer, err := jsonutil.InterfaceToStruct[asyncapi.SubmitAnswer](msg.Body)
 		if err != nil {
 			return nil, err
 		}

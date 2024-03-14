@@ -3,7 +3,8 @@
 package main
 
 import (
-	"gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/configuration"
+	configuration "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/configuration/quizzit"
+	uiconfig "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/configuration/ui"
 	game "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/game"
 	quizzithttp "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/http"
 	"gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/logging"
@@ -26,6 +27,9 @@ func main() {
 	log.Debug("Initializing Configuration")
 	configuration.InitFlags()
 	configuration.ReloadConfig()
+
+	log.Debug("Initializing UI-Configuration")
+	uiconfig.SetUIConfigFromFile()
 
 	log.Info("Setting log level from configuration")
 	log.SetLevel(configuration.GetQuizzitConfig().Log.Level)

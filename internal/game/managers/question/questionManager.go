@@ -6,7 +6,7 @@ import (
 	log "github.com/sirupsen/logrus"
 
 	"gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/category"
-	"gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/configuration"
+	configuration "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/configuration/quizzit"
 	"gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/generated-sources/asyncapi"
 	questionloader "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/question/loader"
 	questionmodel "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/question/model"
