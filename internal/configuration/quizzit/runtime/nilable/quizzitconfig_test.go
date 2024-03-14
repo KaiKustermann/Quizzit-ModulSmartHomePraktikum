@@ -7,7 +7,7 @@ import (
 	"time"
 
 	"github.com/sirupsen/logrus"
-	"gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/pkg/util"
+	jsonutil "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/pkg/json"
 )
 
 func Test_SystemConfigNilable_Merge(t *testing.T) {
@@ -104,7 +104,7 @@ func Test_SystemConfigNilable_Merge(t *testing.T) {
 		t.Run(fmt.Sprintf("Test_SystemConfigNilable_%s_Merge_%s", tc.describeA, tc.describeB), func(t *testing.T) {
 			ab := tc.a.Merge(tc.b)
 			if !reflect.DeepEqual(ab, tc.expected) {
-				t.Errorf("Expected: %v\n Result was: %v", util.JsonString(tc.expected), util.JsonString(ab))
+				t.Errorf("Expected: %v\n Result was: %v", jsonutil.JsonString(tc.expected), jsonutil.JsonString(ab))
 			}
 		})
 	}
