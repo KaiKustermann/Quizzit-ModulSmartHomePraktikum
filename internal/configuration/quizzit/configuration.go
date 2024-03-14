@@ -9,7 +9,7 @@ import (
 	configflag "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/configuration/quizzit/flag"
 	model "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/configuration/quizzit/runtime/model"
 	configpatcher "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/configuration/quizzit/runtime/patcher"
-	"gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/pkg/util"
+	jsonutil "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/pkg/json"
 )
 
 type ConfigChangeHook = func(newConfig model.QuizzitConfig)
@@ -53,7 +53,7 @@ func ReloadConfig() {
 	hybridDieConfig := configfileio.LoadHybridDieConfigFile()
 	conf.HybridDie = patcher.PatchHybridDie(conf.HybridDie, hybridDieConfig)
 
-	log.Infof("New config loaded: %s", util.JsonString(conf))
+	log.Infof("New config loaded: %s", jsonutil.JsonString(conf))
 	setConfig(conf)
 }
 

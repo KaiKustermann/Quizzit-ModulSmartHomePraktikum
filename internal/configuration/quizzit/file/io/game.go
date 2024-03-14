@@ -7,6 +7,7 @@ import (
 	configyaml "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/configuration/quizzit/file/model"
 	configflag "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/configuration/quizzit/flag"
 	confignilable "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/configuration/quizzit/runtime/nilable"
+	yamlutil "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/pkg/yaml"
 )
 
 const GAME_CONFIG_FILE_NAME = "game-config.yaml"
@@ -15,7 +16,7 @@ const GAME_CONFIG_FILE_NAME = "game-config.yaml"
 func LoadGameConfigFile() *confignilable.GameNilable {
 	flags := configflag.GetAppFlags()
 	path := flags.UserConfigDir + GAME_CONFIG_FILE_NAME
-	fileConf, err := loadConfigurationFile[configyaml.GameYAML](path)
+	fileConf, err := yamlutil.LoadYAMLFile[configyaml.GameYAML](path)
 	if err != nil {
 		log.WithField("path", path).Warnf("Not using game config file -> %e", err)
 		return nil
@@ -28,5 +29,5 @@ func SaveGameConfigFile(config *confignilable.GameNilable) (err error) {
 	asYAML := configyamlmapper.YamlNilableConfigMapper{}.GameToYAML(config)
 	flags := configflag.GetAppFlags()
 	path := flags.UserConfigDir + GAME_CONFIG_FILE_NAME
-	return writeConfigurationFile(asYAML, path)
+	return yamlutil.WriteYAMLFile(asYAML, path)
 }

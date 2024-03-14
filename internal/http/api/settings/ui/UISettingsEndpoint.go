@@ -6,7 +6,7 @@ import (
 	"net/http"
 
 	log "github.com/sirupsen/logrus"
-	configfileio "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/configuration/quizzit/file/io"
+	uiconfig "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/configuration/ui"
 	apibase "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/http/api/base"
 )
 
@@ -42,7 +42,7 @@ func (h UISettingsEndpoint) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 // Get handles the GET requests
 func (h UISettingsEndpoint) Get(w http.ResponseWriter, r *http.Request) {
-	config, err := configfileio.LoadUIConfig()
+	config, err := uiconfig.LoadUIConfig()
 	if err != nil {
 		h.SendServerError(w, err)
 		return
@@ -57,7 +57,7 @@ func (h UISettingsEndpoint) Post(w http.ResponseWriter, r *http.Request) {
 		h.SendBadRequest(w, err)
 		return
 	}
-	if err := configfileio.SaveUIConfigFile(config); err != nil {
+	if err := uiconfig.SaveUIConfigFile(config); err != nil {
 		h.SendBadRequest(w, err)
 		return
 	}

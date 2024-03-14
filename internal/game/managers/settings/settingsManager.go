@@ -4,7 +4,7 @@ import (
 	log "github.com/sirupsen/logrus"
 	configuration "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/configuration/quizzit"
 	"gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/generated-sources/asyncapi"
-	asyncapiutils "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/websockets/asyncapi-utils"
+	"gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/websockets/wsmapper"
 )
 
 // SettingsManager provides access to the game's settings
@@ -25,5 +25,5 @@ func (pm *SettingsManager) GetScoredPointsToWin() int {
 
 // GetGameSettings returns the current game settings
 func (pm *SettingsManager) GetGameSettings() asyncapi.GameSettings {
-	return asyncapiutils.QuizzitConfigToGameSettings(configuration.GetQuizzitConfig())
+	return wsmapper.QuizzitConfigToGameSettings(configuration.GetQuizzitConfig())
 }

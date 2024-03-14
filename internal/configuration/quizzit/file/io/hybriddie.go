@@ -7,6 +7,7 @@ import (
 	configyaml "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/configuration/quizzit/file/model"
 	configflag "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/configuration/quizzit/flag"
 	confignilable "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/configuration/quizzit/runtime/nilable"
+	yamlutil "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/pkg/yaml"
 )
 
 const HYBRID_DIE_CONFIG_FILE_NAME = "hybrid-die-config.yaml"
@@ -15,7 +16,7 @@ const HYBRID_DIE_CONFIG_FILE_NAME = "hybrid-die-config.yaml"
 func LoadHybridDieConfigFile() *confignilable.HybridDieNilable {
 	flags := configflag.GetAppFlags()
 	path := flags.UserConfigDir + HYBRID_DIE_CONFIG_FILE_NAME
-	fileConf, err := loadConfigurationFile[configyaml.HybridDieYAML](path)
+	fileConf, err := yamlutil.LoadYAMLFile[configyaml.HybridDieYAML](path)
 	if err != nil {
 		log.WithField("path", path).Warnf("Not using hybrid-die config file -> %e", err)
 		return nil
@@ -28,5 +29,5 @@ func SaveHybridDieConfigFile(config *confignilable.HybridDieNilable) (err error)
 	asYAML := configyamlmapper.YamlNilableConfigMapper{}.HybridDieToYAML(config)
 	flags := configflag.GetAppFlags()
 	path := flags.UserConfigDir + HYBRID_DIE_CONFIG_FILE_NAME
-	return writeConfigurationFile(asYAML, path)
+	return yamlutil.WriteYAMLFile(asYAML, path)
 }

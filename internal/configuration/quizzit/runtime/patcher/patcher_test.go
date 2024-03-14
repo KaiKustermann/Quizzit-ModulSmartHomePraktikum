@@ -9,7 +9,7 @@ import (
 	"github.com/sirupsen/logrus"
 	configmodel "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/configuration/quizzit/runtime/model"
 	confignilable "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/configuration/quizzit/runtime/nilable"
-	"gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/pkg/util"
+	jsonutil "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/pkg/json"
 )
 
 func Test_Patcher(t *testing.T) {
@@ -37,7 +37,7 @@ func Test_Patcher(t *testing.T) {
 			p := ConfigPatcher{"TEST"}
 			result := p.PatchAll(tc.config, tc.patch)
 			if !reflect.DeepEqual(result, tc.expected) {
-				t.Errorf("Expected: %v\n Result was: %v", util.JsonString(tc.expected), util.JsonString(result))
+				t.Errorf("Expected: %v\n Result was: %v", jsonutil.JsonString(tc.expected), jsonutil.JsonString(result))
 			}
 		})
 	}

@@ -1,10 +1,11 @@
-// Package configfileio provides the means to load/write a config from/to file
-package configfileio
+// Package uiconfig
+package uiconfig
 
 import (
 	"fmt"
 
 	configflag "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/configuration/quizzit/flag"
+	yamlutil "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/pkg/yaml"
 )
 
 const UI_CONFIG_FILE_NAME = "ui-config.yaml"
@@ -13,7 +14,7 @@ const UI_CONFIG_FILE_NAME = "ui-config.yaml"
 func LoadUIConfig() (config map[string]string, err error) {
 	flags := configflag.GetAppFlags()
 	path := flags.UserConfigDir + UI_CONFIG_FILE_NAME
-	config, err = loadConfigurationFile[map[string]string](path)
+	config, err = yamlutil.LoadYAMLFile[map[string]string](path)
 	if err != nil {
 		err = fmt.Errorf(`could not load UI config!
 			Please verify the file '%s' exists and is readable.
@@ -27,5 +28,5 @@ func LoadUIConfig() (config map[string]string, err error) {
 func SaveUIConfigFile(config map[string]string) (err error) {
 	flags := configflag.GetAppFlags()
 	path := flags.UserConfigDir + UI_CONFIG_FILE_NAME
-	return writeConfigurationFile(config, path)
+	return yamlutil.WriteYAMLFile(config, path)
 }

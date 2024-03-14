@@ -1,5 +1,5 @@
-// Package asyncapiutils provides utility and mapping functions to work with the generated asyncapi DTOs
-package asyncapiutils
+// Package wsmapper provides mapping functions to work with the generated asyncapi DTOs
+package wsmapper
 
 import (
 	configmodel "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/configuration/quizzit/runtime/model"

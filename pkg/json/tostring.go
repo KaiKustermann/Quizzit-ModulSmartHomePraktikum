@@ -1,4 +1,5 @@
-package util
+// Package jsonutil provides utility functions around JSON and JSONable structs
+package jsonutil
 
 import (
 	"bytes"

@@ -7,13 +7,14 @@ import (
 	configyaml "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/configuration/quizzit/file/model"
 	configflag "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/configuration/quizzit/flag"
 	confignilable "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/configuration/quizzit/runtime/nilable"
+	yamlutil "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/pkg/yaml"
 )
 
 // LoadQuizzitConfigFile reads the quizzit config file and maps it to [QuizzitNilable]
 func LoadQuizzitConfigFile() *confignilable.QuizzitNilable {
 	flags := configflag.GetAppFlags()
 	path := flags.ConfigPath
-	fileConf, err := loadConfigurationFile[configyaml.SystemConfigYAML](path)
+	fileConf, err := yamlutil.LoadYAMLFile[configyaml.SystemConfigYAML](path)
 	if err != nil {
 		log.WithField("path", path).Warnf("Not using system config file -> %e", err)
 		return nil

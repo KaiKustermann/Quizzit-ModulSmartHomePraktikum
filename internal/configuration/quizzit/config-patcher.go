@@ -6,14 +6,14 @@ import (
 	configfileio "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/configuration/quizzit/file/io"
 	confignilable "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/configuration/quizzit/runtime/nilable"
 	configpatcher "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/configuration/quizzit/runtime/patcher"
-	"gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/pkg/util"
+	jsonutil "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/pkg/json"
 )
 
 // PatchGameConfig patches the current config with [GameNilable]
 //
 // Loads GameConfigFile, applies patch, updates the live config and writes updated GameConfigFile
 func PatchGameConfig(patch *confignilable.GameNilable) error {
-	log.Infof("Patching Game Settings with: %s", util.JsonString(patch))
+	log.Infof("Patching Game Settings with: %s", jsonutil.JsonString(patch))
 	oldGameConfig := configfileio.LoadGameConfigFile()
 	patchedGameConfig := oldGameConfig.Merge(patch)
 	patchConfig(&confignilable.QuizzitNilable{Game: patchedGameConfig}, "Game-Config")
@@ -24,7 +24,7 @@ func PatchGameConfig(patch *confignilable.GameNilable) error {
 //
 // Loads HybridDieConfigFile, applies patch, updates the live config and writes updated HybridDieConfigFile
 func PatchHybridDieConfig(patch *confignilable.HybridDieNilable) error {
-	log.Infof("Patching HybridDie Settings with: %s", util.JsonString(patch))
+	log.Infof("Patching HybridDie Settings with: %s", jsonutil.JsonString(patch))
 	oldHybridDieConfig := configfileio.LoadHybridDieConfigFile()
 	patchedHybridDieConfig := oldHybridDieConfig.Merge(patch)
 	patchConfig(&confignilable.QuizzitNilable{HybridDie: patchedHybridDieConfig}, "Hybrid-Die-Config")

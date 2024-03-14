@@ -14,8 +14,8 @@ import (
 	"gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/generated-sources/asyncapi"
 	hybriddie "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/hybrid-die"
 	messagetypes "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/message-types"
-	asyncapiutils "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/websockets/asyncapi-utils"
 	"gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/websockets/wsclients"
+	"gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/websockets/wsmapper"
 )
 
 // Heart of the Game
@@ -177,7 +177,7 @@ func (game *Game) registerHybridDieCallbacks() *Game {
 // This way all clients receive a push with the new settings.
 func (game *Game) onConfigChange(nextConfig configmodel.QuizzitConfig) {
 	log.Debug("Updating game stateMessage due to config change")
-	settings := asyncapiutils.QuizzitConfigToGameSettings(nextConfig)
+	settings := wsmapper.QuizzitConfigToGameSettings(nextConfig)
 	game.stateMessage.Settings = &settings
 	log.Debug("Broadcasting new stateMessage to Websocket Clients")
 	wsclients.BroadCast(game.stateMessage)

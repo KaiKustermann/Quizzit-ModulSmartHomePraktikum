@@ -2,9 +2,12 @@
 package wslistener
 
 import (
+	"encoding/json"
+	"errors"
+
 	"github.com/gorilla/websocket"
 	log "github.com/sirupsen/logrus"
-	asyncapiutils "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/websockets/asyncapi-utils"
+	"gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/generated-sources/asyncapi"
 	"gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/websockets/wsclients"
 	"gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/websockets/wsrouter"
 	"gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/websockets/wswriter"
@@ -21,7 +24,7 @@ func Listen(conn *websocket.Conn) {
 			log.Warn("Could not read Message", err)
 			break
 		}
-		envelope, err := asyncapiutils.ParseWebsocketMessage(payload)
+		envelope, err := parseWebsocketMessage(payload)
 		if err != nil {
 			wswriter.LogErrorAndWriteFeedback(conn, err, envelope)
 			continue
@@ -34,4 +37,21 @@ func Listen(conn *websocket.Conn) {
 		log.Trace("Message handled")
 	}
 	log.Info("Disconnected listener")
+}
+
+// parseWebsocketMessage unmarshals the given bytes to a [WebsocketMessagePublish]
+//
+// Also validates 'MessageType' to be present
+func parseWebsocketMessage(payload []byte) (asyncapi.WebsocketMessagePublish, error) {
+	var parsedPayload asyncapi.WebsocketMessagePublish
+	err := json.Unmarshal(payload, &parsedPayload)
+	if err != nil {
+		log.Debug("Could not unmarshal JSON", err)
+		return parsedPayload, err
+	}
+	if parsedPayload.MessageType == "" {
+		err = errors.New("envelope message type is <empty>")
+		return parsedPayload, err
+	}
+	return parsedPayload, nil
 }

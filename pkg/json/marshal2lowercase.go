@@ -1,15 +1,11 @@
-// Package asyncapiutils provides utility and mapping functions to work with the generated asyncapi DTOs
-package asyncapiutils
+// Package jsonutil provides utility functions around JSON and JSONable structs
+package jsonutil
 
 import (
 	"encoding/json"
-	"errors"
 	"regexp"
 	"unicode"
 	"unicode/utf8"
-
-	log "github.com/sirupsen/logrus"
-	"gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/generated-sources/asyncapi"
 )
 
 // MarshalToLowerCamelCaseJSON works like json.marshal, but the JSON keys are lowerCamelCase
@@ -39,21 +35,4 @@ func MarshalToLowerCamelCaseJSON(data any) ([]byte, error) {
 		},
 	)
 	return converted, err
-}
-
-// ParseWebsocketMessage unmarshals the given bytes to a [WebsocketMessagePublish]
-//
-// Also validates 'MessageType' to be present
-func ParseWebsocketMessage(payload []byte) (asyncapi.WebsocketMessagePublish, error) {
-	var parsedPayload asyncapi.WebsocketMessagePublish
-	err := json.Unmarshal(payload, &parsedPayload)
-	if err != nil {
-		log.Debug("Could not unmarshal JSON", err)
-		return parsedPayload, err
-	}
-	if parsedPayload.MessageType == "" {
-		err = errors.New("envelope message type is <empty>")
-		return parsedPayload, err
-	}
-	return parsedPayload, nil
 }
