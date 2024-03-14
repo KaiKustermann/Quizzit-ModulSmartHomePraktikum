@@ -12,9 +12,8 @@ import (
 // This is a mapping utility function for the asyncapi models.
 func ErrorFeedbackToWebsocketMessageSubscribe(iMsg asyncapi.ErrorFeedback) asyncapi.WebsocketMessageSubscribe {
 	msg := asyncapi.WebsocketMessageSubscribe{
-		MessageType:   string(messagetypes.Game_Generic_ErrorFeedback),
-		Body:          iMsg,
-		CorrelationId: iMsg.ReceivedMessage.CorrelationId,
+		MessageType: string(messagetypes.Game_Generic_ErrorFeedback),
+		Body:        iMsg,
 	}
 	return msg
 }

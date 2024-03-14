@@ -6,6 +6,8 @@ import (
 	"gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/category"
 	configuration "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/configuration/quizzit"
 	configmodel "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/configuration/quizzit/runtime/model"
+	uiconfig "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/configuration/ui"
+	uiconfigmodel "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/configuration/ui/model"
 	gameloop "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/game/loop"
 	"gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/game/managers"
 	player "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/game/managers/player"
@@ -15,6 +17,7 @@ import (
 	hybriddie "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/hybrid-die"
 	messagetypes "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/message-types"
 	"gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/websockets/wsclients"
+	"gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/websockets/wshooks"
 	"gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/websockets/wsmapper"
 )
 
@@ -57,10 +60,18 @@ func InitializeGame() *Game {
 		QuestionManager:  questionmanager.NewQuestionManager(),
 		HybridDieManager: hybriddie.NewHybridDieManager(),
 	}
+
+	gameInstance.constructLoop()
+
+	log.Debug("Registering Callbacks and Hooks")
 	gameInstance.registerHybridDieCallbacks()
-	configuration.RegisterOnChangeHandler(gameInstance.onConfigChange)
+	configuration.RegisterOnChangeHandler(gameInstance.onGameConfigChange)
+	uiconfig.RegisterOnChangeHandler(gameInstance.onUIConfigChange)
+	gameInstance.registerWebsocketMessageHandlers()
+	wshooks.RegisterOnConnectHandler(gameInstance.handleOnConnect)
+
 	gameInstance.managers.HybridDieManager.Find()
-	gameInstance.constructLoop().registerHandlers()
+
 	return gameInstance
 }
 
@@ -135,9 +146,12 @@ func (game *Game) TransitionToGameStep(next gameloop.GameStepIf) (err error) {
 	playerState := game.managers.PlayerManager.GetPlayerState()
 	nextState.PlayerState = &playerState
 
-	cLog.Trace("Adding Settings")
-	settings := game.managers.SettingsManager.GetGameSettings()
-	nextState.Settings = &settings
+	cLog.Trace("Adding GameSettings")
+	gameSettings := game.managers.SettingsManager.GetGameSettings()
+	nextState.GameSettings = &gameSettings
+
+	cLog.Trace("Adding UISettings")
+	nextState.UiSettings = uiconfig.GetUIConfig()
 
 	game.currentStep = next
 	game.stateMessage = nextState
@@ -173,12 +187,21 @@ func (game *Game) registerHybridDieCallbacks() *Game {
 	return game
 }
 
-// onConfigChange updates the game's stateMessage and re-broadcasts it
-// This way all clients receive a push with the new settings.
-func (game *Game) onConfigChange(nextConfig configmodel.QuizzitConfig) {
-	log.Debug("Updating game stateMessage due to config change")
-	settings := wsmapper.QuizzitConfigToGameSettings(nextConfig)
-	game.stateMessage.Settings = &settings
+// onGameConfigChange updates the stateMessage's gameSettings and re-broadcasts it
+// This way all clients receive a push with the new game-settings.
+func (game *Game) onGameConfigChange(nextConfig configmodel.QuizzitConfig) {
+	log.Debug("Updating game stateMessage due to a change in the game config")
+	gameSettings := wsmapper.QuizzitConfigToGameSettings(nextConfig)
+	game.stateMessage.GameSettings = &gameSettings
+	log.Debug("Broadcasting new stateMessage to Websocket Clients")
+	wsclients.BroadCast(game.stateMessage)
+}
+
+// onUIConfigChange updates the stateMessage's uiSettings and re-broadcasts it
+// This way all clients receive a push with the new ui-settings.
+func (game *Game) onUIConfigChange(nextConfig uiconfigmodel.UIConfig) {
+	log.Debug("Updating game stateMessage due to a change in the UI config")
+	game.stateMessage.UiSettings = nextConfig
 	log.Debug("Broadcasting new stateMessage to Websocket Clients")
 	wsclients.BroadCast(game.stateMessage)
 }

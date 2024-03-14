@@ -15,7 +15,7 @@ info:
     
     Some useful links:
     - [Quizzit repository](https://gitlab.mi.hdm-stuttgart.de/quizzit)
-  version: 1.1.0
+  version: 2.0.0
   license:
     name: MIT
     url: https://choosealicense.com/licenses/mit/
@@ -105,8 +105,6 @@ components:
       description: Sent by backend -> Envelope for WSS Messages
       type: object
       properties:
-        correlationId:
-          $ref: "#/components/schemas/Id"
         messageType:
           $ref: "#/components/schemas/MessageTypeSubscribe"
         body:
@@ -123,11 +121,12 @@ components:
             - $ref: "#/components/schemas/PlayerWonPrompt"
         playerState:
           $ref: "#/components/schemas/PlayerState"
-        settings:
+        gameSettings:
           $ref: "#/components/schemas/GameSettings"
+        uiSettings:
+          $ref: "#/components/schemas/UISettings"
       additionalProperties: false
       required:
-        - correlationId
         - messageType
     MessageTypePublish:
       title: Message Type Publish
@@ -147,8 +146,6 @@ components:
       description: Sent by client(s) -> Envelope for WSS Messages
       type: object
       properties:
-        correlationId:
-          $ref: "#/components/schemas/Id"
         messageType:
           $ref: "#/components/schemas/MessageTypePublish"
         body:
@@ -159,7 +156,6 @@ components:
             - $ref: "#/components/schemas/SelectAnswer"
       additionalProperties: false
       required:
-        - correlationId
         - messageType
     # *************************************************************************
     # **** END UTILITY SCHEMAS ************************************************

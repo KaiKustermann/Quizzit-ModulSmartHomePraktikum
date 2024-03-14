@@ -5,7 +5,6 @@ import (
 	log "github.com/sirupsen/logrus"
 	"gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/generated-sources/asyncapi"
 	msgType "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/message-types"
-	"gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/websockets/wshooks"
 	"gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/websockets/wsrouter"
 	"gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/websockets/wswriter"
 )
@@ -34,8 +33,10 @@ func (game *Game) handleOnConnect(conn *websocket.Conn) {
 	}
 }
 
-// Register Hooks for the Websocket connection
-func (game *Game) registerHandlers() *Game {
+// registerWebsocketMessageHandlers register handlers on wsrouter
+//
+// For a list of registered rotues see [MessageTypePublish]
+func (game *Game) registerWebsocketMessageHandlers() *Game {
 	log.Trace("Registering WS-Hooks for commands from tablet")
 	messageTypes := msgType.GetAllMessageTypePublish()
 	for i := 0; i < len(messageTypes); i++ {
@@ -44,8 +45,5 @@ func (game *Game) registerHandlers() *Game {
 
 	log.Trace("Registering WS-Hooks so frontend can fake hybrid die connected screen")
 	wsrouter.RegisterMessageHandler(string(msgType.Game_Die_HybridDieConnected), game.handleMessage)
-
-	log.Trace("Registering on-connect")
-	wshooks.RegisterOnConnectHandler(game.handleOnConnect)
 	return game
 }
