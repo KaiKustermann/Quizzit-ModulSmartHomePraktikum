@@ -18,7 +18,7 @@ func LoadHybridDieConfigFile() *confignilable.HybridDieNilable {
 	path := flags.UserConfigDir + HYBRID_DIE_CONFIG_FILE_NAME
 	fileConf, err := yamlutil.LoadYAMLFile[configyaml.HybridDieYAML](path)
 	if err != nil {
-		log.WithField("path", path).Warnf("Not using hybrid-die config file -> %e", err)
+		log.WithField("path", path).Warnf("Not using hybrid-die config file -> %s", err.Error())
 		return nil
 	}
 	return configyamlmapper.YamlNilableConfigMapper{}.HybridDieToNilable(&fileConf)

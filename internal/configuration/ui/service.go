@@ -27,6 +27,7 @@ func GetUIConfig() uiconfigmodel.UIConfig {
 func SetUIConfigFromFile() (err error) {
 	conf, err := uiconfigfile.LoadUIConfigFile()
 	if err != nil {
+		log.Warnf("Not using UI-Config file -> %s", err.Error())
 		return
 	}
 	setConfig(conf)

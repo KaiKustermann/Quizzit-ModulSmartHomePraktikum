@@ -16,7 +16,7 @@ func LoadQuizzitConfigFile() *confignilable.QuizzitNilable {
 	path := flags.ConfigPath
 	fileConf, err := yamlutil.LoadYAMLFile[configyaml.SystemConfigYAML](path)
 	if err != nil {
-		log.WithField("path", path).Warnf("Not using system config file -> %e", err)
+		log.WithField("path", path).Warnf("Not using system config file -> %s", err.Error())
 		return nil
 	}
 	return configyamlmapper.YamlNilableConfigMapper{}.ToNilable(&fileConf)

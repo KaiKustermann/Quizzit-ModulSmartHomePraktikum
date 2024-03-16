@@ -18,7 +18,7 @@ func LoadGameConfigFile() *confignilable.GameNilable {
 	path := flags.UserConfigDir + GAME_CONFIG_FILE_NAME
 	fileConf, err := yamlutil.LoadYAMLFile[configyaml.GameYAML](path)
 	if err != nil {
-		log.WithField("path", path).Warnf("Not using game config file -> %e", err)
+		log.WithField("path", path).Warnf("Not using game config file -> %s", err.Error())
 		return nil
 	}
 	return configyamlmapper.YamlNilableConfigMapper{}.GameToNilable(&fileConf)
