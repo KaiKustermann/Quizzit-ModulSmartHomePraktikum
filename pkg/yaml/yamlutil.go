@@ -15,8 +15,8 @@ import (
 // On encountering any errors, returns those errors
 func LoadYAMLFile[K any](pathToYAMLfile string) (output K, err error) {
 	cL := log.WithField("filename", pathToYAMLfile)
-	cL.Infof("Loading yaml... ")
-	cL.Debugf("Expanding to absolute path ")
+	cL.Debugf("Loading yaml... ")
+	cL.Tracef("Expanding to absolute path ")
 	absPath, err := filepath.Abs(pathToYAMLfile)
 	if err != nil {
 		return
@@ -30,7 +30,7 @@ func LoadYAMLFile[K any](pathToYAMLfile string) (output K, err error) {
 // On encountering any errors, returns those errors
 func loadYAMLFromAbsolutePath[K any](absPath string) (output K, err error) {
 	cL := log.WithField("filename", absPath)
-	cL.Debug("Opening YAML file ")
+	cL.Trace("Opening YAML file ")
 
 	fileHandle, err := os.Open(absPath)
 	if err != nil {
@@ -39,7 +39,7 @@ func loadYAMLFromAbsolutePath[K any](absPath string) (output K, err error) {
 	// defer the closing of our file so that we can parse it later on
 	defer fileHandle.Close()
 
-	cL.Trace("Successfully opened YAML file ")
+	cL.Debug("Successfully opened YAML file ")
 
 	// read our opened file as a byte array.
 	byteValue, err := io.ReadAll(fileHandle)
@@ -50,7 +50,7 @@ func loadYAMLFromAbsolutePath[K any](absPath string) (output K, err error) {
 	// Unmarshall into  struct
 	err = yaml.Unmarshal(byteValue, &output)
 	if err == nil {
-		cL.Debug("Successfully unmarshalled YAML file contents into struct")
+		cL.Trace("Successfully unmarshalled YAML file contents into struct")
 	}
 	return
 }

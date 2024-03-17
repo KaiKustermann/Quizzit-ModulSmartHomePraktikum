@@ -87,7 +87,7 @@ func createDefaultConfig() model.QuizzitConfig {
 		},
 		Game: model.GameConfig{
 			ScoredPointsToWin: 5,
-			QuestionsPath:     "./questions.json",
+			QuestionsPath:     "./questions.yaml",
 		},
 		CatalogPath: "./catalog.json",
 	}

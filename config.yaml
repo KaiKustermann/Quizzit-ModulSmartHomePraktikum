@@ -9,5 +9,5 @@ hybrid-die:
     timeout: 5s
 game:
   scored-points-to-win: 3
-  questions: "./questions.json"
+  questions: "./questions.yaml"
 # catalogPath: "./catalog.json"

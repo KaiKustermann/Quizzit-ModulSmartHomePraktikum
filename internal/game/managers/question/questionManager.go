@@ -6,10 +6,8 @@ import (
 	log "github.com/sirupsen/logrus"
 
 	"gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/category"
-	configuration "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/configuration/quizzit"
-	"gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/generated-sources/asyncapi"
-	questionloader "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/question/loader"
-	questionmodel "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/question/model"
+	question "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/question/runtime"
+	questionmodel "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/question/runtime/model"
 )
 
 // QuestionManager statefully handles the catalog of [Question]s and the active [Question] and category
@@ -26,14 +24,11 @@ func NewQuestionManager() *QuestionManager {
 	return qm
 }
 
-// LoadQuestions loads the [Question]s from the configured path
-//
-// See [QuizzitConfig]
+// LoadQuestions lods the questions
 func (qm *QuestionManager) LoadQuestions() (err error) {
-	log.Infof("Loading Questions")
-	opts := configuration.GetQuizzitConfig()
-	questions, err := questionloader.LoadQuestions(opts.Game.QuestionsPath)
+	questions, err := question.LoadQuestions()
 	if err != nil {
+		log.Errorf("LoadQuestions failed, not updating 'questions' -> %s", err.Error())
 		return
 	}
 	qm.questions = questions
@@ -58,11 +53,6 @@ func (qm *QuestionManager) MoveToNextQuestion() questionmodel.Question {
 func (qm *QuestionManager) ResetActiveQuestion() {
 	qm.GetActiveQuestion().ResetDisabledStateOfAllAnswers()
 	qm.GetActiveQuestion().ResetSelectedStateOfAllAnswers()
-}
-
-// GetCorrectnessFeedback exposes GetCorrectnessFeedback of the active [Question]
-func (qm *QuestionManager) GetCorrectnessFeedback() asyncapi.CorrectnessFeedback {
-	return qm.activeQuestion.GetCorrectnessFeedback()
 }
 
 // IsSelectedAnswerCorrect exposes IsSelectedAnswerCorrect of the active [Question]
@@ -121,6 +111,7 @@ func (qm *QuestionManager) getRandomQuestionOfActiveCategory() *questionmodel.Qu
 	if poolSize > 0 {
 		log.Debugf("Drafting a question out of %d remaining questions for category %s", poolSize, qm.activeCategory)
 		randomQuestion := draftableQuestions[rand.Intn(poolSize)]
+		randomQuestion.ShuffleAnswerOrder()
 		return randomQuestion
 	}
 

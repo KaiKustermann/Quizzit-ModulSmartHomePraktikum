@@ -7,6 +7,7 @@ import (
 	"gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/game/managers"
 	"gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/generated-sources/asyncapi"
 	messagetypes "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/message-types"
+	"gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/websockets/wsmapper"
 	jsonutil "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/pkg/json"
 )
 
@@ -18,7 +19,8 @@ type QuestionStep struct {
 }
 
 func (s *QuestionStep) GetMessageBody(managers *managers.GameObjectManagers) interface{} {
-	return managers.QuestionManager.GetActiveQuestion().ConvertToDTO()
+	question := managers.QuestionManager.GetActiveQuestion()
+	return wsmapper.QuestionToDTO(question)
 }
 
 // AddSelectAnswerTransition adds handling of answer selection

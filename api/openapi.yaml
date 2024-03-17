@@ -191,7 +191,7 @@ components:
         - name
         - description
       examples:
-        - path: "./questions.json"
+        - path: "./questions.yaml"
           name: "Example"
           description: "A fictional list of questions"
     QuestionCatalog:

@@ -1,12 +1,12 @@
 {
   "entries": [
     {
-      "path": "./questions.json",
+      "path": "./questions.yaml",
       "name": "Development",
       "description": "Kleiner Fragenkatalog zur Benutzung bei der Weiterentwicklung von Quizzit"
     },
     {
-      "path": "./nil.json",
+      "path": "./nil.yaml",
       "name": "Not valid",
       "description": "Dieser Fragenkatalog existiert nicht, nur hier, um eine Auswahl zu ermöglichen."
     }
