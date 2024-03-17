@@ -6,7 +6,6 @@ import (
 	log "github.com/sirupsen/logrus"
 
 	"gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/category"
-	"gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/generated-sources/asyncapi"
 	question "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/question/runtime"
 	questionmodel "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/question/runtime/model"
 )
@@ -54,11 +53,6 @@ func (qm *QuestionManager) MoveToNextQuestion() questionmodel.Question {
 func (qm *QuestionManager) ResetActiveQuestion() {
 	qm.GetActiveQuestion().ResetDisabledStateOfAllAnswers()
 	qm.GetActiveQuestion().ResetSelectedStateOfAllAnswers()
-}
-
-// GetCorrectnessFeedback exposes GetCorrectnessFeedback of the active [Question]
-func (qm *QuestionManager) GetCorrectnessFeedback() asyncapi.CorrectnessFeedback {
-	return qm.activeQuestion.GetCorrectnessFeedback()
 }
 
 // IsSelectedAnswerCorrect exposes IsSelectedAnswerCorrect of the active [Question]

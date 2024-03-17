@@ -6,6 +6,7 @@ import (
 	"gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/game/managers"
 	"gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/generated-sources/asyncapi"
 	messagetypes "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/message-types"
+	"gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/websockets/wsmapper"
 )
 
 // AnswerBaseStep is the common base Step for Correct/Wrong Answer Steps
@@ -16,7 +17,8 @@ type AnswerBaseStep struct {
 }
 
 func (s *AnswerBaseStep) GetMessageBody(managers *managers.GameObjectManagers) interface{} {
-	return managers.QuestionManager.GetCorrectnessFeedback()
+	question := managers.QuestionManager.GetActiveQuestion()
+	return wsmapper.QuestionToCorrectnessFeedback(question)
 }
 
 // AddTransitions adds stransition to [PlayerTurnEndDelegate]

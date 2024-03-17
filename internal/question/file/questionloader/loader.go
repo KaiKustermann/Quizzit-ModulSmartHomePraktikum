@@ -1,5 +1,5 @@
-// Package questionfileio provides the means to load/write questions from/to file
-package questionfileio
+// Package questionloader provides the means to load questions from file and map them to a valid list of questions
+package questionloader
 
 import (
 	"fmt"

@@ -1,3 +1,4 @@
+// Package questionmodel holds the structs that define Questions internally
 package questionmodel
 
 import (
@@ -5,7 +6,6 @@ import (
 	"math/rand"
 
 	log "github.com/sirupsen/logrus"
-	"gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/generated-sources/asyncapi"
 	letterutil "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/pkg/letter"
 )
 
@@ -16,48 +16,6 @@ type Question struct {
 	Category string
 	Answers  []Answer
 	Used     bool
-}
-
-// ConvertToDTO converts this object to a asyncapi.Question
-func (q Question) ConvertToDTO() *asyncapi.Question {
-	var answers = make([]asyncapi.PossibleAnswer, 0, len(q.Answers))
-	for _, a := range q.Answers {
-		answers = append(answers, a.ConvertToDTO())
-	}
-	return &asyncapi.Question{Id: q.Id, Query: q.Query, Answers: answers, Category: string(q.Category)}
-}
-
-// QuestionFromDTO creates a [Question] from the DTO [Question]
-func QuestionFromDTO(in asyncapi.Question) Question {
-	var answerSlice []Answer
-	for _, answer := range in.Answers {
-		answerSlice = append(answerSlice, AnswerFromDTO(answer))
-	}
-	return Question{Id: in.Id, Query: in.Query, Answers: answerSlice, Category: in.Category}
-}
-
-// GetCorrectnessFeedback returns feedback for the currently selected answer
-func (q Question) GetCorrectnessFeedback() (fb asyncapi.CorrectnessFeedback) {
-	fb = asyncapi.CorrectnessFeedback{
-		Question:                q.ConvertToDTO(),
-		SelectedAnswerIsCorrect: false,
-	}
-	for _, a := range q.Answers {
-		if a.IsCorrect {
-			dto := a.ConvertToDTO()
-			fb.CorrectAnswer = &dto
-			if a.IsSelected {
-				fb.SelectedAnswerIsCorrect = true
-				fb.SelectedAnswer = fb.CorrectAnswer
-				return
-			}
-		}
-		if a.IsSelected {
-			dto := a.ConvertToDTO()
-			fb.SelectedAnswer = &dto
-		}
-	}
-	return
 }
 
 // IsSelectedAnswerCorrect returns whether the selected answer is correct
@@ -113,7 +71,7 @@ func (q Question) UseJoker() error {
 	return nil
 }
 
-// Sets the field IsDisabled of all answers to false
+// ResetDisabledStateOfAllAnswers sets the field IsDisabled of all answers to false
 func (q Question) ResetDisabledStateOfAllAnswers() {
 	for idx := range q.Answers {
 		q.Answers[idx].IsDisabled = false

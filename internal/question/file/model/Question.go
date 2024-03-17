@@ -1,3 +1,4 @@
+// Package questionyaml provides the YAML definitions for the question files
 package questionyaml
 
 import (
@@ -15,7 +16,9 @@ type QuestionYAML struct {
 	Answers  []AnswerYAML `yaml:"answers,omitempty"`
 }
 
-// Validates that the field Query contains a reasonable value
+// Validate self and return a [ValidationErrorList]
+//
+// If the returned list is not empty, the validation failed.
 func (q QuestionYAML) Validate() (errors validationutil.ValidationErrorList[QuestionYAML]) {
 	if _ok, err := q.validateQuery(); !_ok {
 		errors.Add(err)
@@ -29,7 +32,9 @@ func (q QuestionYAML) Validate() (errors validationutil.ValidationErrorList[Ques
 	return
 }
 
-// Validates that the field Query contains a reasonable value
+// validateQuery validates that the field Query contains a reasonable value
+//
+// Returns ok=true if validation succeeds, else ok=false and the corresponding [ValidationError]
 func (q QuestionYAML) validateQuery() (ok bool, err validationutil.ValidationError[QuestionYAML]) {
 	ok = true
 	if q.Query == "" {
@@ -41,7 +46,9 @@ func (q QuestionYAML) validateQuery() (ok bool, err validationutil.ValidationErr
 	return
 }
 
-// Validates that for one answer the flag IsCorrect is true and for the others it is false
+// validateCorrectAnswerCount validates that the question has exactly one correct answer
+//
+// Returns ok=true if validation succeeds, else ok=false and the corresponding [ValidationError]
 func (q QuestionYAML) validateCorrectAnswerCount() (ok bool, err validationutil.ValidationError[QuestionYAML]) {
 	ok = true
 	isCorrectCount := 0
@@ -65,7 +72,9 @@ func (q QuestionYAML) validateCorrectAnswerCount() (ok bool, err validationutil.
 	return
 }
 
-// Validates that the category of a given question is part of the supported categories of the game
+// validateCategory validates that the category is supported
+//
+// Returns ok=true if validation succeeds, else ok=false and the corresponding [ValidationError]
 func (q QuestionYAML) validateCategory() (ok bool, err validationutil.ValidationError[QuestionYAML]) {
 	ok = true
 	categorySupported := false
