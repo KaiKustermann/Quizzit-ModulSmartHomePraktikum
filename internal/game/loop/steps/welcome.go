@@ -19,7 +19,7 @@ type WelcomeStep struct {
 func (s *WelcomeStep) AddSetupTransition(setupStep *SetupStep) {
 	var action ActionHandler = func(managers *managers.GameObjectManagers, _ asyncapi.WebsocketMessagePublish) (nextstep gameloop.GameStepIf, err error) {
 		if err := managers.QuestionManager.LoadQuestions(); err != nil {
-			return nil, fmt.Errorf("could not load question catalog. Please define a different catalog in the settings")
+			return nil, fmt.Errorf("bitte in den Einstellungen andere Fragen aussuchen")
 		}
 		return setupStep, nil
 	}

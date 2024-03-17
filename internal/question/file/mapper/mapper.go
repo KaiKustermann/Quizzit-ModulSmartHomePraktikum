@@ -13,7 +13,7 @@ import (
 type QuestionYamlMapper struct{}
 
 // ToRuntimeModel from QuestionsYAML to runtime []Model
-func (m QuestionYamlMapper) ToRuntimeModel(in questionyaml.QuestionsYAML) []questionmodel.Question {
+func (m QuestionYamlMapper) ToRuntimeModel(in questionyaml.QuestionListYAML) []questionmodel.Question {
 	out := make([]questionmodel.Question, 0, len(in.Questions))
 	for i, q := range in.Questions {
 		out = append(out, m.ToRuntimeQuestion(q))
