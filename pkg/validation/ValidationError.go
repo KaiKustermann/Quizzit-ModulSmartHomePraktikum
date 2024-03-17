@@ -23,3 +23,11 @@ func (l *ValidationErrorList[T]) Join(other ValidationErrorList[T]) {
 func (l ValidationErrorList[T]) GetAll() []ValidationError[T] {
 	return l.errors
 }
+
+func (l ValidationErrorList[T]) HasErrors() bool {
+	return len(l.errors) > 0
+}
+
+func (l ValidationErrorList[T]) HasNoErrors() bool {
+	return len(l.errors) == 0
+}

@@ -24,26 +24,41 @@ func LoadQuestionsFile(path string) (questions []questionmodel.Question, err err
 			%e`, path, err)
 		return
 	}
-	err = validateQuestions(questionYaml)
-	questions = questionyamlmapper.QuestionYamlMapper{}.ToRuntimeModel(questionYaml)
+	usableQuestions, err := validateQuestions(questionYaml)
+	if err != nil {
+		return
+	}
+	questions = questionyamlmapper.QuestionYamlMapper{}.ToRuntimeModel(usableQuestions)
 	return
 }
 
-// validateQuestions calls validators on the questions,
+// validateQuestions calls validators on the questions and returns a list of usableQuestions
 //
-// If validation fails, logs validation errors and returns an error.
-func validateQuestions(input questionyaml.QuestionListYAML) error {
-	log.Debugf("Validating questions")
-	if ok, errors := input.Validate(); !ok {
-		logValidationErrors(errors)
-		return fmt.Errorf("validation of questions failed")
+// Any validation errors will be logged, no matter the results.
+//
+// If first validation fails, it attempts to create a subset of valid questions.
+// If the validation of the subset also returns errors, the function returns an error.
+func validateQuestions(input questionyaml.QuestionListYAML) (usableQuestions questionyaml.QuestionListYAML, err error) {
+	log.Tracef("Validating questions")
+	usableQuestions, errors := input.Validate()
+	if errors.HasNoErrors() {
+		log.Debug("Questions have no validation errors")
+		return
 	}
-	log.Debug("Validation of questions succeeded")
-	return nil
+	logValidationErrors(errors)
+	log.Debug("Attempting to create a partial list with valid questions as fallback")
+	usableQuestions, errors = usableQuestions.Validate()
+	if errors.HasNoErrors() {
+		log.Infof("Created a partial list, using %d of %d questions", len(usableQuestions.Questions), len(input.Questions))
+		return
+	}
+	err = fmt.Errorf("questions are not valid")
+	return
 }
 
-// logValidationErrors logs the [ValidationErrorList] as Errors
+// logValidationErrors logs the [ValidationErrorList] as Warnings
 func logValidationErrors(errors validationutil.ValidationErrorList[questionyaml.QuestionYAML]) {
+	log.Warn("Questions have validation errors")
 	for _, e := range errors.GetAll() {
 		var label interface{}
 		if e.Source.Query != "" {
@@ -51,6 +66,6 @@ func logValidationErrors(errors validationutil.ValidationErrorList[questionyaml.
 		} else {
 			label = e.Source
 		}
-		log.WithField("Question", label).Error(e.Problem)
+		log.WithField("Question", label).Warn(e.Problem)
 	}
 }

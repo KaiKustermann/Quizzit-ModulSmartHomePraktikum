@@ -16,18 +16,14 @@ type QuestionYAML struct {
 }
 
 // Validates that the field Query contains a reasonable value
-func (q QuestionYAML) Validate() (ok bool, errors validationutil.ValidationErrorList[QuestionYAML]) {
-	ok = true
+func (q QuestionYAML) Validate() (errors validationutil.ValidationErrorList[QuestionYAML]) {
 	if _ok, err := q.validateQuery(); !_ok {
-		ok = false
 		errors.Add(err)
 	}
 	if _ok, err := q.validateCorrectAnswerCount(); !_ok {
-		ok = false
 		errors.Add(err)
 	}
 	if _ok, err := q.validateCategory(); !_ok {
-		ok = false
 		errors.Add(err)
 	}
 	return
