@@ -3,7 +3,6 @@ package steps
 import (
 	"fmt"
 
-	log "github.com/sirupsen/logrus"
 	gameloop "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/game/loop"
 	gameloopprinter "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/game/loop/printer"
 	"gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/game/managers"
@@ -20,7 +19,6 @@ type WelcomeStep struct {
 func (s *WelcomeStep) AddSetupTransition(setupStep *SetupStep) {
 	var action ActionHandler = func(managers *managers.GameObjectManagers, _ asyncapi.WebsocketMessagePublish) (nextstep gameloop.GameStepIf, err error) {
 		if err := managers.QuestionManager.LoadQuestions(); err != nil {
-			log.Errorf("%e", err)
 			return nil, fmt.Errorf("could not load question catalog. Please define a different catalog in the settings")
 		}
 		return setupStep, nil
