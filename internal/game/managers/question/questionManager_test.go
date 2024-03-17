@@ -4,15 +4,15 @@ import (
 	"reflect"
 	"testing"
 
-	questionmodel "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/question/model"
+	questionmodel "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/question/runtime/model"
 )
 
 func makeQuestion(id string, category string) (q questionmodel.Question) {
 	q.Answers = []questionmodel.Answer{
-		{Id: "A", Answer: "text A"},
-		{Id: "B", Answer: "text B"},
-		{Id: "C", Answer: "text C"},
-		{Id: "D", Answer: "text D"},
+		{Id: "A", Text: "text A"},
+		{Id: "B", Text: "text B"},
+		{Id: "C", Text: "text C"},
+		{Id: "D", Text: "text D"},
 	}
 	q.Id = id
 	q.Category = category

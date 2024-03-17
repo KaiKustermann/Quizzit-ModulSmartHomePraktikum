@@ -1,0 +1,193 @@
+questions:
+  - query: Welcher Fluss ist der längste innerhalb von Deutschland?
+    category: Geographie
+    answers:
+      - text: Rhein
+        isCorrect: true
+      - text: Donau
+      - text: Main
+      - text: Neckar
+  - query: Welcher Berg ist der höchste in Deutschland?
+    category: Geographie
+    answers:
+    - text: Zugspitze
+      isCorrect: true
+    - text: Matterhorn
+    - text: Watzmann
+    - text: Hochgrat
+  - query: Welches Land grenzt nicht an Deutschland an?
+    category: Geographie
+    answers:
+    - text: Slowenien
+      isCorrect: true
+    - text: Tschechien
+    - text: Niederlande
+    - text: Dänemark
+  - query: Welches Bundesland grenzt nicht an Baden-Württemberg?
+    category: Geographie
+    answers:
+    - text: Saarland
+      isCorrect: true
+    - text: Bayern
+    - text: Rheinland-Pfalz
+    - text: Hessen
+  - query: Wann war die erste Mondlandung?
+    category: Geschichte
+    answers:
+    - text: '1969'
+      isCorrect: true
+    - text: '1965'
+    - text: '1980'
+    - text: '1966'
+  - query: Wer war Bundeskanzler während der Wiedervereinigung?
+    category: Geschichte
+    answers:
+    - text: Helmut Kohl
+      isCorrect: true
+    - text: Willy Brandt
+    - text: Harald Schmidt
+    - text: Gerhard Schröder
+  - query: Seit wann gibt es Farbfernsehen in Deutschland?
+    category: Geschichte
+    answers:
+    - text: '1967'
+      isCorrect: true
+    - text: '1930'
+    - text: '1980'
+    - text: '1957'
+  - query: Welche Stadt war im Jahr 1980 die Hauptstadt von der Bundesrepublik Deutschland?
+    category: Geschichte
+    answers:
+    - text: Bonn
+      isCorrect: true
+    - text: Stuttgart
+    - text: Berlin
+    - text: Frankfurt
+  - query: Woher kommt der Name Stuttgart?
+    category: Heimat
+    answers:
+    - text: Stutengarten
+      isCorrect: true
+    - text: Bauernhof
+    - text: Stadtkirche
+    - text: Stutenbach
+  - query: Wie heißt der Fluss der ursprünglisch durch Stuttgart floss?
+    category: Heimat
+    answers:
+    - text: Nesenbach
+      isCorrect: true
+    - text: Neckar
+    - text: Stutenbach
+    - text: Rems
+  - query: Was ist das Besondere am Stuttgarter Rathaus?
+    category: Heimat
+    answers:
+    - text: Paternoster
+      isCorrect: true
+    - text: Anzahl der Fenster
+    - text: Fachwerk
+    - text: Rosa Farbe
+  - query: Welches Essen ist nicht schwäbisch?
+    category: Heimat
+    answers:
+    - text: Kaiserscharrn
+      isCorrect: true
+    - text: Wibele
+    - text: Maultaschen
+    - text: Dinette
+  - query: Wer moderierte die Sendung - Dalli Dalli?
+    category: Unterhaltung
+    answers:
+    - text: Rudi Carrell
+      isCorrect: true
+    - text: Hans Rosenthal
+    - text: Peter Alexander
+    - text: Thomas Gottschalk
+  - query: Wann wurde Deutschland das erste Mal Fußball Weltmeister?
+    category: Unterhaltung
+    answers:
+    - text: 1954 in Bern
+      isCorrect: true
+    - text: 1958 in Stockholm
+    - text: 1938 in Berlin
+    - text: 1938 in Paris
+  - query: Welche Band ist für Hits wie 'Imagine' und 'Hey Jude' bekannt?
+    category: Unterhaltung
+    answers:
+    - text: The Beatles
+      isCorrect: true
+    - text: The Rolling Stones
+    - text: Led Zeppelin
+    - text: The Beach Boys
+  - query: Wer gewann im Jahr 1982 den Grand Prix Eurovision de la Chanson mit dem Lied 'Ein bisschen Frieden'?
+    category: Unterhaltung
+    answers:
+    - text: Nicole
+      isCorrect: true
+    - text: ABBA
+    - text: Udo Jürgens
+    - text: Nena
+  - query: 'Vervollständige dieses Sprichwort: Reden ist Silber...'
+    category: Sprichwörter
+    answers:
+    - text: Schweigen ist Gold
+      isCorrect: true
+    - text: Handeln ist Gold
+    - text: Zuhören ist Gold
+    - text: Verstehen ist Gold
+  - query: 'Vervollständige dieses Sprichwort: Stolz wie...?'
+    category: Sprichwörter
+    answers:
+    - text: Oskar
+      isCorrect: true
+    - text: Peter
+    - text: Tim
+    - text: Georg
+  - query: 'Vervollständige dieses Sprichwort: Den Morgen nicht vor dem Abend...'
+    category: Sprichwörter
+    answers:
+    - text: loben
+      isCorrect: true
+    - text: verehren
+    - text: beginnen
+    - text: zählen
+  - query: 'Vervollständige dieses Sprichwort: Der frühe Vogel fängt...'
+    category: Sprichwörter
+    answers:
+    - text: den Wurm
+      isCorrect: true
+    - text: die Katz
+    - text: die Maus
+    - text: die Schnecke
+  - query: Welches Obst verbirgt sich hinter dem Namen 'Williams Christ'?
+    category: Überraschung
+    answers:
+    - text: Birne
+      isCorrect: true
+    - text: Erdbeere
+    - text: Apfel
+    - text: Marille
+  - query: Welche dieser Automodelle stammt nicht von VW?
+    category: Überraschung
+    answers:
+    - text: Ente
+      isCorrect: true
+    - text: Polo
+    - text: Käfer
+    - text: Golf
+  - query: Welche deutsche Stadt ist für das weltberühmte Oktoberfest bekannt?
+    category: Überraschung
+    answers:
+    - text: München
+      isCorrect: true
+    - text: Stuttgart
+    - text: Berlin
+    - text: Köln
+  - query: Wer malte das Gemälde 'Mona Lisa'?
+    category: Überraschung
+    answers:
+    - text: Leonardo da Vinci
+      isCorrect: true
+    - text: Vincent van Gogh
+    - text: Pablo Picasso
+    - text: Michelangelo

@@ -1,14 +1,14 @@
-package questionvalidator
+package questionyamlvalidator
 
 import (
 	log "github.com/sirupsen/logrus"
-	questionmodel "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/question/model"
+	questionyaml "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/question/file/model"
 )
 
 // Container for validation errors concerning Question
 type ValidationError struct {
 	Problem  string
-	Question questionmodel.Question
+	Question questionyaml.QuestionYAML
 }
 
 // Convenience function, iterates through a list of validation errors and logs them as errors

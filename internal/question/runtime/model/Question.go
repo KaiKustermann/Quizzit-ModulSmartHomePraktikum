@@ -6,6 +6,7 @@ import (
 
 	log "github.com/sirupsen/logrus"
 	"gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/internal/generated-sources/asyncapi"
+	letterutil "gitlab.mi.hdm-stuttgart.de/quizzit/backend-server/pkg/letter"
 )
 
 // Question represents a question object internally, for use in the backend
@@ -148,5 +149,17 @@ func (q Question) SelectAnswerById(selectedAnswerId string) (err error) {
 func (q Question) ResetSelectedStateOfAllAnswers() {
 	for idx := range q.Answers {
 		q.Answers[idx].IsSelected = false
+	}
+}
+
+// ShuffleAnswerOrder randomizes answer order and their ID.
+func (q *Question) ShuffleAnswerOrder() {
+	log.Debug("Shuffling answer order")
+	rand.Shuffle(
+		len(q.Answers),
+		func(i, j int) { q.Answers[i], q.Answers[j] = q.Answers[j], q.Answers[i] },
+	)
+	for i := 0; i < len(q.Answers); i++ {
+		q.Answers[i].Id = letterutil.GetLetterFromAlphabet(i)
 	}
 }
